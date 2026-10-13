@@ -9,21 +9,74 @@ jobs:
         with: { node-version: 20 }
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: 17 }
-      - name: Build
+      - name: Prepare project (from driver.html only)
         run: |
           set -e
-          echo "--- repo files ---"; find . -maxdepth 3 -not -path './.git/*' | head -40
-          PKG=$(find . -name package.json -not -path '*/node_modules/*' | head -1)
-          [ -n "$PKG" ] || { echo "ERROR: ไม่พบ package.json ใน repo — อัปโหลดไฟล์จากซิปไม่ครบ"; exit 1; }
-          cd "$(dirname "$PKG")"; pwd; ls
-          [ -f www/index.html ] || { echo "ERROR: ไม่พบ www/index.html"; exit 1; }
+          SRC=$(find . -maxdepth 3 -iname 'driver.html' -not -path './node_modules/*' | head -1)
+          [ -n "$SRC" ] || { echo "ERROR: ไม่พบ driver.html ใน repo — อัปโหลด driver.html ไว้ที่รากของ repo"; find . -maxdepth 2 -not -path './.git/*'; exit 1; }
+          echo "ใช้ไฟล์: $SRC"
+          mkdir -p app/www && cp "$SRC" app/www/index.html
+          cat > app/package.json <<'EOF'
+          {"name":"cabby-drivers","version":"1.0.0","private":true,
+           "scripts":{"build:android":"cap sync android && cd android && ./gradlew assembleDebug"},
+           "dependencies":{"@capacitor/android":"^6.0.0","@capacitor/core":"^6.0.0"},
+           "devDependencies":{"@capacitor/cli":"^6.0.0"}}
+          EOF
+          cat > app/capacitor.config.json <<'EOF'
+          {"appId":"com.ashaenergy.cabbydrivers","appName":"Cabby Drivers","webDir":"www","backgroundColor":"#071a3e"}
+          EOF
+          cat > app/icons.py <<'EOF'
+          import re, base64, io, os, sys
+          from PIL import Image, ImageDraw
+          s = open('www/index.html', encoding='utf-8').read()
+          m = re.search(r'class="hdr-logo"[^>]*src="data:image/[^;]+;base64,([^"]+)"', s)
+          if not m: sys.exit('ไม่พบโลโก้ใน driver.html')
+          l = Image.open(io.BytesIO(base64.b64decode(m.group(1)))).convert('RGBA')
+          NAVY = (7, 26, 62, 255)
+          def logo(size, frac):
+              w = int(size * frac); h = int(l.size[1] * w / l.size[0]); return l.resize((w, h), Image.LANCZOS)
+          def place(c, lg):
+              c.alpha_composite(lg, ((c.width - lg.width) // 2, (c.height - lg.height) // 2)); return c
+          fg = {'mdpi': 108, 'hdpi': 162, 'xhdpi': 216, 'xxhdpi': 324, 'xxxhdpi': 432}
+          lc = {'mdpi': 48, 'hdpi': 72, 'xhdpi': 96, 'xxhdpi': 144, 'xxxhdpi': 192}
+          base = 'android-res'
+          for d in fg:
+              o = f'{base}/mipmap-{d}'; os.makedirs(o, exist_ok=True)
+              s1 = fg[d]; place(Image.new('RGBA', (s1, s1), (0, 0, 0, 0)), logo(s1, 0.52)).save(f'{o}/ic_launcher_foreground.png')
+              s2 = lc[d]; sq = place(Image.new('RGBA', (s2, s2), NAVY), logo(s2, 0.78)).convert('RGB'); sq.save(f'{o}/ic_launcher.png')
+              mk = Image.new('L', (s2 * 4, s2 * 4), 0); ImageDraw.Draw(mk).ellipse((0, 0, s2 * 4 - 1, s2 * 4 - 1), fill=255); mk = mk.resize((s2, s2), Image.LANCZOS)
+              r = sq.convert('RGBA'); r.putalpha(mk); r.save(f'{o}/ic_launcher_round.png')
+          os.makedirs(f'{base}/mipmap-anydpi-v26', exist_ok=True)
+          x = '<?xml version="1.0" encoding="utf-8"?>\n<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n    <background android:drawable="@color/ic_launcher_background"/>\n    <foreground android:drawable="@mipmap/ic_launcher_foreground"/>\n</adaptive-icon>\n'
+          for n in ('ic_launcher', 'ic_launcher_round'): open(f'{base}/mipmap-anydpi-v26/{n}.xml', 'w').write(x)
+          os.makedirs(f'{base}/values', exist_ok=True)
+          open(f'{base}/values/ic_launcher_background.xml', 'w').write('<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#071A3E</color>\n</resources>\n')
+          EOF
+      - name: Build
+        working-directory: app
+        run: |
+          set -e
+          pip install pillow
+          python3 icons.py
           npm install
           npx cap add android
+          cp -r android-res/. android/app/src/main/res/
+          rm -f android/app/src/main/res/drawable-v24/ic_launcher_foreground.xml android/app/src/main/res/drawable/ic_launcher_background.xml
+          echo '--- launcher resources after copy ---'; find android/app/src/main/res -name 'ic_launcher*' | sort
+          echo '--- manifest icon ---'; grep -n 'android:icon\|roundIcon' android/app/src/main/AndroidManifest.xml
           f=android/app/src/main/AndroidManifest.xml
           for p in INTERNET ACCESS_FINE_LOCATION ACCESS_COARSE_LOCATION CAMERA; do
             grep -q "android.permission.$p" $f || sed -i "s#<application#<uses-permission android:name=\"android.permission.$p\" />\n    <application#" $f
           done
           npm run build:android
-          echo "APKDIR=$(pwd)" >> $GITHUB_ENV
+      - name: Verify icon is inside APK
+        working-directory: app
+        run: |
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          mkdir -p /tmp/apkx && unzip -q -o $APK -d /tmp/apkx
+          echo '--- icons in APK ---'; find /tmp/apkx/res -name 'ic_launcher*' | sort
+          echo '--- sha256 ours vs apk (xxxhdpi) ---'
+          sha256sum android-res/mipmap-xxxhdpi/ic_launcher.png
+          for f in $(find /tmp/apkx/res -path '*xxxhdpi*' -name 'ic_launcher.png'); do sha256sum $f; done
       - uses: actions/upload-artifact@v4
-        with: { name: cabby-drivers-apk, path: "${{ env.APKDIR }}/android/app/build/outputs/apk/debug/app-debug.apk" }
+        with: { name: cabby-drivers-apk, path: app/android/app/build/outputs/apk/debug/app-debug.apk }
