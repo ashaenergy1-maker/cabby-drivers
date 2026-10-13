@@ -257,6 +257,11 @@
   .n-dot{width:12px;height:12px;border-radius:50%;background:var(--teal);flex:0 0 auto;margin-left:auto;}
   .n-foot{padding:16px 20px 20px;}
   @keyframes spin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+  .home-ann{border-color:#f0dcae;background:linear-gradient(160deg,#fff8e8,#fff 60%);}
+  .home-ann-h{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--navy);} .home-ann-h b{font-weight:800;}
+  .home-ann-b{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+  .ann-new{display:inline-block;margin-left:6px;font-size:9.5px;font-weight:800;background:var(--gold);color:var(--navy);border-radius:8px;padding:1px 6px;vertical-align:middle;}
+  .home-ann-all{margin-top:8px;width:100%;border:none;background:var(--teal-soft);color:var(--teal-dark);font-weight:800;font-size:13px;padding:10px;border-radius:12px;font-family:inherit;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -304,6 +309,7 @@
   </header>
 
   <div id="screen-home" class="screen">
+    <div id="homeAnn"></div>
     <div class="card" id="dashMonth"></div>
     <div id="dashQueue"></div>
   </div>
@@ -1293,7 +1299,8 @@ function startAnnouncements(){
   annRef = db.ref('announcements').orderByChild('ts').limitToLast(20);
   annRef.on('value', snap=>{
     const v = snap.val() || {};
-    announcements = Object.entries(v).map(([id,x])=>({id, ...x})).filter(x=>x && x.title)
+    const _d=new Date(), _today=_d.getFullYear()+'-'+String(_d.getMonth()+1).padStart(2,'0')+'-'+String(_d.getDate()).padStart(2,'0');
+    announcements = Object.entries(v).map(([id,x])=>({id, ...x})).filter(x=>x && x.title && !(x.expires && x.expires < _today))
       .sort((a,b)=> (b.pinned?1:0)-(a.pinned?1:0) || String(b.ts||'').localeCompare(String(a.ts||'')));
     renderAnn();
   }, ()=>{ announcements = []; renderAnn(); });
@@ -1308,6 +1315,9 @@ function renderAnn(){
   $('profAnn').innerHTML = `<h3>ประกาศ${unread && !openSecs.has('ann') ? `<span class="ann-n">${unread}</span>` : ''}</h3>` + (announcements.length
     ? announcements.map(x=>`<div class="ann-item"><div class="t">${x.pinned ? '<i>ปักหมุด</i>' : ''}${esc(x.title)}</div><div class="d">${esc(fmt(x.ts))}</div>${x.body ? `<div class="b">${esc(x.body)}</div>` : ''}</div>`).join('')
     : '<div class="ann-item"><div class="b">ยังไม่มีประกาศ</div></div>');
+  const top = announcements.slice(0,2);
+  $('homeAnn').innerHTML = top.length ? `<div class="card home-ann"><div class="home-ann-h"><b>ประกาศจากบริษัท</b>${unread?`<span class="ann-n">${unread} ใหม่</span>`:''}</div>${top.map(x=>`<div class="ann-item"><div class="t">${x.pinned?'<i>ปักหมุด</i>':''}${esc(x.title)}${String(x.ts||'')>seen?'<span class="ann-new">ใหม่</span>':''}</div><div class="d">${esc(fmt(x.ts))}</div>${x.body?`<div class="b home-ann-b">${esc(x.body)}</div>`:''}</div>`).join('')}<button class="home-ann-all" id="homeAnnAll" type="button">ดูประกาศทั้งหมด${announcements.length>2?' ('+announcements.length+')':''} ›</button></div>` : '';
+  const hb=$('homeAnnAll'); if(hb) hb.onclick=()=>{ openSecs.add('ann'); showScreen('profile'); renderAnn(); };
   makeCollapsible($('profAnn'),'ann');
   if(openSecs.has('ann') && newest && newest > seen){ try{ localStorage.setItem(annSeenKey(), newest); }catch(e){} }
 }
