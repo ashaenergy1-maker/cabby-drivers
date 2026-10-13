@@ -11,9 +11,12 @@ jobs:
         with: { distribution: temurin, java-version: 17 }
       - name: Prepare project (from driver.html only)
         run: |
-          set -e
-          SRC=$(find . -maxdepth 3 -iname 'driver.html' -not -path './node_modules/*' | head -1)
-          [ -n "$SRC" ] || { echo "ERROR: ไม่พบ driver.html ใน repo — อัปโหลด driver.html ไว้ที่รากของ repo"; find . -maxdepth 2 -not -path './.git/*'; exit 1; }
+          set -eE
+          trap 'echo "::error::ล้มที่คำสั่ง: $BASH_COMMAND (บรรทัด $LINENO)"' ERR
+          echo "::notice::ไฟล์ใน repo: $(find . -maxdepth 3 -not -path './.git/*' -type f | head -15 | tr '\n' ' ')"
+          echo '--- ไฟล์ใน repo ---'; find . -maxdepth 3 -not -path './.git/*' -type f | head -30
+          SRC=$(grep -rl 'class="hdr-logo"' --include='*.html' . 2>/dev/null | head -1 || true)
+          [ -n "$SRC" ] || { echo "::error::ไม่พบ driver.html ใน repo (ไฟล์ .html ที่มี class=hdr-logo) — ต้องอัปโหลด driver.html ใหม่"; exit 1; }
           echo "ใช้ไฟล์: $SRC"
           mkdir -p app/www && cp "$SRC" app/www/index.html
           cat > app/package.json <<'EOF'
@@ -55,7 +58,8 @@ jobs:
       - name: Build
         working-directory: app
         run: |
-          set -e
+          set -eE
+          trap 'echo "::error::ล้มที่คำสั่ง: $BASH_COMMAND (บรรทัด $LINENO)"' ERR
           pip install pillow
           python3 icons.py
           npm install
