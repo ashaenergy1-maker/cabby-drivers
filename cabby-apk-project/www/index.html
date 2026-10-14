@@ -261,7 +261,15 @@
   .home-ann-h{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--navy);} .home-ann-h b{font-weight:800;}
   .home-ann-b{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
   .ann-new{display:inline-block;margin-left:6px;font-size:9.5px;font-weight:800;background:var(--gold);color:var(--navy);border-radius:8px;padding:1px 6px;vertical-align:middle;}
+  .ann-read{margin-top:6px;border:1px solid #b9e3e6;background:#fff;color:var(--teal-dark);font-weight:700;font-size:11.5px;padding:4px 12px;border-radius:999px;cursor:pointer;}
   .home-ann-all{margin-top:8px;width:100%;border:none;background:var(--teal-soft);color:var(--teal-dark);font-weight:800;font-size:13px;padding:10px;border-radius:12px;font-family:inherit;cursor:pointer;}
+  .howto{margin:6px 0 0;padding-left:20px;} .howto li{padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px;line-height:1.55;color:#4a5a75;} .howto li:last-child{border-bottom:none;}
+  .howto li b{display:block;color:var(--navy);font-size:13px;font-weight:800;margin-bottom:1px;}
+  .batt-ov{position:fixed;inset:0;z-index:9999;background:rgba(10,20,40,.6);display:flex;align-items:center;justify-content:center;padding:16px;}
+  .batt-box{background:#fff;border-radius:18px;padding:18px;width:100%;max-width:380px;max-height:92vh;overflow:auto;}
+  .batt-box h3{margin:0 0 4px;font-size:16px;color:var(--navy);}
+  .batt-pv{border:2px dashed #c9d6e6;border-radius:12px;min-height:150px;display:flex;align-items:center;justify-content:center;color:var(--sub);font-size:13px;margin-bottom:10px;overflow:hidden;}
+  .batt-pv img{width:100%;display:block;}
 </style>
 </head>
 <body>
@@ -402,6 +410,7 @@
     <div class="sec-card" id="profDocs"></div>
     <div class="sec-card" id="profContract"></div>
     <div class="sec-card" id="profAnn"></div>
+    <div class="sec-card" id="profHowto"></div>
     <div class="sec-card help-card">
       <h3>ขอความช่วยเหลือ</h3>
       <div class="help-sub">รถเสีย อุบัติเหตุ หรือมีปัญหาระหว่างทำงาน</div>
@@ -897,13 +906,53 @@ function renderDash(){
   }
 }
 
+// ถ่ายรูปเปอร์เซ็นต์แบตเตอรี่ด้วยกล้องสดเท่านั้น (ไม่เปิดคลังภาพ/ไฟล์ — กันแนบรูปเก่า) → JPEG ด้านยาว ≤ 960px คืน dataURL หรือ null ถ้ายกเลิก
+function askBatteryPhoto(){
+  return new Promise(async resolve=>{
+    if(typeof stopScan === 'function'){ try{ stopScan(); }catch(e){} }
+    const ov = document.createElement('div'); ov.className = 'batt-ov';
+    ov.innerHTML = `<div class="batt-box"><h3>ถ่ายรูปเปอร์เซ็นต์แบตเตอรี่</h3>
+      <div class="muted" style="margin-bottom:10px;">เล็งกล้องไปที่หน้าจอแสดงเปอร์เซ็นต์แบตเตอรี่ของรถให้ชัดเจน แล้วกดถ่ายภาพ (แนบรูปจากคลังภาพไม่ได้)</div>
+      <div class="batt-pv"><video id="battVid" playsinline autoplay muted style="width:100%;display:block;"></video><img id="battImg" alt="รูปแบตเตอรี่" style="display:none;width:100%;"></div>
+      <div class="err-text" id="battErr" style="display:none;margin-bottom:8px;"></div>
+      <button class="btn btn-outline" id="battShoot" type="button" disabled>📷 ถ่ายภาพ</button>
+      <button class="btn btn-green" id="battOk" type="button" disabled style="margin-top:8px;display:none;">ยืนยันและลงคิว</button>
+      <button class="btn btn-outline" id="battNo" type="button" style="margin-top:8px;">ยกเลิก</button></div>`;
+    document.body.appendChild(ov);
+    const q = id=>ov.querySelector('#'+id); let stream = null, data = null;
+    const stop = ()=>{ if(stream){ stream.getTracks().forEach(t=>t.stop()); stream = null; } };
+    const done = v=>{ stop(); ov.remove(); resolve(v); };
+    q('battNo').onclick = ()=> done(null);
+    q('battOk').onclick = ()=> done(data);
+    const vid = q('battVid');
+    const live = async ()=>{
+      data = null; q('battImg').style.display = 'none'; vid.style.display = ''; q('battOk').style.display = 'none'; q('battShoot').textContent = '📷 ถ่ายภาพ'; q('battShoot').disabled = true;
+      try{
+        if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('อุปกรณ์นี้ไม่รองรับการเปิดกล้อง');
+        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}, audio:false});
+        vid.srcObject = stream; await vid.play().catch(()=>{}); q('battShoot').disabled = false;
+      }catch(e){ q('battErr').style.display = ''; q('battErr').textContent = 'เปิดกล้องไม่ได้: ' + (e && e.message || e) + ' — ตรวจสอบสิทธิ์กล้องของแอป'; }
+    };
+    q('battShoot').onclick = ()=>{
+      if(data){ live(); return; } // ถ่ายใหม่
+      if(!vid.videoWidth) return;
+      const k = Math.min(1, 960/Math.max(vid.videoWidth, vid.videoHeight));
+      const c = document.createElement('canvas'); c.width = Math.round(vid.videoWidth*k); c.height = Math.round(vid.videoHeight*k);
+      c.getContext('2d').drawImage(vid, 0, 0, c.width, c.height);
+      data = c.toDataURL('image/jpeg', 0.6); stop();
+      q('battImg').src = data; q('battImg').style.display = ''; vid.style.display = 'none';
+      q('battOk').style.display = ''; q('battOk').disabled = false; q('battShoot').textContent = '📷 ถ่ายใหม่';
+    };
+    live();
+  });
+}
 let joining = false;
-async function joinQueue(locKey, geoInfo){
+async function joinQueue(locKey, geoInfo, photo){
   if(joining) return; // กันกดซ้ำรัวๆ จนลงคิวซ้ำ
   joining = true;
-  try{ await joinQueueInner(locKey, geoInfo); } finally{ joining = false; }
+  try{ await joinQueueInner(locKey, geoInfo, photo); } finally{ joining = false; }
 }
-async function joinQueueInner(locKey, geoInfo){
+async function joinQueueInner(locKey, geoInfo, photo){
   const why = blockedReason(); if(why){ appAlert(why); return; }
   if(!driverCurrentUser.vehicleId){ appAlert('บัญชีนี้ยังไม่ผูกทะเบียนรถ ติดต่อเจ้าหน้าที่'); return; }
   const allEntries = Object.values(queueData).flat();
@@ -926,7 +975,17 @@ async function joinQueueInner(locKey, geoInfo){
     entry.checkinAccuracyM = geoInfo.accuracy != null ? Math.round(geoInfo.accuracy) : null;
     entry.checkinDistanceM = geoInfo.distanceKm != null ? Math.round(geoInfo.distanceKm * 1000) : null;
   }
-  try{ await db.ref('queue/'+locKey).push(entry); }
+  try{
+    if(photo){
+      // เขียนทีเดียวแบบ atomic: คิว + รูป (รูปแยกโหนด battery-photos เพื่อไม่ให้ทุกเครื่องที่ฟังคิวต้องโหลดรูปไปด้วย)
+      const key = db.ref('queue/'+locKey).push().key;
+      entry.batteryPhoto = true; entry.batteryAt = new Date().toISOString();
+      await db.ref().update({
+        ['queue/'+locKey+'/'+key]: entry,
+        ['battery-photos/'+key]: {img: photo, ts: entry.batteryAt, locKey, plate: entry.plate, by: entry.addedBy}
+      });
+    } else await db.ref('queue/'+locKey).push(entry);
+  }
   catch(e){ appAlert('ลงคิวไม่สำเร็จ: '+e.message); return; }
   currentQueueLoc = locKey;
   showScreen('queue');
@@ -1046,13 +1105,22 @@ async function verifyGeofenceAndJoin(locKey){
     async pos=>{
       const d = haversineKm(pos.coords.latitude, pos.coords.longitude, loc.lat, loc.lng);
       if(d <= CHECKIN_GEOFENCE_RADIUS_KM){
-        $('scanGeoStatus').textContent = 'ยืนยันตำแหน่งสำเร็จ กำลังลงคิว...';
+        $('scanGeoStatus').textContent = 'ยืนยันตำแหน่งสำเร็จ — ถ่ายรูปแบตเตอรี่ก่อนลงคิว';
+        const photo = await askBatteryPhoto();
+        if(!photo){
+          $('scanGeoStatus').textContent = 'ยังไม่ได้ลงคิว';
+          $('scanGeoDetail').textContent = 'ต้องถ่ายรูปเปอร์เซ็นต์แบตเตอรี่ของรถก่อนลงคิว เพื่อให้เจ้าหน้าที่ Stand ทราบว่ารับงานประเภทไหนได้';
+          $('scanGeoActions').style.display = '';
+          $('scanGeoRetryBtn').style.display = '';
+          return;
+        }
+        $('scanGeoStatus').textContent = 'กำลังลงคิว...';
         await joinQueue(locKey, {
           lat: pos.coords.latitude,
           lng: pos.coords.longitude,
           accuracy: pos.coords.accuracy,
           distanceKm: d
-        });
+        }, photo);
       } else {
         $('scanGeoStatus').textContent = 'อยู่ไกลจากจุดรับคิวเกินไป';
         $('scanGeoDetail').textContent = `ระยะห่างจากตำแหน่งปัจจุบัน ~${d.toFixed(2)} กม. (ต้องอยู่ในรัศมี ${(CHECKIN_GEOFENCE_RADIUS_KM*1000).toFixed(0)} เมตร) — ลองขยับเข้าใกล้จุดรับคิวแล้วกดลองใหม่`;
@@ -1142,7 +1210,7 @@ $('cancelQueueBtn').addEventListener('click', async ()=>{
   if(!entryId) return;
   if(!(await appConfirm('ยกเลิกคิวของคุณ?'))) return;
   suppressCancelNotifyIds.add(entryId); // ยกเลิกเองไม่ต้องเด้งแจ้งเตือนตัวเอง
-  try{ await db.ref('queue/'+currentQueueLoc+'/'+entryId).remove(); }
+  try{ await db.ref().update({['queue/'+currentQueueLoc+'/'+entryId]: null, ['battery-photos/'+entryId]: null}); }
   catch(e){ suppressCancelNotifyIds.delete(entryId); appAlert('ยกเลิกไม่สำเร็จ: '+e.message); return; }
   await shiftStandbySlots(currentQueueLoc);
 });
@@ -1301,11 +1369,14 @@ function startAnnouncements(){
     const v = snap.val() || {};
     const _d=new Date(), _today=_d.getFullYear()+'-'+String(_d.getMonth()+1).padStart(2,'0')+'-'+String(_d.getDate()).padStart(2,'0');
     announcements = Object.entries(v).map(([id,x])=>({id, ...x})).filter(x=>x && x.title && !(x.expires && x.expires < _today))
+      .filter(x=>!Array.isArray(x.plates) || !x.plates.length || x.plates.some(pl=>String(pl).toLowerCase().replace(/\s+/g,'')===String(driverCurrentUser&&driverCurrentUser.plate||'').toLowerCase().replace(/\s+/g,'')))
       .sort((a,b)=> (b.pinned?1:0)-(a.pinned?1:0) || String(b.ts||'').localeCompare(String(a.ts||'')));
     renderAnn();
   }, ()=>{ announcements = []; renderAnn(); });
 }
 function stopAnnouncements(){ if(annRef){ try{ annRef.off(); }catch(e){} annRef = null; } announcements = []; }
+function annReadSet(){ try{ return new Set(JSON.parse(localStorage.getItem(annSeenKey()+':read')||'[]')); }catch(e){ return new Set(); } }
+function annRk(x){ return x.id+'|'+(x.ts||''); }
 function renderAnn(){
   if(!driverCurrentUser) return;
   let seen = ''; try{ seen = localStorage.getItem(annSeenKey()) || ''; }catch(e){}
@@ -1315,8 +1386,9 @@ function renderAnn(){
   $('profAnn').innerHTML = `<h3>ประกาศ${unread && !openSecs.has('ann') ? `<span class="ann-n">${unread}</span>` : ''}</h3>` + (announcements.length
     ? announcements.map(x=>`<div class="ann-item"><div class="t">${x.pinned ? '<i>ปักหมุด</i>' : ''}${esc(x.title)}</div><div class="d">${esc(fmt(x.ts))}</div>${x.body ? `<div class="b">${esc(x.body)}</div>` : ''}</div>`).join('')
     : '<div class="ann-item"><div class="b">ยังไม่มีประกาศ</div></div>');
-  const top = announcements.slice(0,2);
-  $('homeAnn').innerHTML = top.length ? `<div class="card home-ann"><div class="home-ann-h"><b>ประกาศจากบริษัท</b>${unread?`<span class="ann-n">${unread} ใหม่</span>`:''}</div>${top.map(x=>`<div class="ann-item"><div class="t">${x.pinned?'<i>ปักหมุด</i>':''}${esc(x.title)}${String(x.ts||'')>seen?'<span class="ann-new">ใหม่</span>':''}</div><div class="d">${esc(fmt(x.ts))}</div>${x.body?`<div class="b home-ann-b">${esc(x.body)}</div>`:''}</div>`).join('')}<button class="home-ann-all" id="homeAnnAll" type="button">ดูประกาศทั้งหมด${announcements.length>2?' ('+announcements.length+')':''} ›</button></div>` : '';
+  const rd = annReadSet(), unreadList = announcements.filter(x=>!rd.has(annRk(x))), top = unreadList.slice(0,2);
+  $('homeAnn').innerHTML = top.length ? `<div class="card home-ann"><div class="home-ann-h"><b>ประกาศจากบริษัท</b>${unread?`<span class="ann-n">${unread} ใหม่</span>`:''}</div>${top.map(x=>`<div class="ann-item"><div class="t">${x.pinned?'<i>ปักหมุด</i>':''}${esc(x.title)}${String(x.ts||'')>seen?'<span class="ann-new">ใหม่</span>':''}</div><div class="d">${esc(fmt(x.ts))}</div>${x.body?`<div class="b home-ann-b">${esc(x.body)}</div>`:''}<button class="ann-read" data-k="${esc(annRk(x))}" type="button">อ่านแล้ว ✓</button></div>`).join('')}<button class="home-ann-all" id="homeAnnAll" type="button">ดูประกาศทั้งหมด${announcements.length>2?' ('+announcements.length+')':''} ›</button></div>` : '';
+  document.querySelectorAll('#homeAnn .ann-read').forEach(b=>b.onclick=()=>{ const r=annReadSet(); r.add(b.dataset.k); try{ localStorage.setItem(annSeenKey()+':read', JSON.stringify([...r].slice(-200))); }catch(e){} renderAnn(); });
   const hb=$('homeAnnAll'); if(hb) hb.onclick=()=>{ openSecs.add('ann'); showScreen('profile'); renderAnn(); };
   makeCollapsible($('profAnn'),'ann');
   if(openSecs.has('ann') && newest && newest > seen){ try{ localStorage.setItem(annSeenKey(), newest); }catch(e){} }
@@ -1501,7 +1573,19 @@ $('screen-profile').addEventListener('click', e=>{
 });
 // ช่องทางติดต่อ — ค่าจากใบสรุปค่าเดินทาง (ยังไม่ยืนยันว่าเป็นช่องทางสำหรับคนขับ) แก้ที่นี่ที่เดียว
 const SUPPORT_TEL = '020268888', SUPPORT_TEL_SHOW = '02-026-8888', SUPPORT_LINE = '@cabby';
+const HOWTO = [
+  ['ลงคิวรับงานสนามบิน','แตะปุ่มสแกนกลางแถบเมนูด้านล่าง → สแกน QR ที่ติดอยู่จุดรับคิว → อนุญาตการเข้าถึงตำแหน่ง (GPS) เพื่อยืนยันว่าอยู่ใกล้จุดรับคิวจริง → ได้รหัสคิวของคุณ'],
+  ['ดูและจัดการคิว','หน้าคิวแสดงรหัสคิวของคุณและลำดับรถในคิว ถ้ามีปัญหากด "แจ้งปัญหา" หรือกด "ยกเลิกคิว" หากไม่รับงานแล้ว'],
+  ['ประวัติ','เลือกวันที่ในแถบด้านบนเพื่อดูรายได้ จำนวนทริป และรายการงานของวันนั้น'],
+  ['งานจอง','ดูงานจองที่ส่งเข้ามา แตะที่งานเพื่อดูรายละเอียด'],
+  ['โปรไฟล์','ดูข้อมูลรถ เอกสารและเงินประกัน สัญญา และประกาศ แตะหัวข้อเพื่อเปิด/ปิด'],
+  ['ประกาศจากบริษัท','ประกาศใหม่จะขึ้นที่หน้าแรก กด "อ่านแล้ว ✓" เมื่ออ่านจบเพื่อซ่อนออกจากหน้าแรก (ยังดูย้อนหลังได้ที่โปรไฟล์ › ประกาศ)'],
+  ['ต้องการความช่วยเหลือ','รถเสีย อุบัติเหตุ หรือมีปัญหาระหว่างทำงาน กดโทรหรือ LINE ที่ปุ่ม "ขอความช่วยเหลือ" ด้านล่างของหน้าโปรไฟล์'],
+  ['เข้าสู่ระบบ','ใช้รหัสผู้เช่าขับ (DR…) และเบอร์โทรศัพท์ที่ลงทะเบียนไว้เป็นรหัสผ่าน ถ้าเข้าไม่ได้ให้แจ้งเจ้าหน้าที่ตรวจสอบรหัส']
+];
 function renderProfile(){
+  $('profHowto').innerHTML = '<h3>วิธีการใช้งาน</h3><ol class="howto">' + HOWTO.map(x=>`<li><b>${esc(x[0])}</b><span>${esc(x[1])}</span></li>`).join('') + '</ol>';
+  makeCollapsible($('profHowto'),'howto');
   $('helpCall').href = 'tel:' + SUPPORT_TEL; $('helpCall').textContent = 'โทร ' + SUPPORT_TEL_SHOW;
   $('helpLine').href = 'https://line.me/R/ti/p/' + encodeURIComponent(SUPPORT_LINE); $('helpLine').textContent = 'LINE ' + SUPPORT_LINE;
   const u = driverCurrentUser;
