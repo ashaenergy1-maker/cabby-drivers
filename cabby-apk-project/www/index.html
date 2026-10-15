@@ -452,7 +452,14 @@
 .bn-item[data-link]{cursor:pointer;}
 .bn-item img{width:100%;height:100%;object-fit:cover;display:block;}
 .bn-item{position:relative;box-sizing:border-box;}
-.bn-left{position:absolute;right:10px;bottom:10px;background:rgba(6,22,54,.78);color:#fff;font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:99px;}
+.bn-item.bn-img{aspect-ratio:16/9;}
+.bn-scroll{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.bn-scroll::-webkit-scrollbar{display:none;}
+.bn-scroll img{width:100%;height:auto;object-fit:initial;display:block;}
+.bn-x{position:absolute;top:8px;right:8px;z-index:2;width:28px;height:28px;border-radius:50%;border:0;background:rgba(6,22,54,.7);color:#fff;font-size:13px;line-height:28px;padding:0;cursor:pointer;}
+.bn-skip{position:absolute;left:10px;bottom:10px;z-index:2;display:flex;align-items:center;gap:6px;background:rgba(6,22,54,.78);color:#fff;font-size:10.5px;font-weight:800;padding:4px 10px 4px 7px;border-radius:99px;cursor:pointer;}
+.bn-skip input{width:14px;height:14px;margin:0;accent-color:#12c9d6;}
+.bn-left{position:absolute;right:10px;top:10px;z-index:1;margin-right:36px;background:rgba(6,22,54,.78);color:#fff;font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:99px;}
 .bn-txt{background:linear-gradient(135deg,#061636,#0a2556 60%,#0c3563);color:#fff;padding:16px 18px;display:flex;flex-direction:column;justify-content:center;gap:4px;text-align:left;}
 .bn-txt b{font-size:17px;line-height:1.3;} .bn-txt b em{color:#e0a030;font-style:normal;}
 .bn-txt small{color:#b9c8df;font-size:11.5px;} .bn-tag{font-size:10px;font-weight:800;letter-spacing:1.2px;color:#12c9d6;}
@@ -1591,16 +1598,24 @@ function startBanners(){
   }, ()=>{ banners = []; renderBanners(); });
 }
 function stopBanners(){ if(bnRef){ try{ bnRef.off(); }catch(e){} bnRef = null; } banners = []; renderBanners(); }
+const bnKey = () => 'ssls_bn_x_' + ((driverCurrentUser && driverCurrentUser.username) || '');
+const bnToday = () => { const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+let bnSession = new Set(); // ปิดด้วย ✕ = ซ่อนจนกว่าจะเปิดแอปใหม่
+function bnHiddenToday(){ try{ const o = JSON.parse(localStorage.getItem(bnKey())||'{}'), t = bnToday(); return new Set(Object.keys(o).filter(k=>o[k]===t)); }catch(e){ return new Set(); } }
+function bnSkipToday(id){ try{ const o = JSON.parse(localStorage.getItem(bnKey())||'{}'), t = bnToday(); Object.keys(o).forEach(k=>{ if(o[k]!==t) delete o[k]; }); o[id] = t; localStorage.setItem(bnKey(), JSON.stringify(o)); }catch(e){} bnSession.add(id); renderBanners(); }
 function renderBanners(){
   const el = $('dashBanner'); if(!el) return;
-  if(!banners.length){ el.innerHTML = ''; return; }
-  el.innerHTML = `<div class="bn-track">${banners.map(b=>{
+  const closed = bnHiddenToday(), list = banners.filter(b=>!closed.has(b.id) && !bnSession.has(b.id));
+  if(!list.length){ el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="bn-track">${list.map(b=>{
     const hasImg = /^(https:\/\/|data:image\/)/.test(String(b.poster||''));
     const left = `เหลืออีก ${b.daysLeft} วัน`;
     return hasImg
-      ? `<div class="bn-item" role="img" aria-label="${esc(bnName(b.name))}"><img src="${esc(b.poster)}" alt="${esc(bnName(b.name))}"><span class="bn-left">${left}</span></div>`
-      : `<div class="bn-item bn-txt"><span class="bn-tag">แคมเปญ</span><b>${bnNameHtml(b.name)}</b><small>${esc(b.subtitle||'')}</small><span class="bn-left">${left}</span></div>`;
-  }).join('')}</div>${banners.length>1 ? `<div class="bn-dots">${banners.map((_,i)=>`<i${i?'':' class="on"'}></i>`).join('')}</div>` : ''}`;
+      ? `<div class="bn-item bn-img" aria-label="${esc(bnName(b.name))}"><div class="bn-scroll"><img src="${esc(b.poster)}" alt="${esc(bnName(b.name))}"></div><span class="bn-left">${left}</span><button type="button" class="bn-x" data-id="${esc(b.id)}" aria-label="ปิดแบนเนอร์">✕</button><label class="bn-skip"><input type="checkbox" data-id="${esc(b.id)}"><span>ไม่ต้องแสดงวันนี้</span></label></div>`
+      : `<div class="bn-item bn-txt"><span class="bn-tag">แคมเปญ</span><b>${bnNameHtml(b.name)}</b><small>${esc(b.subtitle||'')}</small><span class="bn-left">${left}</span><button type="button" class="bn-x" data-id="${esc(b.id)}" aria-label="ปิดแบนเนอร์">✕</button><label class="bn-skip"><input type="checkbox" data-id="${esc(b.id)}"><span>ไม่ต้องแสดงวันนี้</span></label></div>`;
+  }).join('')}</div>${list.length>1 ? `<div class="bn-dots">${list.map((_,i)=>`<i${i?'':' class="on"'}></i>`).join('')}</div>` : ''}`;
+  el.querySelectorAll('.bn-x').forEach(x=>x.addEventListener('click', ()=>{ bnSession.add(x.dataset.id); renderBanners(); }));
+  el.querySelectorAll('.bn-skip input').forEach(c=>c.addEventListener('change', ()=>{ if(c.checked) bnSkipToday(c.dataset.id); }));
   const tr = el.querySelector('.bn-track');
   tr.addEventListener('scroll', ()=>{ const i = Math.round(tr.scrollLeft/tr.clientWidth); el.querySelectorAll('.bn-dots i').forEach((d,k)=>d.classList.toggle('on',k===i)); }, {passive:true});
 }
