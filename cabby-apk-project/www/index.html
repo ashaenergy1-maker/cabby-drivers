@@ -467,6 +467,14 @@
 .bn-dots i{width:6px;height:6px;border-radius:50%;background:#c3cedd;transition:all .2s;}
 .bn-dots i.on{width:16px;border-radius:3px;background:#12c9d6;}
 </style>
+<script>try{if(localStorage.getItem('ssls_driver_session_username'))document.documentElement.classList.add('has-sess');}catch(e){}</script>
+<style id="boot-style">
+#bootSplash{display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;color:#b9c8df;font-size:13px;font-weight:700;flex:1;min-height:0;background:linear-gradient(165deg,#061636 0%,#0a2556 55%,#0c3563 100%);}
+#bootSplash i{width:34px;height:34px;border-radius:50%;border:3px solid rgba(255,255,255,.18);border-top-color:#12c9d6;animation:bootSp .8s linear infinite;}
+@keyframes bootSp{to{transform:rotate(360deg);}}
+.has-sess #bootSplash{display:flex;}
+.has-sess #loginScreen{display:none;}
+</style>
 </head>
 <body>
 
@@ -474,6 +482,7 @@
 
 <div id="toastBox" style="position:absolute;top:10px;left:10px;right:10px;z-index:2000;pointer-events:none;"></div>
 
+<div id="bootSplash"><i></i>กำลังเข้าสู่ระบบ…</div>
 <div id="loginScreen" class="login-wrap">
   <div class="lg-hero">
     <img id="lgLogo" class="lg-logo" alt="Cabby">
@@ -1078,7 +1087,7 @@ function renderDash(){
   if(oj.length){
     const e0 = oj[0];
     $('dashQueue').innerHTML = `<div class="run-card">
-        <div class="top"><h2>งานค้าง</h2><span class="pill">รอจบงาน</span></div>
+        <div class="top"><h2>งานค้าง</h2><span class="pill">กำลังไปส่งผู้โดยสาร</span></div>
         <div class="lbl">เลขงาน</div><div class="loc">${esc(e0.jobCode||'-')}</div>
         <div class="muted" style="color:#b9c8df;margin:-6px 0 14px;font-size:12px;">กรอกค่าโดยสารตามมิเตอร์แล้วกดจบงาน จึงจะลงคิวครั้งถัดไปได้${oj.length>1 ? ` (ค้างอยู่ ${oj.length} งาน)` : ''}</div>
         <button class="btn btn-green" id="dashFinishBtn">กดจบงาน</button>
@@ -1541,7 +1550,7 @@ document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && $('jobDetailM
 // ===== งานจอง (bookings/{id}) =====
 // สัญญาข้อมูล: { code, date:'YYYY-MM-DD', time:'HH:MM', pickup, dropoff, pName, pCount, pPhone, special, note, source,
 //   driverUsername, status:'pending'|'accepted'|'declined' } — ฝั่งเจ้าหน้าที่ยังไม่มีหน้าสร้าง ต้องเขียนข้อมูลตามนี้
-const BK_ST = { pending:['รอรับงาน','gold'], accepted:['รับงานแล้ว','green'], declined:['ยกเลิกแล้ว','red'], done:['จบงานแล้ว','green'] };
+const BK_ST = { pending:['รอรับงาน','gold'], accepted:['กำลังไปส่งผู้โดยสาร','green'], declined:['ยกเลิกแล้ว','red'], done:['จบงานแล้ว','green'] };
 let bookings = [], bookingsRef = null, bookingsSeen = null, bookingDate = null, openBookingId = null;
 function startBookings(){
   stopBookings();
@@ -1954,8 +1963,12 @@ $('queueBackBtn').addEventListener('click', ()=>showScreen(lastMain));
 // เก็บ session ไว้ใน localStorage กันหลุดล็อกอินทุกครั้งที่รีเฟรช — เก็บแค่ username ไม่เก็บรหัสผ่าน/hash ใดๆ ทั้งสิ้น
 // ถ้าบัญชีถูกลบ/ระงับไปหลังล็อกอินไว้ ตอน refresh จะเช็คซ้ำกับ DB เสมอแล้วเด้งกลับไปหน้า login เอง ไม่ใช่ session ที่ปลอมข้อมูลค้างอยู่ตลอดไป
 const DRIVER_SESSION_KEY = 'ssls_driver_session_username';
+const DRIVER_LOGIN_AT_KEY = 'ssls_driver_login_at'; // เวลา (ms) ที่ล็อกอินล่าสุด เก็บค้างในเครื่องจนกว่าจะกดออกจากระบบ
+function hideBoot(){ const b = $('bootSplash'); if(b) b.style.display = 'none'; }
+function showLoginScreen(){ hideBoot(); $('loginScreen').style.display = 'flex'; }
 function enterApp(u){
   driverCurrentUser = u;
+  hideBoot();
   $('loginScreen').style.display = 'none';
   $('app').style.display = 'flex';
   renderProfile();
@@ -1981,7 +1994,7 @@ async function doLogin(){
   const hash = await hashPin(pin);
   if(hash !== u.pinHash){ $('loginErr').textContent='รหัสผ่านไม่ถูกต้อง'; $('loginErr').style.display=''; return; }
   await loadVehiclesRaw();
-  try{ localStorage.setItem(DRIVER_SESSION_KEY, username); }catch(e){ /* บาง browser ปิด localStorage (private mode บางตัว) — ไม่ critical แค่รีเฟรชแล้วต้องล็อกอินใหม่เหมือนเดิม */ }
+  try{ localStorage.setItem(DRIVER_SESSION_KEY, username); localStorage.setItem(DRIVER_LOGIN_AT_KEY, String(Date.now())); const {pinHash:_ph, ...safe} = u; localStorage.setItem('ssls_driver_user_cache', JSON.stringify(safe)); }catch(e){ /* บาง browser ปิด localStorage (private mode บางตัว) — ไม่ critical แค่รีเฟรชแล้วต้องล็อกอินใหม่เหมือนเดิม */ }
   enterApp(u);
 }
 $('loginBtn').addEventListener('click', ()=>{ try{ if(!driverAudioCtx) driverAudioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} doLogin(); });
@@ -1995,30 +2008,38 @@ $('logoutBtn').addEventListener('click', ()=>{
   myLatLng = null;
   lastGeofenceOutOfRange = null;
   stopLocationAutoRefresh();
-  try{ localStorage.removeItem(DRIVER_SESSION_KEY); }catch(e){}
+  try{ localStorage.removeItem(DRIVER_SESSION_KEY); localStorage.removeItem(DRIVER_LOGIN_AT_KEY); localStorage.removeItem('ssls_driver_user_cache'); }catch(e){}
   $('app').style.display = 'none';
-  $('loginScreen').style.display = 'flex';
+  showLoginScreen();
   $('loginPin').value = '';
 });
 
 (async ()=>{
   try{ await ensureFirebaseAuth(); }
-  catch(e){ appAlert('เชื่อมต่อระบบไม่ได้: ' + (e && e.message ? e.message : e)); return; }
+  catch(e){ showLoginScreen(); appAlert('เชื่อมต่อระบบไม่ได้: ' + (e && e.message ? e.message : e)); return; }
   await loadLocationsRaw();
 
   // เช็คว่าเคยล็อกอินค้างไว้ไหม (รีเฟรชหน้า/เปิดแอปใหม่) — ถ้ามีและบัญชียังใช้งานได้อยู่จริงใน DB ก็เข้าแอปเลยไม่ต้องพิมพ์รหัสซ้ำ
   let savedUsername = null;
   try{ savedUsername = localStorage.getItem(DRIVER_SESSION_KEY); }catch(e){}
   if(savedUsername){
-    const list = await loadDriverAccountsRaw();
-    const u = list.find(x=>x.username===savedUsername);
+    // เช็คบัญชีซ้ำกับ DB — ถ้าเครือข่ายล้มเหลว (ไม่ใช่ "ไม่พบบัญชี") ใช้สำเนาที่แคชไว้ตอนล็อกอินแทน เพื่อไม่ให้หลุดล็อกอินเพราะเน็ตช้า
+    let u = null, netFail = false;
+    try{
+      const snap = await db.ref('driver-users').once('value'), val = snap.val() || {};
+      if(val[savedUsername]) u = {username:savedUsername, ...val[savedUsername]};
+    }catch(e){ netFail = true; }
+    if(netFail){ try{ u = JSON.parse(localStorage.getItem('ssls_driver_user_cache')||'null'); if(u && u.username !== savedUsername) u = null; }catch(e){ u = null; } }
     if(u && u.active !== false){
+      try{ const {pinHash, ...safe} = u; localStorage.setItem('ssls_driver_user_cache', JSON.stringify(safe)); }catch(e){} // ไม่เก็บ pinHash ลงเครื่อง
       await loadVehiclesRaw();
+      try{ if(!localStorage.getItem(DRIVER_LOGIN_AT_KEY)) localStorage.setItem(DRIVER_LOGIN_AT_KEY, String(Date.now())); }catch(e){}
       enterApp(u);
       return;
     }
-    try{ localStorage.removeItem(DRIVER_SESSION_KEY); }catch(e){} // บัญชีถูกลบ/ระงับไปแล้ว เคลียร์ session เก่าทิ้ง
+    try{ localStorage.removeItem(DRIVER_SESSION_KEY); localStorage.removeItem(DRIVER_LOGIN_AT_KEY); }catch(e){} // บัญชีถูกลบ/ระงับไปแล้ว เคลียร์ session เก่าทิ้ง
   }
+  showLoginScreen(); // ไม่มี session (หรือใช้ไม่ได้แล้ว) → หน้า login
 })();
 
 }
