@@ -506,6 +506,70 @@
 #appHeader .hdr-plate{position:absolute;right:0;top:-57px;width:92px;z-index:1;} /* #headerExtra เป็น relative → วางลอยขึ้นไปข้างชื่อ ใต้ปุ่มกระดิ่ง */
 #appHeader .hdr-plate b{font-size:16px;}
 </style>
+<style id="car-only-home">
+#deviceFrame::before{display:none;}
+#deviceFrame.on-home::before{display:block;}
+</style>
+<style id="acc-locked">
+#bkAcceptBtn:disabled{opacity:1;background:linear-gradient(135deg,#8be6ed,#5fd0da);color:#0a2556;box-shadow:0 4px 10px rgba(18,201,214,.22);cursor:not-allowed;font-weight:800;}
+</style>
+<style id="rs-label">
+.bk-route .bk-from small,.bk-route .bk-to small{display:inline-block;width:auto;font-size:10.5px;line-height:1;font-weight:800;letter-spacing:.3px;padding:3px 9px;border-radius:99px;margin-bottom:3px;}
+.bk-route .bk-from small{background:#12c9d6;color:#06303a;}
+.bk-route .bk-to small{background:#e0a030;color:#3a2600;}
+</style>
+<style id="ver-style">
+.app-ver{font-size:10.5px;font-weight:700;color:#8fa0b8;letter-spacing:.2px;}
+</style>
+<style id="qjob-style">
+#dashQueue:empty{display:none;}
+#dashQueue + #dashMonth{margin-top:2px;}
+
+.qjob .qj-steps{display:flex;align-items:center;gap:6px;margin:12px 0 2px;position:relative;z-index:1;}
+.qjob .qj-steps span{font-size:10px;font-weight:800;color:#6f86a8;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;}
+.qjob .qj-steps span::before{content:'';width:8px;height:8px;border-radius:50%;border:2px solid #4a6288;box-sizing:border-box;}
+.qjob .qj-steps span.done{color:#9fb2cf;} .qjob .qj-steps span.done::before{background:var(--teal);border-color:var(--teal);}
+.qjob .qj-steps span.now{color:var(--teal);} .qjob .qj-steps span.now::before{border-color:var(--teal);background:rgba(18,201,214,.35);}
+.qjob .qj-steps i{flex:1;height:2px;border-radius:2px;background:#2a4472;min-width:8px;}
+.qjob .qj-route{position:relative;margin:12px 0 10px;padding:12px 14px 12px 38px;border-radius:16px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);z-index:1;display:flex;flex-direction:column;gap:12px;}
+.qjob .qj-route::before{content:'';position:absolute;left:19px;top:22px;bottom:22px;border-left:2px dashed rgba(255,255,255,.28);}
+.qjob .qj-pt{position:relative;padding-right:58px;min-height:44px;display:flex;flex-direction:column;justify-content:center;}
+.qjob .qj-map{position:absolute;right:0;top:50%;transform:translateY(-50%);width:48px;height:44px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;background:linear-gradient(160deg,#17d3df,#0fa9b8);color:#05303a;text-decoration:none;box-shadow:0 5px 12px rgba(18,201,214,.3);}
+.qjob .qj-map em{font-style:normal;font-size:9px;font-weight:800;line-height:1;}
+.qjob .qj-map:active{transform:translateY(-50%) scale(.95);}
+.qjob .qj-pt{position:relative;} .qjob .qj-pt::before{content:'';position:absolute;left:-25px;top:3px;width:12px;height:12px;border-radius:50%;box-sizing:border-box;border:3px solid;}
+.qjob .qj-pt.a::before{border-color:#12c9d6;background:#06303a;} .qjob .qj-pt.b::before{border-color:#e0a030;background:#3a2600;}
+.qjob .qj-pt small,.qjob .qj-chips small{display:block;font-size:9.5px;font-weight:800;letter-spacing:.5px;color:#9fb2cf;margin-bottom:1px;}
+.qjob .qj-pt b{display:block;font-size:14px;font-weight:800;line-height:1.35;color:#fff;}
+.qjob .qj-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px;position:relative;z-index:1;}
+.qjob .qj-chips div{flex:1 1 auto;min-width:30%;padding:7px 11px;border-radius:12px;background:rgba(18,201,214,.1);border:1px solid rgba(18,201,214,.18);}
+.qjob .qj-chips b{font-size:12.5px;font-weight:800;color:#e8f0fb;word-break:break-word;}
+.qjob .qj-hint{font-size:11.5px;line-height:1.55;color:#b9c8df;margin:0 0 12px;position:relative;z-index:1;}
+</style>
+<style id="bkrun-style">
+.run-card.bkrun .top{align-items:center;}
+.run-card.bkrun h2{font-size:14px;}
+.bkr-head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-top:10px;padding-bottom:10px;border-bottom:1px dashed rgba(255,255,255,.18);position:relative;z-index:1;}
+.bkr-head small{display:block;font-size:9.5px;font-weight:800;letter-spacing:.6px;color:#9fb2cf;margin-bottom:2px;}
+.bkr-code b{font-size:14.5px;font-weight:800;color:#fff;letter-spacing:.2px;}
+.bkr-time{text-align:right;} .bkr-time b{font-size:24px;line-height:1;font-weight:800;color:#12c9d6;}
+.bkr-route{margin:10px 0 12px;display:flex;flex-direction:column;gap:7px;position:relative;z-index:1;}
+.bkr-row{display:flex;align-items:flex-start;gap:9px;}
+.bkr-tag{flex:0 0 auto;font-size:10.5px;font-weight:800;line-height:1;padding:4px 10px;border-radius:99px;margin-top:1px;}
+.bkr-tag.a{background:#12c9d6;color:#06303a;} .bkr-tag.b{background:#e0a030;color:#3a2600;}
+.bkr-t{font-size:12.5px;font-weight:700;line-height:1.4;color:#e8f0fb;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+</style>
+<style id="decline-style">
+#declineBox{position:absolute;inset:0;background:rgba(7,26,62,.55);display:flex;align-items:center;justify-content:center;z-index:2950;padding:20px;}
+#declineBox .box{background:#fff;border-radius:24px;padding:20px;max-width:340px;width:100%;box-sizing:border-box;}
+#declineBox h3{margin:0;font-size:16px;font-weight:800;text-align:center;} #declineBox .muted{text-align:center;font-size:12px;}
+.dr-list{display:flex;flex-direction:column;gap:6px;}
+.dr-opt{display:flex;align-items:center;gap:10px;border:1.5px solid #e1e8f1;border-radius:12px;padding:9px 12px;font-size:13px;font-weight:700;color:#0a2556;cursor:pointer;}
+.dr-opt:has(input:checked){border-color:#12c9d6;background:#effcfd;}
+.dr-opt input{accent-color:#12c9d6;margin:0;}
+#drOther{width:100%;box-sizing:border-box;margin-top:8px;border:1.5px solid #e1e8f1;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:13px;resize:none;outline:none;} #drOther:focus{border-color:#12c9d6;}
+#drYes:disabled{opacity:.45;cursor:not-allowed;}
+</style>
 <style id="boot-style">
 #bootSplash{display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;color:#b9c8df;font-size:13px;font-weight:700;flex:1;min-height:0;background:linear-gradient(165deg,#061636 0%,#0a2556 55%,#0c3563 100%);}
 #bootSplash i{width:34px;height:34px;border-radius:50%;border:3px solid rgba(255,255,255,.18);border-top-color:#12c9d6;animation:bootSp .8s linear infinite;}
@@ -541,7 +605,7 @@
     <div class="err-text" id="loginErr" style="display:none;"></div>
     <button class="btn btn-green lg-btn" id="loginBtn">เข้าสู่ระบบ →</button>
     <div class="lg-chips"><span>ลงคิวสนามบิน</span><span>งานจอง</span><span>รายได้</span></div>
-    <div class="lg-foot">© 2026 AshaEnergy Co., Ltd All Rights Reserved.</div>
+    <div class="lg-foot">© 2026 AshaEnergy Co., Ltd All Rights Reserved.<br><span class="app-ver">เวอร์ชัน -</span></div>
   </div>
 </div>
 
@@ -562,8 +626,8 @@
 
   <div id="screen-home" class="screen">
     <div id="homeAnn"></div>
-    <div class="card" id="dashMonth"></div>
     <div id="dashQueue"></div>
+    <div class="card" id="dashMonth"></div>
     <div id="dashBanner"></div>
   </div>
 
@@ -662,6 +726,7 @@
       <div class="btn-row" style="margin:12px 0 0;"><a class="btn btn-green help-btn" id="helpCall">โทร Call Center</a><a class="btn btn-outline help-btn" id="helpLine" target="_blank" rel="noopener">LINE</a></div>
     </div>
     <button class="btn btn-outline" id="logoutBtn" style="color:var(--red);border-color:#f3c9c9;">ออกจากระบบ</button>
+    <div class="app-ver" style="text-align:center;margin:12px 0 4px;">เวอร์ชัน -</div>
   </div>
 
   <nav id="bottomNav">
@@ -1091,6 +1156,28 @@ async function openQueueReceipt(e){
   openFare({ id:e.id, code:e.jobCode||job.code, pName:job.pName, pPhone:job.pPhone, pCount:job.pCount, date:job.date, time:job.time,
     pickup:job.pickup||(loc?loc.name:''), dropoff:job.dropoff, source:(LOCS[e.locKey]?LOCS[e.locKey].name:e.locKey), jobType:job.jobType, meterFare:fare, totalFare:fare }, true, {fee:0});
 }
+// ข้อมูลการเดินทางของงานจากคิว (อ่านจาก jobs/{jobId}) แสดงในการ์ดงานที่กำลังรับอยู่ — แคชไว้กันอ่านซ้ำทุกครั้งที่วาดใหม่
+const jobInfoCache = {};
+// ลิงก์เปิด Google Maps ค้นหาตามชื่อสถานที่ (Maps URLs: /maps/search/?api=1&query=) — ใช้ชื่อที่เจ้าหน้าที่พิมพ์ อาจไม่ตรงพิกัดเป๊ะ
+const mapsLink = q => q ? `<a class="qj-map" data-q="${esc(q)}" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}" target="_blank" rel="noopener noreferrer" aria-label="นำทางด้วยแผนที่" title="นำทาง"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M21 3 3 10.5l7 2.5 2.5 7z"/></svg><em>นำทาง</em></a>` : '';
+// เด้งเข้าแอปแผนที่ของเครื่อง: Android ใช้ geo: (เลือก/เปิดแอปแผนที่ที่ติดตั้ง), iOS ลอง comgooglemaps:// ก่อน ถ้าไม่มีแอปค่อยเปิดเว็บ — ยังไม่ได้ทดสอบบนเครื่องจริง
+document.addEventListener('click', ev=>{
+  const a = ev.target.closest && ev.target.closest('.qj-map'); if(!a) return;
+  const q = encodeURIComponent(a.dataset.q||''), ua = navigator.userAgent||'';
+  if(/Android/i.test(ua)){ ev.preventDefault(); location.href = 'geo:0,0?q='+q; }
+  else if(/iPhone|iPad|iPod/i.test(ua)){ ev.preventDefault(); const t=setTimeout(()=>{ location.href = a.href; }, 900); window.addEventListener('pagehide', ()=>clearTimeout(t), {once:true}); location.href = 'comgooglemaps://?q='+q; }
+});
+async function fillJobInfo(e){
+  if(!e.jobId) return;
+  if(!(e.jobId in jobInfoCache)) jobInfoCache[e.jobId] = await fetchJobDetail(e.jobId);
+  const j = jobInfoCache[e.jobId], box = $('dashJobInfo'); if(!j || !box) return;
+  const tm = $('qjTime'); if(tm) tm.textContent = j.time || '--:--';
+  const chips = [j.date ? ['วันที่', fmtDate(parseYmd(j.date))] : null, j.pName ? ['ผู้โดยสาร', j.pName + (j.pCount!=null&&j.pCount!=='' ? ' · '+j.pCount+' คน' : '')] : (j.pCount!=null&&j.pCount!=='' ? ['จำนวน', j.pCount+' คน'] : null), j.pPhone ? ['โทร', j.pPhone] : null].filter(Boolean);
+  box.innerHTML = `<div class="qj-route">
+      <div class="qj-pt a"><small>จุดรับ</small><b>${esc(j.pickup||'-')}</b>${mapsLink(j.pickup)}</div>
+      <div class="qj-pt b"><small>จุดส่ง</small><b>${esc(j.dropoff||'-')}</b>${mapsLink(j.dropoff)}</div>
+    </div>` + (chips.length ? `<div class="qj-chips">${chips.map(c=>`<div><small>${esc(c[0])}</small><b>${esc(c[1])}</b></div>`).join('')}</div>` : '');
+}
 async function finishQueueJob(e){
   const job = await fetchJobDetail(e.jobId) || {};
   const b = { id:e.id, code:e.jobCode||job.code, pName:job.pName, pPhone:job.pPhone, pCount:job.pCount, date:job.date, time:job.time, pickup:job.pickup, dropoff:job.dropoff, source:(LOCS[e.locKey]?LOCS[e.locKey].name:e.locKey) };
@@ -1142,20 +1229,36 @@ function renderDash(){
   const mine = Object.entries(queueData).flatMap(([k,a])=>a.map(e=>({...e, locKey:k})))
     .find(e=>e.vehicleId===driverCurrentUser.vehicleId && ['waiting','standby','active'].includes(e.status));
   const oj = myOpenJobs();
+  // งานที่กำลังรับอยู่: งานคิวที่ยังไม่จบ + งานจองที่กดรับแล้วและยังไม่จบ (เรียงตามวัน-เวลา)
+  const curBk = bookings.filter(b=>b.status==='accepted').sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')) || String(a.time||'').localeCompare(String(b.time||'')));
+  let html = '';
   if(oj.length){
-    const e0 = oj[0];
-    $('dashQueue').innerHTML = `<div class="run-card">
-        <div class="top"><h2>งานค้าง</h2><span class="pill">กำลังไปส่งผู้โดยสาร</span></div>
-        <div class="lbl">เลขงาน</div><div class="loc">${esc(e0.jobCode||'-')}</div>
-        <div class="muted" style="color:#b9c8df;margin:-6px 0 14px;font-size:12px;">กรอกค่าโดยสารตามมิเตอร์แล้วกดจบงาน จึงจะลงคิวครั้งถัดไปได้${oj.length>1 ? ` (ค้างอยู่ ${oj.length} งาน)` : ''}</div>
-        <button class="btn btn-green" id="dashFinishBtn">กดจบงาน</button>
+    const e0 = oj[0], accepted = !!e0.acceptedAt; // acceptedAt = คนขับกดรับแล้ว (ฟิลด์เพิ่ม — jobStatus ยังเป็น 'open' เพื่อไม่กระทบปุ่มปลดล็อกฝั่งเจ้าหน้าที่)
+    html += `<div class="run-card bkrun qjob">
+        <div class="top"><h2>${accepted ? 'งานที่กำลังรับอยู่' : 'งานใหม่จากจุดบริการ'}</h2><span class="pill">${accepted ? 'กำลังไปส่งผู้โดยสาร' : 'รอรับงาน'}</span></div>
+        <div class="qj-steps"><span class="done">รับงาน</span><i></i><span class="${accepted?'now':''}">ไปส่งผู้โดยสาร</span><i></i><span>จบงาน</span></div>
+        <div class="bkr-head"><div class="bkr-code"><small>เลขงาน · คิวสนามบิน</small><b>${esc(e0.jobCode||'-')}</b></div><div class="bkr-time"><small>เวลารับ</small><b id="qjTime">--:--</b></div></div>
+        <div id="dashJobInfo"></div>
+        <div class="qj-hint">${accepted ? 'ถึงจุดหมายแล้วกดจบงาน และกรอกค่าโดยสารตามมิเตอร์ จึงจะลงคิวครั้งถัดไปได้' : 'เจ้าหน้าที่ส่งงานให้คุณ กดรับงานเพื่อเริ่มเดินทาง'}${oj.length>1 ? ` (ค้างอยู่ ${oj.length} งาน)` : ''}</div>
+        <button class="btn btn-green" id="${accepted ? 'dashFinishBtn' : 'dashAcceptBtn'}">${accepted ? 'กดจบงาน' : 'รับงาน'}</button>
       </div>`;
-    $('dashFinishBtn').addEventListener('click', ()=> finishQueueJob(e0));
-  } else if(mine){
-    $('dashQueue').innerHTML = ''; // สถานะคิวไปแสดงที่หน้าลงคิวแทน (การ์ด 'อยู่ในคิว' + ปุ่มดูคิวของฉัน)
-  } else {
-    $('dashQueue').innerHTML = ''; // ยังไม่ลงคิว = ไม่แสดงการ์ดอะไร (ลงคิวผ่านแท็บ "ลงคิว")
   }
+  curBk.slice(0,3).forEach(b=>{
+    html += `<div class="run-card bkrun">
+        <div class="top"><h2>งานจองที่กำลังรับอยู่</h2><span class="pill">กำลังไปส่งผู้โดยสาร</span></div>
+        <div class="bkr-head"><div class="bkr-code"><small>เลขงาน</small><b>${esc(b.code||b.id)}</b></div><div class="bkr-time"><small>เวลารับ</small><b>${esc(b.time||'-')}</b></div></div>
+        <div class="bkr-route">
+          <div class="bkr-row"><span class="bkr-tag a">รับ</span><span class="bkr-t">${esc(b.pickup||'-')}</span></div>
+          <div class="bkr-row"><span class="bkr-tag b">ส่ง</span><span class="bkr-t">${esc(b.dropoff||'-')}</span></div>
+        </div>
+        <button class="btn btn-green dash-bk-btn" data-bk="${esc(b.id)}">ดูรายละเอียด / จบงาน</button>
+      </div>`;
+  });
+  $('dashQueue').innerHTML = html; // ไม่มีงานที่กำลังรับอยู่ = ว่าง
+  if(oj.length) fillJobInfo(oj[0]);
+  if($('dashAcceptBtn')) $('dashAcceptBtn').addEventListener('click', async ()=>{ if(await appConfirm('ยืนยันรับงานนี้? หลังรับสถานะจะเป็น กำลังไปส่งผู้โดยสาร')){ try{ await db.ref('queue/'+oj[0].locKey+'/'+oj[0].id).update({acceptedAt:new Date().toISOString()}); }catch(err){ appAlert('บันทึกไม่สำเร็จ: '+err.message); } } });
+  if($('dashFinishBtn')) $('dashFinishBtn').addEventListener('click', async ()=>{ if(await appConfirm('ยืนยันจบงานนี้? ต่อไปจะให้กรอกค่าโดยสารตามมิเตอร์')) finishQueueJob(oj[0]); });
+  $('dashQueue').querySelectorAll('.dash-bk-btn').forEach(x=>x.addEventListener('click', ()=>{ openBookingId = x.dataset.bk; showScreen('bookingDetail'); }));
 }
 
 // ถ่ายรูปเปอร์เซ็นต์แบตเตอรี่ด้วยกล้องสดเท่านั้น (ไม่เปิดคลังภาพ/ไฟล์ — กันแนบรูปเก่า) → JPEG ด้านยาว ≤ 960px คืน dataURL หรือ null ถ้ายกเลิก
@@ -1735,7 +1838,14 @@ function renderBookings(){
   const days = dayRange(0, 5);
   if(!bookingDate || !days.some(d=>ymd(d)===bookingDate)) bookingDate = ymd(days[0]);
   $('bookingStrip').innerHTML = dayStripHtml(days, bookingDate);
-  const list = bookings.filter(b=>b.date===bookingDate).sort((a,b)=> String(b.time||'').localeCompare(String(a.time||''))); // เวลาล่าสุดอยู่บนสุด
+  // เรียง: งานที่ยังไม่จบอยู่บน (ใกล้เวลาเดินทางที่สุดขึ้นก่อน → ไกลออกไป → งานที่เลยเวลาแล้ว) ส่วนงานที่จบ/ยกเลิกแล้วอยู่ล่างสุด
+  const nowHM = new Date().toTimeString().slice(0,5), isToday = bookingDate === ymd(new Date());
+  const rank = b => (b.status==='done'||b.status==='declined') ? 2 : (isToday && String(b.time||'') < nowHM ? 1 : 0);
+  const list = bookings.filter(b=>b.date===bookingDate).sort((a,b)=>{
+    const ra = rank(a), rb = rank(b); if(ra !== rb) return ra - rb;
+    const c = String(a.time||'').localeCompare(String(b.time||''));
+    return ra === 0 ? c : -c; // กลุ่มเลยเวลา/จบแล้ว: ล่าสุดก่อน
+  });
   const d = parseYmd(bookingDate);
   $('bookingHead').innerHTML = `<span>${bookingDate===ymd(new Date()) ? 'งานวันนี้' : `งานวัน${TH_W[d.getDay()]}ที่ ${d.getDate()} ${TH_M[d.getMonth()]}`}</span><span class="muted">${list.length} งาน</span>`;
   let html = list.length ? list.map(b=>bkCard(b,false)).join('') : `<div class="card empty-state">ไม่มีงานจองในวันที่เลือก</div>`;
@@ -1779,14 +1889,14 @@ function renderBookingDetail(){
       ${b.pPhone ? `<a class="bkd-call" href="tel:${esc(String(b.pPhone).replace(/[^0-9+]/g,''))}"><span>📞</span>${esc(b.pPhone)}</a>` : '<span class="bkd-nocall">ไม่มีเบอร์</span>'}
     </div>
     <div class="bkd-notes"><div><small>ความต้องการพิเศษ</small><b>${esc(b.special||'-')}</b></div><div><small>หมายเหตุ</small><b>${esc(b.note||'-')}</b></div></div>
-    ${st==='declined' ? '' : st==='done' ? `<div class="btn-row"><button class="btn btn-green" id="bkViewBtn">ดูใบสรุปค่าโดยสาร</button></div>` : `<div class="btn-row"><button class="btn btn-red" id="bkDeclineBtn">ยกเลิกงาน</button>${st==='pending' ? (()=>{ const at = bkAcceptOpenAt(b); const locked = at && Date.now() < at.getTime(); return locked ? `<button class="btn btn-green" id="bkAcceptBtn" disabled style="opacity:.45;">รับงานได้ ${fmtDate(at)} ${String(at.getHours()).padStart(2,'0')}:${String(at.getMinutes()).padStart(2,'0')}</button>` : '<button class="btn btn-green" id="bkAcceptBtn">รับงาน</button>'; })() : '<button class="btn btn-green" id="bkFinishBtn">กดจบงาน</button>'}</div>`}`;
+    ${st==='declined' ? '' : st==='done' ? `<div class="btn-row"><button class="btn btn-green" id="bkViewBtn">ดูใบสรุปค่าโดยสาร</button></div>` : `<div class="btn-row"><button class="btn btn-red" id="bkDeclineBtn">ยกเลิกงาน</button>${st==='pending' ? (()=>{ const at = bkAcceptOpenAt(b); const locked = at && Date.now() < at.getTime(); return locked ? `<button class="btn btn-green" id="bkAcceptBtn" disabled>รับงานได้ ${fmtDate(at)} ${String(at.getHours()).padStart(2,'0')}:${String(at.getMinutes()).padStart(2,'0')}</button>` : '<button class="btn btn-green" id="bkAcceptBtn">รับงาน</button>'; })() : '<button class="btn btn-green" id="bkFinishBtn">กดจบงาน</button>'}</div>`}`;
   clearTimeout(bkUnlockTimer);
   { const at = st==='pending' ? bkAcceptOpenAt(b) : null; const ms = at ? at.getTime() - Date.now() : 0;
     if(ms > 0 && ms < 2147483647) bkUnlockTimer = setTimeout(()=>{ if(openBookingId===b.id) renderBookingDetail(); }, ms + 500); }
-  if($('bkFinishBtn')) $('bkFinishBtn').addEventListener('click', ()=> openFare(b, false));
+  if($('bkFinishBtn')) $('bkFinishBtn').addEventListener('click', async ()=>{ if(await appConfirm('ยืนยันจบงานนี้? ต่อไปจะให้กรอกค่าโดยสารตามมิเตอร์')) openFare(b, false); });
   if($('bkViewBtn')) $('bkViewBtn').addEventListener('click', ()=> openFare(b, true));
-  if($('bkAcceptBtn')) $('bkAcceptBtn').addEventListener('click', ()=> setBookingStatus(b.id,'accepted'));
-  if($('bkDeclineBtn')) $('bkDeclineBtn').addEventListener('click', async ()=>{ if(await appConfirm('ยกเลิกงานจองนี้?')) setBookingStatus(b.id,'declined'); });
+  if($('bkAcceptBtn')) $('bkAcceptBtn').addEventListener('click', async ()=>{ if(await appConfirm('ยืนยันรับงานจองนี้?')) setBookingStatus(b.id,'accepted'); });
+  if($('bkDeclineBtn')) $('bkDeclineBtn').addEventListener('click', async ()=>{ const why = await askDeclineReason(); if(why) setBookingStatus(b.id,'declined',{declineReason:why, declinedAt:new Date().toISOString()}); });
 }
 
 // ===== จบงาน + ใบสรุปค่าโดยสาร (ค่าโดยสาร = ราคามิเตอร์ที่คนขับกรอก + ค่าธรรมเนียมบริการคงที่) =====
@@ -1820,6 +1930,7 @@ function openFare(b, readOnly, opts){
       const v = parseFloat(inp.value);
       if(!(v > 0) || v > 99999){ $('frErr').textContent = 'กรอกราคาตามมิเตอร์ให้ถูกต้อง (มากกว่า 0)'; inp.focus(); return; }
       const m = Math.round(v*100)/100;
+      if(!(await appConfirm('ยืนยันบันทึกค่าโดยสาร '+money(m)+' และจบงาน?'))) return;
       $('frOk').disabled = true;
       try{
         if(opts.save) await opts.save(m, Math.round((m+FEE)*100)/100);
@@ -1831,10 +1942,29 @@ function openFare(b, readOnly, opts){
   $('fareModal').style.display = 'flex';
   if(!readOnly) setTimeout(()=>$('frMeter').focus(), 50);
 }
-async function setBookingStatus(id, status){
+// ถามเหตุผลก่อนยกเลิกงานจอง — คืนข้อความเหตุผล หรือ null ถ้ากดยกเลิก
+const DECLINE_REASONS = ['รถเสีย / ขัดข้อง','มีธุระฉุกเฉิน','ไม่สะดวกเดินทางตามเวลา','ติดต่อผู้โดยสารไม่ได้','ผู้โดยสารขอยกเลิก','อื่นๆ'];
+function askDeclineReason(){
+  return new Promise(resolve=>{
+    const ov = document.createElement('div'); ov.id = 'declineBox';
+    ov.innerHTML = `<div class="box"><h3>ยกเลิกงานจองนี้?</h3><div class="muted" style="margin:2px 0 10px;">กรุณาเลือกเหตุผล</div>
+      <div class="dr-list">${DECLINE_REASONS.map((r,i)=>`<label class="dr-opt"><input type="radio" name="drReason" value="${i}"><span>${esc(r)}</span></label>`).join('')}</div>
+      <textarea id="drOther" rows="2" maxlength="200" placeholder="ระบุเหตุผล" style="display:none;"></textarea>
+      <div class="btn-row" style="margin:12px 0 0;"><button type="button" class="btn btn-outline" id="drNo">ไม่ยกเลิก</button><button type="button" class="btn btn-red" id="drYes" disabled>ยืนยันยกเลิก</button></div></div>`;
+    (document.getElementById('deviceFrame') || document.body).appendChild(ov);
+    const yes = ov.querySelector('#drYes'), other = ov.querySelector('#drOther');
+    const cur = ()=>{ const r = ov.querySelector('input[name=drReason]:checked'); return r ? DECLINE_REASONS[+r.value] : ''; };
+    const refresh = ()=>{ const c = cur(), isOther = c === 'อื่นๆ'; other.style.display = isOther ? '' : 'none'; yes.disabled = !c || (isOther && !other.value.trim()); };
+    ov.addEventListener('change', refresh); other.addEventListener('input', refresh);
+    const done = v=>{ ov.remove(); resolve(v); };
+    ov.querySelector('#drNo').addEventListener('click', ()=>done(null));
+    yes.addEventListener('click', ()=>{ const c = cur(); done(c === 'อื่นๆ' ? 'อื่นๆ: ' + other.value.trim() : c); });
+  });
+}
+async function setBookingStatus(id, status, extra){
   if(status==='accepted'){ const bk = bookings.find(x=>x.id===id); const at = bk && bkAcceptOpenAt(bk);
     if(at && Date.now() < at.getTime()){ appAlert('รับงานได้ตั้งแต่ 30 นาทีก่อนเวลาเดินทาง'); return; } }
-  try{ await db.ref('bookings/'+id).update({status, updatedAt:new Date().toISOString()}); }
+  try{ await db.ref('bookings/'+id).update(Object.assign({status, updatedAt:new Date().toISOString()}, extra||{})); }
   catch(e){ appAlert('บันทึกไม่สำเร็จ: '+e.message); }
 }
 $('bookingBackBtn').addEventListener('click', ()=> showScreen('job'));
@@ -1914,7 +2044,7 @@ $('screen-profile').addEventListener('click', e=>{
   if(k === 'ann') renderAnn();
 });
 // ช่องทางติดต่อ — ค่าจากใบสรุปค่าเดินทาง (ยังไม่ยืนยันว่าเป็นช่องทางสำหรับคนขับ) แก้ที่นี่ที่เดียว
-const SUPPORT_TEL = '020268888', SUPPORT_TEL_SHOW = '02-026-8888', SUPPORT_LINE = '@cabby';
+const SUPPORT_TEL = '020268888', SUPPORT_TEL_SHOW = '02-026-8888', SUPPORT_LINE = '@498fkvii';
 const HOWTO = [
   ['ลงคิวสนามบิน','กดปุ่มสแกนกลางเมนู → สแกน QR จุดรับคิว → อนุญาต GPS → ถ่ายรูปเปอร์เซ็นต์แบตเตอรี่ (กล้องสดเท่านั้น แนบจากคลังภาพไม่ได้) → ได้รหัสคิว ต้องปิดงานคิวเดิมและกรอกค่ามิเตอร์ก่อนจึงลงคิวใหม่ได้'],
   ['หน้าแรก','ดูรายได้และจำนวนทริป วันนี้/เดือนนี้ (รวมงานจอง) และประกาศใหม่ กด "อ่านแล้ว ✓" เพื่อซ่อน'],
@@ -2006,6 +2136,7 @@ function showScreen(name){
   if(name !== 'scan' && scanStream) stopScan(); // ออกจากหน้าสแกนต้องปิดกล้องเสมอ
   if(MAIN_SCREENS.includes(name)) lastMain = name;
   currentScreen = name;
+  $('deviceFrame').classList.toggle('on-home', name === 'home'); // รูปรถพื้นหลังแสดงเฉพาะหน้าหลัก (หน้า login มีรูปของตัวเอง)
   ALL_SCREENS.forEach(s=>{ $('screen-'+s).style.display = s===name ? '' : 'none'; });
   document.querySelectorAll('#bottomNav button[data-screen]').forEach(b=>b.classList.toggle('active', b.dataset.screen===name));
   setHeader(name);
@@ -2027,6 +2158,9 @@ $('queueBackBtn').addEventListener('click', ()=>showScreen(lastMain));
 
 // เก็บ session ไว้ใน localStorage กันหลุดล็อกอินทุกครั้งที่รีเฟรช — เก็บแค่ username ไม่เก็บรหัสผ่าน/hash ใดๆ ทั้งสิ้น
 // ถ้าบัญชีถูกลบ/ระงับไปหลังล็อกอินไว้ ตอน refresh จะเช็คซ้ำกับ DB เสมอแล้วเด้งกลับไปหน้า login เอง ไม่ใช่ session ที่ปลอมข้อมูลค้างอยู่ตลอดไป
+// เวอร์ชันของตัวแอป (เนื้อหาเว็บ driver.html) — เพิ่มเลขทุกครั้งที่ส่งมอบรุ่นใหม่ ไม่ใช่ versionName ของ APK
+const APP_VERSION = '1.0.0', APP_BUILD = '2026-10-16';
+document.querySelectorAll('.app-ver').forEach(el=>{ el.textContent = 'เวอร์ชัน ' + APP_VERSION + ' · อัปเดต ' + APP_BUILD; });
 const DRIVER_SESSION_KEY = 'ssls_driver_session_username';
 const DRIVER_LOGIN_AT_KEY = 'ssls_driver_login_at'; // เวลา (ms) ที่ล็อกอินล่าสุด เก็บค้างในเครื่องจนกว่าจะกดออกจากระบบ
 function hideBoot(){ const b = $('bootSplash'); if(b) b.style.display = 'none'; }
