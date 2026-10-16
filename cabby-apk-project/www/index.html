@@ -444,6 +444,25 @@
 .login-wrap .lg-foot{position:relative;z-index:1;}
 </style>
 <style id="banner-style">
+#bnPopup{position:absolute;inset:0;z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px;box-sizing:border-box;background:rgba(3,10,25,.82);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
+.bnp-card{position:relative;width:100%;max-height:min(76dvh,680px);border-radius:22px;overflow:hidden;display:flex;box-shadow:0 20px 50px rgba(0,0,0,.5);background:#061636;}
+.bnp-track{flex:1;min-width:0;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;}
+.bnp-track::-webkit-scrollbar{display:none;}
+.bnp-slide{flex:0 0 100%;scroll-snap-align:center;position:relative;min-width:0;box-sizing:border-box;max-height:min(76dvh,680px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;background:#061636;}
+.bnp-slide::-webkit-scrollbar{display:none;}
+.bnp-scroll{background:#061636;}
+.bnp-scroll img{width:100%;height:auto;display:block;}
+.bnp-txt{min-height:min(60dvh,520px);box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;gap:10px;padding:32px;color:#fff;background:linear-gradient(160deg,#061636,#0a2556 60%,#0c3563);}
+.bnp-txt b{font-size:26px;line-height:1.3;} .bnp-txt b em{color:#e0a030;font-style:normal;} .bnp-txt small{color:#b9c8df;font-size:14px;}
+.bnp-left{position:sticky;display:block;width:max-content;margin:0 0 -34px 12px;top:12px;z-index:1;float:none;background:rgba(6,22,54,.82);color:#fff;font-size:12px;font-weight:800;padding:6px 12px;border-radius:99px;}
+.bnp-x{position:absolute;right:12px;top:12px;width:38px;height:38px;border-radius:50%;border:0;background:rgba(6,22,54,.82);color:#fff;font-size:16px;cursor:pointer;z-index:2;}
+.bnp-dots{position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:6px;pointer-events:none;}
+.bnp-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.55);box-shadow:0 0 0 1px rgba(6,22,54,.25);} .bnp-dots i.on{width:18px;border-radius:4px;background:#12c9d6;}
+.bnp-bar{flex:0 0 auto;width:100%;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 6px;}
+.bnp-skip{display:flex;align-items:center;gap:8px;color:#dbe6f6;font-size:13px;font-weight:700;cursor:pointer;}
+.bnp-skip input{width:18px;height:18px;margin:0;accent-color:#12c9d6;}
+.bnp-ok{border:0;border-radius:12px;background:linear-gradient(135deg,#12c9d6,#0a9fb0);color:#fff;font-family:inherit;font-weight:800;font-size:14px;padding:11px 26px;cursor:pointer;}
+
 #dashBanner:empty{display:none;}
 #dashBanner{margin-top:12px;}
 .bn-track{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border-radius:18px;}
@@ -468,6 +487,25 @@
 .bn-dots i.on{width:16px;border-radius:3px;background:#12c9d6;}
 </style>
 <script>try{if(localStorage.getItem('ssls_driver_session_username'))document.documentElement.classList.add('has-sess');}catch(e){}</script>
+<style id="month-style">
+.mo-sel{display:inline-flex;align-items:center;position:relative;margin-top:4px;}
+.mo-sel select{appearance:none;-webkit-appearance:none;border:1.5px solid #dbe5f1;background:#f3f7fc;color:#0a2556;font-family:inherit;font-weight:700;font-size:13px;padding:5px 30px 5px 12px;border-radius:99px;outline:none;cursor:pointer;}
+.mo-sel select:focus{border-color:#12c9d6;}
+.mo-sel::after{content:'';position:absolute;right:12px;top:50%;width:6px;height:6px;border-right:2px solid #0a2556;border-bottom:2px solid #0a2556;transform:translateY(-70%) rotate(45deg);pointer-events:none;}
+</style>
+<style id="right-align-style">
+.glass-row .glass,#dashMonth .mini-box{text-align:right;}
+#appHeader .glass-row{justify-content:center;gap:10px;} #appHeader .glass-row .glass{flex:0 0 auto;width:calc(50% - 5px);max-width:148px;min-width:0;} /* ช่องยอดไม่ยาวเต็มแถว */
+.glass-row .glass .lbl,.glass-row .glass .val,#dashMonth .mini-box .lbl,#dashMonth .mini-box .val{text-align:right;}
+#historyStats .st-dark,#historyStats .st-light,#historyStats .lbl,#historyStats .val{text-align:right;}
+#historyStats{width:100%;box-sizing:border-box;} #historyStats .st-dark,#historyStats .st-light{flex:1 1 0;min-width:0;max-width:50%;padding:9px 12px 10px;} /* กล่องเท่ากัน ไม่ยาวเกินครึ่ง */
+#historyStats .st-dark::before,#historyStats .st-light::before{right:auto !important;left:10px;}
+#dashMonth .mini-box::after{right:auto !important;left:10px;} /* ไอคอนจางๆ ย้ายไปซ้าย ไม่ให้ทับตัวเลขที่ชิดขวา */
+</style>
+<style id="plate-hdr-style">
+#appHeader .hdr-plate{position:absolute;right:0;top:-57px;width:92px;z-index:1;} /* #headerExtra เป็น relative → วางลอยขึ้นไปข้างชื่อ ใต้ปุ่มกระดิ่ง */
+#appHeader .hdr-plate b{font-size:16px;}
+</style>
 <style id="boot-style">
 #bootSplash{display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;color:#b9c8df;font-size:13px;font-weight:700;flex:1;min-height:0;background:linear-gradient(165deg,#061636 0%,#0a2556 55%,#0c3563 100%);}
 #bootSplash i{width:34px;height:34px;border-radius:50%;border:3px solid rgba(255,255,255,.18);border-top-color:#12c9d6;animation:bootSp .8s linear infinite;}
@@ -708,6 +746,7 @@ const fmtDate = d => `${d.getDate()} ${TH_M[d.getMonth()]} ${d.getFullYear()}`;
 const ymd = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const parseYmd = s => new Date(s + 'T00:00:00');
 const baht = n => '฿' + Number(n||0).toLocaleString('en-US');
+const bahtU = n => Number(n||0).toLocaleString('en-US') + '<small>บาท</small>'; // ช่องสรุปยอด: ตัวเลข + หน่วย "บาท"
 function dayRange(offsetStart, n){ const t = new Date(); return Array.from({length:n}, (_,i)=> new Date(t.getFullYear(), t.getMonth(), t.getDate()+offsetStart+i)); }
 function dayStripHtml(days, sel){
   const today = ymd(new Date());
@@ -1059,6 +1098,18 @@ async function finishQueueJob(e){
 }
 
 // ===== ภาพรวม =====
+// โหมดตัวอย่างสำหรับนำเสนอ: เปิดด้วย ?demo=1 ท้าย URL เท่านั้น — แสดงรายได้วันนี้/เดือนนี้เป็น ฿600 (ตัวเลขจำลอง ไม่ใช่ข้อมูลจริง) และมีป้ายกำกับ; ไม่ใส่พารามิเตอร์ = ข้อมูลจริงเสมอ
+const DEMO_MODE = /[?&]demo=1(&|$)/.test(location.search), DEMO_AMT = 600;
+// จังหวัดบนป้าย: ใช้ค่า province ของรถถ้ามี ไม่มี = ใช้ค่าตั้งต้นนี้ (สมมติฐาน ยังไม่ยืนยันว่าทุกคันจดทะเบียนที่กรุงเทพฯ — แก้ที่นี่ หรือกรอก province ในข้อมูลรถรายคัน)
+const DEFAULT_PROVINCE = 'กรุงเทพมหานคร';
+function myPlateHtml(){
+  const u = driverCurrentUser; if(!u) return '';
+  const prof = Object.fromEntries(Object.entries(driverProfile||{}).filter(([,x])=>x!=='' && x!=null));
+  const veh = Object.assign({}, vehicles.find(x=>x.id===u.vehicleId)||{}, prof);
+  const plate = veh.plate || u.plate; if(!plate) return '';
+  return `<div class="th-plate hdr-plate"><i>THAILAND</i><b>${esc(plate)}</b><span>${esc(veh.province || DEFAULT_PROVINCE)}</span></div>`;
+}
+let dashMonthSel = ''; // 'YYYY-MM' ที่เลือกดูในสรุปประจำเดือน ('' = เดือนปัจจุบัน)
 function renderDash(){
   const now = new Date(), today = ymd(now);
   // งานจองที่จบแล้ว นับรวมเป็นรายได้/ทริปด้วย (ราคารวม = มิเตอร์ + ค่าบริการ ตามที่บันทึกตอนจบงาน)
@@ -1066,21 +1117,28 @@ function renderDash(){
     .map(b=>({ doneAt:b.doneAt, meterFare:Number(b.totalFare)>0 ? Number(b.totalFare) : Number(b.meterFare), isBooking:true }));
   const done = myDone().concat(bkDone);
   const td = done.filter(e=> ymd(new Date(e.doneAt)) === today);
-  const mo = done.filter(e=>{ const d = new Date(e.doneAt); return d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth(); });
+  const ym = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+  const curYm = ym(now);
+  const monthsAll = [...new Set(done.map(e=>ym(new Date(e.doneAt))).concat(curYm))].sort().reverse().slice(0,12);
+  if(!monthsAll.includes(dashMonthSel)) dashMonthSel = curYm;
+  const isCur = dashMonthSel === curYm;
+  const mo = done.filter(e=> ym(new Date(e.doneAt)) === dashMonthSel);
+  const selTxt = k => { const [y,m] = k.split('-'); return TH_MF[+m-1]+' '+y; };
   loadPrices(mo);
   $('headerExtra').innerHTML = `<div class="glass-row">
-      <div class="glass"><div class="lbl">รายได้รวมวันนี้</div><div class="val">${baht(sumPrice(td))}</div></div>
+      <div class="glass"><div class="lbl">รายได้รวมวันนี้</div><div class="val">${bahtU(DEMO_MODE ? DEMO_AMT : sumPrice(td))}</div></div>
       <div class="glass"><div class="lbl">ทริปวันนี้</div><div class="val">${td.length}<small>ทริป</small></div></div>
-    </div>`;
+    </div>${myPlateHtml()}${DEMO_MODE ? '<div style="margin-top:8px;text-align:center;font-size:10.5px;font-weight:800;color:#e0a030;">● โหมดตัวอย่าง — ตัวเลขรายได้ไม่ใช่ข้อมูลจริง</div>' : ''}`;
   $('dashMonth').innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
-      <div><div style="font-size:22px;font-weight:800;">สรุปประจำเดือน</div><div class="muted" style="font-size:15px;margin-top:4px;">${TH_MF[now.getMonth()]} ${now.getFullYear()}</div></div>
-      <span class="pill pill-teal" style="flex:0 0 auto;">งานที่จบแล้ว</span>
+      <div><div style="font-size:22px;font-weight:800;">สรุปประจำเดือน</div></div>
+      <label class="mo-sel" style="flex:0 0 auto;margin-top:2px;"><select id="dashMonthSelect" aria-label="เลือกเดือน">${monthsAll.map(k=>`<option value="${k}"${k===dashMonthSel?' selected':''}>${esc(selTxt(k))}${k===curYm?' (เดือนนี้)':''}</option>`).join('')}</select></label>
     </div>
     <div style="display:flex;gap:12px;margin-top:16px;">
-      <div class="mini-box"><div class="lbl">รายได้เดือนนี้</div><div class="val">${baht(sumPrice(mo))}</div></div>
-      <div class="mini-box t"><div class="lbl">ทริปเดือนนี้</div><div class="val">${mo.length}<small>ทริป</small></div></div>
+      <div class="mini-box"><div class="lbl">${isCur?'รายได้เดือนนี้':'รายได้รวม'}</div><div class="val">${bahtU(DEMO_MODE ? DEMO_AMT : sumPrice(mo))}</div></div>
+      <div class="mini-box t"><div class="lbl">${isCur?'ทริปเดือนนี้':'ทริปรวม'}</div><div class="val">${mo.length}<small>ทริป</small></div></div>
     </div>`;
+  $('dashMonthSelect').addEventListener('change', e=>{ dashMonthSel = e.target.value; renderDash(); });
   const mine = Object.entries(queueData).flatMap(([k,a])=>a.map(e=>({...e, locKey:k})))
     .find(e=>e.vehicleId===driverCurrentUser.vehicleId && ['waiting','standby','active'].includes(e.status));
   const oj = myOpenJobs();
@@ -1096,12 +1154,7 @@ function renderDash(){
   } else if(mine){
     $('dashQueue').innerHTML = ''; // สถานะคิวไปแสดงที่หน้าลงคิวแทน (การ์ด 'อยู่ในคิว' + ปุ่มดูคิวของฉัน)
   } else {
-    $('dashQueue').innerHTML = `<div class="card" style="text-align:center;padding:24px 18px;">
-        <div style="font-weight:800;font-size:18px;">ยังไม่ได้ลงคิว</div>
-        <div class="muted" style="margin:6px 0 16px;">เลือกสนามบินแล้วสแกน QR เพื่อลงคิวรับงาน</div>
-        <button class="btn btn-green" id="dashJoinBtn">ลงคิวสนามบิน</button>
-      </div>`;
-    $('dashJoinBtn').addEventListener('click', ()=> showScreen('join'));
+    $('dashQueue').innerHTML = ''; // ยังไม่ลงคิว = ไม่แสดงการ์ดอะไร (ลงคิวผ่านแท็บ "ลงคิว")
   }
 }
 
@@ -1447,7 +1500,7 @@ function renderHistory(){
     .sort((a,b)=> String(b.doneAt).localeCompare(String(a.doneAt))); // ล่าสุดอยู่บนสุด
   loadPrices(list);
   $('historyStats').innerHTML = `
-    <div class="st-dark"><div class="lbl">รายได้วันที่เลือก</div><div class="val">${baht(sumPrice(list))}</div></div>
+    <div class="st-dark"><div class="lbl">รายได้วันที่เลือก</div><div class="val">${bahtU(sumPrice(list))}</div></div>
     <div class="st-light"><div class="lbl">จำนวนทริป</div><div class="val">${list.length}<small>ทริป</small></div></div>`;
   $('historyDateLabel').textContent = fmtDate(parseYmd(historyDate));
   const wrap = $('historyList');
@@ -1606,27 +1659,39 @@ function startBanners(){
     renderBanners();
   }, ()=>{ banners = []; renderBanners(); });
 }
-function stopBanners(){ if(bnRef){ try{ bnRef.off(); }catch(e){} bnRef = null; } banners = []; renderBanners(); }
+function stopBanners(){ bnPopupDone = false; { const p = $('bnPopup'); if(p) p.remove(); } if(bnRef){ try{ bnRef.off(); }catch(e){} bnRef = null; } banners = []; renderBanners(); }
 const bnKey = () => 'ssls_bn_x_' + ((driverCurrentUser && driverCurrentUser.username) || '');
 const bnToday = () => { const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
-let bnSession = new Set(); // ปิดด้วย ✕ = ซ่อนจนกว่าจะเปิดแอปใหม่
+let bnPopupDone = false; // โชว์ป๊อปอัปครั้งเดียวต่อการล็อกอิน/เปิดแอป
 function bnHiddenToday(){ try{ const o = JSON.parse(localStorage.getItem(bnKey())||'{}'), t = bnToday(); return new Set(Object.keys(o).filter(k=>o[k]===t)); }catch(e){ return new Set(); } }
-function bnSkipToday(id){ try{ const o = JSON.parse(localStorage.getItem(bnKey())||'{}'), t = bnToday(); Object.keys(o).forEach(k=>{ if(o[k]!==t) delete o[k]; }); o[id] = t; localStorage.setItem(bnKey(), JSON.stringify(o)); }catch(e){} bnSession.add(id); renderBanners(); }
+function bnSkipToday(ids){ try{ const o = JSON.parse(localStorage.getItem(bnKey())||'{}'), t = bnToday(); Object.keys(o).forEach(k=>{ if(o[k]!==t) delete o[k]; }); ids.forEach(id=>{ o[id] = t; }); localStorage.setItem(bnKey(), JSON.stringify(o)); }catch(e){} }
+function bnClosePopup(skip){
+  const pop = $('bnPopup'); if(!pop) return;
+  if(skip) bnSkipToday([...pop.querySelectorAll('.bnp-slide')].map(x=>x.dataset.id));
+  pop.remove();
+}
 function renderBanners(){
-  const el = $('dashBanner'); if(!el) return;
-  const closed = bnHiddenToday(), list = banners.filter(b=>!closed.has(b.id) && !bnSession.has(b.id));
-  if(!list.length){ el.innerHTML = ''; return; }
-  el.innerHTML = `<div class="bn-track">${list.map(b=>{
-    const hasImg = /^(https:\/\/|data:image\/)/.test(String(b.poster||''));
-    const left = `เหลืออีก ${b.daysLeft} วัน`;
-    return hasImg
-      ? `<div class="bn-item bn-img" aria-label="${esc(bnName(b.name))}"><div class="bn-scroll"><img src="${esc(b.poster)}" alt="${esc(bnName(b.name))}"></div><span class="bn-left">${left}</span><button type="button" class="bn-x" data-id="${esc(b.id)}" aria-label="ปิดแบนเนอร์">✕</button><label class="bn-skip"><input type="checkbox" data-id="${esc(b.id)}"><span>ไม่ต้องแสดงวันนี้</span></label></div>`
-      : `<div class="bn-item bn-txt"><span class="bn-tag">แคมเปญ</span><b>${bnNameHtml(b.name)}</b><small>${esc(b.subtitle||'')}</small><span class="bn-left">${left}</span><button type="button" class="bn-x" data-id="${esc(b.id)}" aria-label="ปิดแบนเนอร์">✕</button><label class="bn-skip"><input type="checkbox" data-id="${esc(b.id)}"><span>ไม่ต้องแสดงวันนี้</span></label></div>`;
-  }).join('')}</div>${list.length>1 ? `<div class="bn-dots">${list.map((_,i)=>`<i${i?'':' class="on"'}></i>`).join('')}</div>` : ''}`;
-  el.querySelectorAll('.bn-x').forEach(x=>x.addEventListener('click', ()=>{ bnSession.add(x.dataset.id); renderBanners(); }));
-  el.querySelectorAll('.bn-skip input').forEach(c=>c.addEventListener('change', ()=>{ if(c.checked) bnSkipToday(c.dataset.id); }));
-  const tr = el.querySelector('.bn-track');
-  tr.addEventListener('scroll', ()=>{ const i = Math.round(tr.scrollLeft/tr.clientWidth); el.querySelectorAll('.bn-dots i').forEach((d,k)=>d.classList.toggle('on',k===i)); }, {passive:true});
+  const old = $('dashBanner'); if(old) old.innerHTML = '';
+  if(bnPopupDone || !driverCurrentUser) return;
+  const closed = bnHiddenToday(), list = banners.filter(b=>!closed.has(b.id));
+  if(!list.length) return;
+  bnPopupDone = true;
+  const pop = document.createElement('div'); pop.id = 'bnPopup';
+  pop.innerHTML = `<div class="bnp-card"><div class="bnp-track">${list.map(b=>{
+    const hasImg = /^(https:\/\/|data:image\/)/.test(String(b.poster||'')), left = `เหลืออีก ${b.daysLeft} วัน`;
+    return `<div class="bnp-slide" data-id="${esc(b.id)}"><span class="bnp-left">${left}</span>${hasImg
+      ? `<div class="bnp-scroll"><img src="${esc(b.poster)}" alt="${esc(bnName(b.name))}"></div>`
+      : `<div class="bnp-txt"><span class="bn-tag">แคมเปญ</span><b>${bnNameHtml(b.name)}</b><small>${esc(b.subtitle||'')}</small></div>`}</div>`;
+  }).join('')}</div>
+  <button type="button" class="bnp-x" aria-label="ปิด">✕</button>
+  ${list.length>1 ? `<div class="bnp-dots">${list.map((_,i)=>`<i${i?'':' class="on"'}></i>`).join('')}</div>` : ''}</div>
+  <div class="bnp-bar"><label class="bnp-skip"><input type="checkbox" id="bnpSkip"><span>ไม่ต้องแสดงวันนี้</span></label><button type="button" class="bnp-ok">ปิด</button></div>`;
+  (document.getElementById('deviceFrame') || document.body).appendChild(pop);
+  const done = ()=> bnClosePopup($('bnpSkip').checked);
+  pop.querySelector('.bnp-x').addEventListener('click', done);
+  pop.querySelector('.bnp-ok').addEventListener('click', done);
+  const tr = pop.querySelector('.bnp-track');
+  tr.addEventListener('scroll', ()=>{ const i = Math.round(tr.scrollLeft/tr.clientWidth); pop.querySelectorAll('.bnp-dots i').forEach((d,k)=>d.classList.toggle('on',k===i)); }, {passive:true});
 }
 function stopAnnouncements(){ if(annRef){ try{ annRef.off(); }catch(e){} annRef = null; } announcements = []; }
 function annReadSet(){ try{ return new Set(JSON.parse(localStorage.getItem(annSeenKey()+':read')||'[]')); }catch(e){ return new Set(); } }
@@ -1894,7 +1959,7 @@ function renderProfile(){
   const sub = [veh.color, veh.rentPerDay != null && veh.rentPerDay !== '' ? `ค่าเช่า ${baht2(veh.rentPerDay)}/วัน` : ''].filter(Boolean).join(' · ');
   $('profVehicle').innerHTML = `<h3>ข้อมูลรถ</h3>
     <div class="veh-head">
-      <div class="th-plate"><i>THAILAND</i><b>${esc(plate)}</b>${veh.province ? `<span>${esc(veh.province)}</span>` : ''}</div>
+      <div class="th-plate"><i>THAILAND</i><b>${esc(plate)}</b><span>${esc(veh.province || DEFAULT_PROVINCE)}</span></div>
       <div style="min-width:0;"><div class="veh-model">${esc(veh.model||'-')}</div>${sub ? `<div class="muted veh-sub">${esc(sub)}</div>` : ''}</div>
     </div>
     ${kvRow('พ.ร.บ.', datePill(veh.actExpiry))}${kvRow('ประกันภัย', datePill(veh.insuranceExpiry))}
@@ -2001,7 +2066,7 @@ $('loginBtn').addEventListener('click', ()=>{ try{ if(!driverAudioCtx) driverAud
 $('loginPin').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
 $('logoutBtn').addEventListener('click', ()=>{
   stopBookings(); stopAnnouncements(); stopBanners(); stopQueuesRealtime();
-  driverProfile = {};
+  driverProfile = {}; dashMonthSel = '';
   notifs = []; updateBell();
   driverCurrentUser = null;
   currentQueueLoc = null;
