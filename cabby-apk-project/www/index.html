@@ -12,7 +12,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js" integrity="sha384-b5Ya4Bq3qCyz39m2ISh+4DxjAIljdeFwK/BsXLuj9gugaNwAcj/ia15fxNZL9Nlx" crossorigin="anonymous"></script>
 <style>
 @keyframes toastIn{ from{opacity:0;transform:translateY(-10px);} to{opacity:1;transform:translateY(0);} }
   :root{
@@ -251,7 +251,12 @@
   #screen-profile .sec-head{gap:12px;}
   #screen-profile .sec-head::before{content:'📄';flex:none;width:36px;height:36px;border-radius:12px;display:grid;place-items:center;font-size:17px;background:linear-gradient(135deg,var(--teal-soft),#c9f2f6);box-shadow:inset 0 0 0 1.5px rgba(18,201,214,.3);}
   #screen-profile .sec-head[data-sec=veh]::before{content:'🚗';} #screen-profile .sec-head[data-sec=docs]::before{content:'🗂';} #screen-profile .sec-head[data-sec=contract]::before{content:'✍️';} #screen-profile .sec-head[data-sec=ann]::before{content:'📣';} #screen-profile .sec-head[data-sec=howto]::before{content:'📘';}
-  #screen-profile .sec-head h3{flex:1;font-size:14px;color:var(--navy);}
+  #screen-profile .sec-head h3{flex:1;font-size:12.5px;color:var(--navy);}
+  #screen-profile .sec-card:not(.help-card){padding:8px 12px;margin-bottom:7px;border-radius:14px;}
+  #screen-profile .sec-card:not(.help-card) .sec-head{gap:9px;}
+  #screen-profile .sec-card:not(.help-card) .sec-head::before{width:28px;height:28px;border-radius:9px;font-size:14px;}
+  #screen-profile .sec-card:not(.help-card) .sec-chev{width:22px;height:22px;} #screen-profile .sec-card:not(.help-card) .sec-chev svg{width:14px;height:14px;}
+  #screen-profile .sec-card .pm-badge{min-width:18px;height:18px;font-size:11px;padding:0 5px;}
   #screen-profile .sec-chev{flex:none;width:26px;height:26px;border-radius:50%;background:#f1f5f9;align-items:center;justify-content:center;color:var(--navy);} #screen-profile .sec-chev svg{width:16px;height:16px;} #screen-profile .sec-card.open .sec-chev{background:var(--teal);color:#fff;}
   #screen-profile .help-card{background:linear-gradient(135deg,#061636 0%,#0a2556 60%,#0c3563 100%);border:none;color:#fff;overflow:hidden;}
   #screen-profile .help-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--gold);}
@@ -406,6 +411,7 @@
   .n-trash{margin-left:auto;width:50px;height:50px;border-radius:16px;border:none;background:var(--red-soft);color:var(--red);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;}
   .n-list{overflow-y:auto;flex:1;}
   .n-item{display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--line);}
+  .n-st{display:inline-block;margin-top:4px;font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px;} .n-st.new{background:#fff0d6;color:#b26a00;} .n-st.ok{background:#e6f6ee;color:#0a8a54;}
   .n-item.unread{background:#f1fbfc;} .n-item.click{cursor:pointer;}
   .n-ic{width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;background:#fbf1de;color:var(--gold);}
   .n-ic.t{background:#e3f3ef;color:#14897f;} .n-ic.r{background:var(--red-soft);color:var(--red);}
@@ -531,6 +537,11 @@
 .qjob .qj-steps span.done{color:#9fb2cf;} .qjob .qj-steps span.done::before{background:var(--teal);border-color:var(--teal);}
 .qjob .qj-steps span.now{color:var(--teal);} .qjob .qj-steps span.now::before{border-color:var(--teal);background:rgba(18,201,214,.35);}
 .qjob .qj-steps i{flex:1;height:2px;border-radius:2px;background:#2a4472;min-width:8px;}
+.qjob .qj-prog{display:flex;align-items:center;gap:4px;margin:12px 0 4px;position:relative;z-index:1;}
+.qjob .qj-prog span{flex:none;width:10px;height:10px;border-radius:50%;border:2px solid #4a6288;box-sizing:border-box;}
+.qjob .qj-prog span.done{background:var(--teal);border-color:var(--teal);} .qjob .qj-prog span.now{border-color:var(--teal);background:rgba(18,201,214,.35);box-shadow:0 0 0 3px rgba(18,201,214,.18);}
+.qjob .qj-prog i{flex:1;height:2px;border-radius:2px;background:#2a4472;min-width:4px;}
+.qjob .qj-cur{font-size:10.5px;font-weight:800;color:var(--teal);margin:0 0 6px;position:relative;z-index:1;}
 .qjob .qj-route{position:relative;margin:12px 0 10px;padding:12px 14px 12px 38px;border-radius:16px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);z-index:1;display:flex;flex-direction:column;gap:12px;}
 .qjob .qj-route::before{content:'';position:absolute;left:19px;top:22px;bottom:22px;border-left:2px dashed rgba(255,255,255,.28);}
 .qjob .qj-pt{position:relative;padding-right:58px;min-height:44px;display:flex;flex-direction:column;justify-content:center;}
@@ -558,8 +569,8 @@
 .pl-open .pl-ic{flex:none;width:40px;height:40px;border-radius:13px;background:#12c9d6;color:#04323a;display:flex;align-items:center;justify-content:center;} .pl-open.wait .pl-ic{background:#e0a030;color:#3a2600;}
 .pl-open .pl-tx{flex:1;min-width:0;display:flex;flex-direction:column;} .pl-open b{font-size:14px;color:#0a1f44;} .pl-open small{font-size:11.5px;color:#4a5d7a;font-weight:700;}
 .pl-open .pl-n{flex:none;min-width:30px;height:30px;padding:0 9px;border-radius:99px;background:#0a1f44;color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;}
-#poolModal{display:none;position:absolute;inset:0;z-index:2800;background:rgba(7,26,62,.55);align-items:center;justify-content:center;padding:18px;}
-#poolModal.on{display:flex;}
+#poolModal,#pmModal,#annModal{display:none;position:absolute;inset:0;z-index:2800;background:rgba(7,26,62,.55);align-items:center;justify-content:center;padding:18px;}
+#poolModal.on,#pmModal.on,#annModal.on{display:flex;}
 .pm-box{width:100%;max-width:380px;max-height:84%;display:flex;flex-direction:column;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 24px 60px rgba(7,26,62,.45);animation:pmPop .2s ease;}
 @keyframes pmPop{from{transform:translateY(12px) scale(.97);opacity:0}to{transform:none;opacity:1}}
 .pm-hd{position:relative;padding:16px 50px 14px 20px;background:linear-gradient(135deg,#061636 0%,#0a2556 60%,#0c3563 100%);border-bottom:3px solid #12c9d6;} .pm-hd h3{margin:0;color:#fff;font-size:17px;font-weight:800;}
@@ -583,6 +594,86 @@
 .pd-remark{border:1px solid #e1e9f2;border-radius:16px;padding:10px 12px;background:#fffdf5;} .pd-remark small{display:block;font-size:11px;color:#6b7c95;font-weight:700;} .pd-remark b{font-size:13px;font-weight:700;color:#0a1f44;line-height:1.4;word-break:break-word;white-space:pre-wrap;}
 .pd-pax{display:grid;grid-template-columns:1fr 1fr;border:1px solid #e1e9f2;border-radius:16px;overflow:hidden;} .pd-pax>div{padding:10px 12px;} .pd-pax>div+div{border-left:1px solid #e1e9f2;} .pd-pax small{display:block;font-size:11px;color:#6b7c95;font-weight:700;} .pd-pax b,.pd-pax a{font-size:13.5px;font-weight:800;color:#0a1f44;word-break:break-word;} .pd-pax a{color:#0a6f78;text-decoration:none;} .pd-warn{background:#fff1f0;color:#b3261e;border-radius:12px;padding:9px 12px;font-size:12.5px;font-weight:700;}
 .pd-ft{padding:12px 14px 14px;border-top:1px solid #e6edf5;} .pd-ft .btn{width:100%;}
+</style>
+<style id="invoice-style">
+.fr-head{align-items:flex-start;padding:16px 18px 10px;} .fr-head>div:last-child{text-align:right;}
+.fr-logo{background:var(--navy);border-radius:10px;padding:5px 12px 4px;text-align:center;line-height:1;flex:none;} .fr-logo img{height:26px;background:none!important;padding:0!important;border-radius:0!important;margin:0 auto;} .fr-logo i{display:block;font-style:normal;font-size:7px;color:#e0a030;font-weight:800;letter-spacing:.3px;margin-top:2px;}
+.fr-head h2{font-size:18px;margin:0;} .fr-head .tag{margin-top:1px;} .fr-head .no{margin-top:5px;} .fr-head .no b{color:var(--navy);}
+.fr-box4{display:grid;grid-template-columns:1fr 1fr;padding:0;gap:0;} .fr-box4>div{padding:9px 12px;border-left:1px solid var(--line);border-top:1px solid var(--line);min-width:0;} .fr-box4>div:nth-child(odd){border-left:0;} .fr-box4>div:nth-child(-n+2){border-top:0;}
+#fareModal .panel{overflow-y:auto;} #fareModal .fr-body{overflow:visible;flex:none;}
+.fr-box .sep{grid-column:1/-1;border-top:1px solid var(--line);margin:0;padding:0;height:0;}
+.fr-fare.one{padding:14px 14px;display:flex;justify-content:space-between;align-items:center;font-size:12.5px;gap:10px;} .fr-fare.one b{font-size:21px;color:var(--navy);white-space:nowrap;}
+.fr-bottom{display:flex;gap:10px;align-items:flex-end;justify-content:space-between;padding:6px 18px 12px;} .fr-bottom .fr-note{padding:0;text-align:left;flex:1;font-size:9.5px;}
+.fr-qr{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:7px 9px;flex:none;} .fr-qr .qrimg{display:block;width:46px;height:46px;} .fr-qr .qrimg svg{width:100%;height:100%;display:block;}
+.fr-qr b{display:block;font-size:10px;color:var(--navy);margin-bottom:1px;} .fr-qr span{font-size:8.5px;color:var(--navy);display:block;line-height:1.35;font-weight:700;}
+</style>
+<style id="pm-style">
+#screen-profile .sec-head[data-sec=pm]::before{content:'🔧';}
+.pm-badge{flex:none;min-width:22px;height:22px;padding:0 7px;border-radius:99px;background:#e0a030;color:#fff;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;margin-left:6px;}
+.pm-item{border:1px solid #e3eaf2;border-left:5px solid #e0a030;border-radius:14px;padding:10px 12px;margin-top:8px;background:#fffdf6;} .pm-item.t{border-left-color:#d64545;background:#fff7f6;}
+.pm-top{display:flex;justify-content:space-between;align-items:center;gap:8px;} .pm-when{font-size:12px;font-weight:800;color:#b26a00;} .pm-item.t .pm-when{color:#c0392b;} .pm-time{font-size:17px;font-weight:800;color:var(--navy);}
+.pm-row{display:flex;gap:8px;font-size:12.5px;margin-top:4px;color:var(--navy);} .pm-row small{flex:none;width:62px;color:#6b7c95;font-weight:700;} .pm-row b{font-weight:700;word-break:break-word;}
+.pm-item.go{cursor:pointer;} .pm-urg{display:inline-block;background:#d64545;color:#fff;font-size:12px;font-weight:800;padding:3px 10px;border-radius:99px;} .pm-st{display:inline-block;font-size:11.5px;font-weight:800;padding:2px 9px;border-radius:99px;background:#fff0d6;color:#b26a00;} .pm-st.inprogress{background:#dff0ff;color:#0a5fa3;} .pm-st.approved{background:#e0f5e9;color:#0a7a4a;} .pm-st.done{background:#e6f6ee;color:#0a8a54;}
+.pm-tabs{display:flex;gap:6px;margin:0 0 10px;} .pm-tab{flex:1;border:1px solid #d6e0ec;background:#f4f7fb;color:#486079;font:inherit;font-weight:800;font-size:12px;padding:7px 4px;border-radius:10px;cursor:pointer;} .pm-tab.on{background:#0a1f44;border-color:#0a1f44;color:#fff;}
+.pm-h{border:1px solid #e3eaf2;border-left:5px solid #22c55e;border-radius:12px;padding:8px 10px;margin-top:8px;background:#fafdfb;} .pm-res-h{background:#e6f6ee;color:#0a8a54;font-size:12px;font-weight:800;padding:5px 10px;border-radius:8px;border-top:0!important;} .pm-h.go{cursor:pointer;} .pm-h b{font-size:12.5px;color:var(--navy);} .pm-h small{display:block;font-size:11px;color:#6b7c95;font-weight:700;margin-top:2px;}
+.pm-more{text-align:right;font-size:11.5px;font-weight:800;color:#0a8a96;margin-top:4px;}
+.pm-back{border:0;background:none;color:#0a8a96;font:inherit;font-weight:800;font-size:12px;padding:0 0 6px;cursor:pointer;} .pm-dh{font-size:12px;font-weight:800;color:#b26a00;} .pm-item.t + .pm-dh{color:#c0392b;}
+.pm-dt{font-size:20px;font-weight:800;color:var(--navy);margin:0 0 6px;} .pm-dl{display:flex;flex-direction:column;gap:6px;} .pm-dl>div{border-top:1px solid #eef2f7;padding-top:5px;} .pm-dl small{display:block;font-size:10px;font-weight:700;color:#6b7c95;} .pm-dl b{font-size:12.5px;color:var(--navy);} .pm-dl ul{margin:1px 0 0;padding-left:16px;} .pm-dl li{font-size:12.5px;font-weight:700;color:var(--navy);margin:1px 0;}
+.pm-empty{font-size:12.5px;color:#6b7c95;padding:8px 2px;} .pm-note{font-size:11px;color:#6b7c95;margin-top:8px;}
+.an-img{display:block;width:100%;height:auto;object-fit:contain;border-radius:10px;margin-top:8px;cursor:zoom-in;background:#eef3f8;} #annLight{position:absolute;inset:0;z-index:3100;background:rgba(7,26,62,.9);display:flex;align-items:center;justify-content:center;padding:14px;} #annLight img{max-width:100%;max-height:100%;border-radius:10px;}
+ /* ===== ส่วนหัวหน้าแรก (ออกแบบใหม่): แผงสถิติเดียว แบ่งสองช่อง มีไอคอนวงกลม ===== */
+#appHeader .hdr-title{font-size:17.5px;letter-spacing:.1px;}
+#appHeader .glass-row{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:12px;padding:0;border-radius:20px;overflow:hidden;position:relative;background:linear-gradient(135deg,rgba(255,255,255,.15),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.2);box-shadow:0 10px 24px rgba(3,12,32,.35),inset 0 1px 0 rgba(255,255,255,.2);}
+#appHeader .glass-row::after{content:'';position:absolute;left:50%;top:16%;bottom:16%;width:1px;background:linear-gradient(180deg,transparent,rgba(255,255,255,.35),transparent);}
+#appHeader .glass-row .glass{display:flex;align-items:center;gap:10px;width:auto;max-width:none;min-width:0;flex:none;background:none;border:0;border-radius:0;padding:11px 14px;}
+#appHeader .glass-row .glass:last-child{background:none;border:0;}
+#appHeader .glass-row .gi{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:18px;line-height:1;background:linear-gradient(135deg,#ffe36a,#e0a030);color:#3a2a00;box-shadow:0 4px 12px rgba(224,160,48,.4);}
+#appHeader .glass-row .gi.t{background:linear-gradient(135deg,#6bf2fb,#12c9d6);color:#03323a;box-shadow:0 4px 12px rgba(18,201,214,.4);} #appHeader .glass-row .gi svg{width:20px;height:20px;}
+#appHeader .glass-row .gt{min-width:0;text-align:left;}
+#appHeader .glass-row .glass .lbl{text-align:left;font-size:10.5px;color:#b9c8df;letter-spacing:.2px;}
+#appHeader .glass-row .glass .val{text-align:left;font-size:19px;margin-top:1px;white-space:nowrap;} #appHeader .glass-row .glass .val small{font-size:10.5px;margin-left:4px;}
+ /* ===== การ์ดสรุปประจำเดือน + 2 กล่องลัด (ออกแบบใหม่ให้เข้ากับส่วนหัว) ===== */
+#dashMonth{border:1px solid #e1e9f1;border-top:0;border-radius:22px;padding:14px 14px 12px;background:linear-gradient(180deg,#ffffff 0%,#f7fbfd 100%);box-shadow:0 12px 28px rgba(10,31,68,.09);position:relative;overflow:hidden;}
+#dashMonth::before{content:'';position:absolute;left:0;right:0;top:0;height:5px;background:linear-gradient(90deg,var(--teal) 0 68%,var(--gold) 68% 100%);}
+#dashMonth .mc-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:4px;}
+#dashMonth .mc-t{display:flex;align-items:center;gap:10px;min-width:0;}
+#dashMonth .mc-ic{flex:none;width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#0a2556,#0c3563);color:#6bf2fb;box-shadow:0 6px 14px rgba(10,37,86,.3);} #dashMonth .mc-ic svg{width:19px;height:19px;}
+#dashMonth .mc-ttl{font-size:15.5px;font-weight:800;color:var(--navy);line-height:1.2;} #dashMonth .mc-sub{font-size:11px;font-weight:700;color:var(--sub);margin-top:1px;}
+#dashMonth .mc-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px !important;}
+#dashMonth .mc-tile{display:flex;align-items:center;gap:10px;min-width:0;border-radius:16px;padding:11px 12px;border:1px solid #f0e2bd;background:linear-gradient(150deg,#fffaf0 0%,#fdf0d3 100%);}
+#dashMonth .mc-tile.trip{border-color:#bfeef2;background:linear-gradient(150deg,#effcfd 0%,#d5f4f7 100%);}
+#dashMonth .mc-gi{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:17px;line-height:1;background:linear-gradient(135deg,#ffe36a,#e0a030);color:#3a2a00;box-shadow:0 4px 10px rgba(224,160,48,.35);}
+#dashMonth .mc-gi.t{background:linear-gradient(135deg,#6bf2fb,#12c9d6);color:#03323a;box-shadow:0 4px 10px rgba(18,201,214,.35);} #dashMonth .mc-gi svg{width:19px;height:19px;}
+#dashMonth .mc-tile .lbl{font-size:10.5px;font-weight:700;color:#6b7c95;letter-spacing:.2px;text-align:left;} #dashMonth .mc-tile .val{font-size:20px;font-weight:800;color:var(--navy);margin-top:1px;text-align:left;white-space:nowrap;} #dashMonth .mc-tile .val small{font-size:10.5px;margin-left:4px;opacity:.75;}
+#dashMonth>div.mc-foot{margin:10px 0 0 !important;padding-top:9px;border-top:1px dashed #d6e0ec;display:flex;justify-content:space-between;font-size:11.5px;font-weight:700;color:#6b7c95;} #dashMonth .mc-foot b{color:var(--navy);}
+.hb-grid{gap:10px;margin-top:2px;}
+.hb{flex-direction:row;align-items:center;gap:10px;border:1px solid #cfeaf0;background:#fff;border-radius:18px;padding:10px 11px;box-shadow:0 6px 16px rgba(10,31,68,.07);transition:transform .12s;} .hb:active{transform:scale(.98);}
+.hb.pm{border-color:#f3dcaf;background:#fff;}
+.hb .hb-ic{flex:none;width:36px;height:36px;border-radius:12px;display:grid;place-items:center;font-size:17px;background:linear-gradient(135deg,#d8f8fb,#b6eef3);box-shadow:inset 0 0 0 1.5px rgba(18,201,214,.35);} .hb.pm .hb-ic{background:linear-gradient(135deg,#fff1d2,#ffe0a1);box-shadow:inset 0 0 0 1.5px rgba(224,160,48,.45);}
+.hb .hb-tx{display:flex;flex-direction:column;min-width:0;flex:1;gap:1px;} .hb .h{font-size:12.5px;font-weight:800;color:var(--navy);gap:0;white-space:nowrap;} .hb .s{font-size:10.5px;font-weight:700;color:#6b7c95;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;} .hb.pm .s{color:#8a6a1f;}
+.hb .hb-n{flex:none;min-width:22px;height:22px;padding:0 6px;border-radius:99px;background:#12c9d6;color:#fff;font-size:11.5px;font-weight:800;display:grid;place-items:center;box-shadow:0 3px 8px rgba(18,201,214,.4);} .hb.pm .hb-n{background:#e0a030;box-shadow:0 3px 8px rgba(224,160,48,.4);}
+.hb .hb-chev{flex:none;color:#9fb0c6;font-size:20px;line-height:1;font-weight:700;}
+.an-item{border:1px solid #e3eaf2;border-left:5px solid #12c9d6;border-radius:12px;padding:9px 12px;margin-top:8px;background:#f8fdfe;} .an-item .t{font-size:13px;font-weight:800;color:var(--navy);} .an-item .t i{font-style:normal;font-size:10.5px;background:#e0a030;color:#fff;padding:1px 7px;border-radius:99px;margin-right:6px;} .an-item .d{font-size:11px;color:#6b7c95;font-weight:700;margin-top:2px;} .an-item .b{font-size:12.5px;color:#243b5a;margin-top:5px;white-space:pre-wrap;line-height:1.45;}
+.hb-grid{display:grid;grid-template-columns:1fr 1fr;} .hb{display:flex;text-align:left;font:inherit;cursor:pointer;min-width:0;}
+/* compact home: monthly card + 2 boxes */
+#dashMonth{border-radius:18px;padding:10px 11px 9px;}
+#dashMonth .mc-head{margin-top:2px;gap:8px;} #dashMonth .mc-t{gap:8px;}
+#dashMonth .mc-ic{width:28px;height:28px;border-radius:9px;} #dashMonth .mc-ic svg{width:15px;height:15px;}
+#dashMonth .mc-ttl{font-size:13px;} #dashMonth .mc-sub{font-size:9.5px;}
+#dashMonth select{font-size:11px !important;padding:5px 8px !important;min-height:0 !important;height:auto !important;}
+#dashMonth .mc-stats{gap:7px;margin-top:8px !important;}
+#dashMonth .mc-tile{gap:7px;padding:7px 9px;border-radius:12px;}
+#dashMonth .mc-gi{width:26px;height:26px;font-size:13px;} #dashMonth .mc-gi svg{width:14px;height:14px;}
+#dashMonth .mc-tile .lbl{font-size:9.3px;} #dashMonth .mc-tile .val{font-size:15.5px;} #dashMonth .mc-tile .val small{font-size:9.3px;}
+#dashMonth>div.mc-foot{margin-top:7px !important;padding-top:6px;font-size:10px;}
+.hb-grid{gap:7px;}
+.hb{gap:7px;padding:7px 8px;border-radius:14px;}
+.hb .hb-ic{width:28px;height:28px;border-radius:9px;font-size:14px;}
+.hb .h{font-size:11px;} .hb .s{font-size:9.3px;line-height:1.25;}
+.hb .hb-n{min-width:18px;height:18px;font-size:10px;padding:0 5px;} .hb .hb-chev{font-size:16px;}
+
+.pm-home{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:1px solid #f3dcaf;background:#fff6e4;border-radius:12px;padding:6px 10px;margin:0 0 8px;cursor:pointer;font:inherit;box-shadow:none;}
+.pm-home .ic{flex:none;width:26px;height:26px;border-radius:8px;background:#e0a030;display:grid;place-items:center;font-size:13px;} .pm-home b{display:block;font-size:12.5px;line-height:1.25;color:#0a1f44;} .pm-home small{display:block;font-size:10.5px;line-height:1.25;color:#6b5320;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .pm-home>span:last-child{min-width:0;}
 </style>
 <style id="pool-style">
 .pl-card{background:#fff;border:1px solid #e3e9f2;border-radius:20px;padding:14px;margin:0 0 12px;box-shadow:0 8px 20px rgba(10,31,68,.07);}
@@ -674,8 +765,9 @@
 
   <div id="screen-home" class="screen">
     <div id="homeAnn"></div>
-    <div id="dashQueue"></div>
     <div class="card" id="dashMonth"></div>
+    <div id="dashPm" style="margin-top:12px;"></div>
+    <div id="dashQueue" style="margin-top:12px;"></div>
     <div id="dashBanner"></div>
   </div>
 
@@ -767,7 +859,7 @@
     <div id="profAlerts"></div>
     <div class="sec-card" id="profVehicle"></div>
     <div class="sec-card" id="profDocs"></div>
-    <div class="sec-card" id="profContract"></div>
+    <div class="sec-card" id="profPm"></div>
     <div class="sec-card" id="profAnn"></div>
     <div class="sec-card" id="profHowto"></div>
     <div class="sec-card help-card">
@@ -796,11 +888,11 @@
 
 <div id="fareModal">
   <div class="panel">
-    <div class="fr-head"><img id="frLogo" alt="Cabby"><div><div class="tag">TRIP SUMMARY</div><h2>ใบสรุปค่าเดินทาง</h2><div class="no" id="frNo"></div></div></div>
+    <div class="fr-head"><div class="fr-logo"><img id="frLogo" alt="Cabby"><i>Advance Booking</i></div><div><h2>ใบสรุปค่าเดินทาง</h2><div class="tag">TRIP SUMMARY</div><div class="no" id="frNo"></div></div></div>
     <div class="fr-body" id="frBody"></div>
     <div class="fr-err" id="frErr" style="padding:0 18px;"></div>
     <div class="fr-foot" id="frFoot"></div>
-    <div class="fr-note">เอกสารสรุปค่าเดินทาง • ไม่ใช่ใบเสร็จรับเงินหรือใบกำกับภาษี</div>
+    <div class="fr-bottom"><div class="fr-note">เอกสารสรุปค่าเดินทาง • ซึ่งไม่ใช่ใบเสร็จรับเงินหรือใบกำกับภาษี</div><div class="fr-qr"><span class="qrimg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 33 33" shape-rendering="crispEdges"><rect x="-2" y="-2" width="33" height="33" fill="#fff"/><path d="M0 0h7v1h-7zM9 0h2v1h-2zM12 0h1v1h-1zM14 0h1v1h-1zM17 0h1v1h-1zM19 0h1v1h-1zM22 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h1v1h-1zM10 1h1v1h-1zM12 1h2v1h-2zM17 1h1v1h-1zM19 1h2v1h-2zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM9 2h1v1h-1zM12 2h1v1h-1zM15 2h1v1h-1zM18 2h1v1h-1zM20 2h1v1h-1zM22 2h1v1h-1zM24 2h3v1h-3zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h3v1h-3zM13 3h1v1h-1zM16 3h1v1h-1zM18 3h2v1h-2zM22 3h1v1h-1zM24 3h3v1h-3zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h1v1h-1zM11 4h1v1h-1zM13 4h1v1h-1zM16 4h4v1h-4zM22 4h1v1h-1zM24 4h3v1h-3zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM9 5h3v1h-3zM14 5h4v1h-4zM19 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h7v1h-7zM9 7h1v1h-1zM11 7h1v1h-1zM15 7h1v1h-1zM17 7h4v1h-4zM0 8h1v1h-1zM2 8h1v1h-1zM4 8h1v1h-1zM6 8h1v1h-1zM9 8h2v1h-2zM12 8h1v1h-1zM16 8h3v1h-3zM24 8h1v1h-1zM27 8h1v1h-1zM1 9h3v1h-3zM5 9h1v1h-1zM7 9h1v1h-1zM9 9h5v1h-5zM15 9h2v1h-2zM20 9h3v1h-3zM25 9h1v1h-1zM28 9h1v1h-1zM4 10h1v1h-1zM6 10h2v1h-2zM9 10h1v1h-1zM11 10h1v1h-1zM14 10h4v1h-4zM20 10h1v1h-1zM22 10h1v1h-1zM26 10h3v1h-3zM0 11h1v1h-1zM8 11h1v1h-1zM10 11h2v1h-2zM13 11h2v1h-2zM16 11h2v1h-2zM19 11h1v1h-1zM22 11h1v1h-1zM24 11h1v1h-1zM27 11h1v1h-1zM0 12h2v1h-2zM4 12h4v1h-4zM9 12h1v1h-1zM14 12h2v1h-2zM17 12h1v1h-1zM21 12h2v1h-2zM25 12h1v1h-1zM27 12h2v1h-2zM8 13h1v1h-1zM14 13h2v1h-2zM17 13h1v1h-1zM20 13h4v1h-4zM25 13h1v1h-1zM28 13h1v1h-1zM1 14h3v1h-3zM6 14h1v1h-1zM8 14h1v1h-1zM12 14h2v1h-2zM17 14h2v1h-2zM22 14h2v1h-2zM25 14h1v1h-1zM27 14h2v1h-2zM2 15h4v1h-4zM7 15h4v1h-4zM12 15h1v1h-1zM15 15h1v1h-1zM17 15h3v1h-3zM25 15h1v1h-1zM27 15h1v1h-1zM4 16h1v1h-1zM6 16h4v1h-4zM16 16h2v1h-2zM19 16h5v1h-5zM25 16h1v1h-1zM27 16h2v1h-2zM2 17h2v1h-2zM5 17h1v1h-1zM10 17h2v1h-2zM13 17h1v1h-1zM15 17h2v1h-2zM20 17h3v1h-3zM25 17h2v1h-2zM28 17h1v1h-1zM0 18h1v1h-1zM2 18h1v1h-1zM6 18h1v1h-1zM9 18h1v1h-1zM14 18h4v1h-4zM20 18h1v1h-1zM22 18h2v1h-2zM27 18h2v1h-2zM1 19h2v1h-2zM9 19h1v1h-1zM13 19h2v1h-2zM16 19h3v1h-3zM20 19h3v1h-3zM25 19h1v1h-1zM27 19h1v1h-1zM0 20h1v1h-1zM2 20h6v1h-6zM12 20h1v1h-1zM14 20h2v1h-2zM17 20h1v1h-1zM20 20h5v1h-5zM8 21h2v1h-2zM11 21h2v1h-2zM14 21h2v1h-2zM20 21h1v1h-1zM24 21h1v1h-1zM26 21h3v1h-3zM0 22h7v1h-7zM11 22h3v1h-3zM19 22h2v1h-2zM22 22h1v1h-1zM24 22h2v1h-2zM27 22h2v1h-2zM0 23h1v1h-1zM6 23h1v1h-1zM10 23h3v1h-3zM15 23h1v1h-1zM17 23h2v1h-2zM20 23h1v1h-1zM24 23h2v1h-2zM0 24h1v1h-1zM2 24h3v1h-3zM6 24h1v1h-1zM8 24h5v1h-5zM16 24h3v1h-3zM20 24h5v1h-5zM27 24h1v1h-1zM0 25h1v1h-1zM2 25h3v1h-3zM6 25h1v1h-1zM10 25h1v1h-1zM15 25h2v1h-2zM24 25h1v1h-1zM26 25h1v1h-1zM0 26h1v1h-1zM2 26h3v1h-3zM6 26h1v1h-1zM8 26h1v1h-1zM10 26h8v1h-8zM23 26h3v1h-3zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM14 27h1v1h-1zM16 27h3v1h-3zM20 27h2v1h-2zM24 27h1v1h-1zM27 27h1v1h-1zM0 28h7v1h-7zM8 28h1v1h-1zM12 28h2v1h-2zM15 28h2v1h-2zM18 28h3v1h-3zM23 28h3v1h-3zM27 28h2v1h-2z" fill="#000"/></svg></span><div><b>จองเที่ยวถัดไป</b><span>Call Center 02-026-8888</span><span>LINE @cabby</span><span>www.cabbyviptaxi.com</span></div></div></div>
   </div>
 </div>
 <div id="notifModal">
@@ -1181,11 +1273,42 @@ async function loadPrices(list){
   renderAll();
 }
 // ราคาของทริป: ค่ามิเตอร์ที่คนขับกรอกตอนจบงานมาก่อน ถ้าไม่มี (งานเก่า) ใช้ราคาที่เจ้าหน้าที่คีย์ใน jobs/{id}/price
-const priceOf = e => e.meterFare != null ? (Number(e.meterFare)||0) : (Number(jobPrice[e.jobId])||0);
+const priceOf = e => Number(e.totalFare) > 0 ? Number(e.totalFare) : (e.meterFare != null ? (Number(e.meterFare)||0) : (Number(jobPrice[e.jobId])||0)); // ยอดรวม (มิเตอร์+ทางด่วน+ค่าสนามบิน) ถ้ามี
 const sumPrice = list => list.reduce((s,e)=> s + priceOf(e), 0);
 // งานค้าง: งานจากคิวที่เจ้าหน้าที่สร้างแล้ว (status done + jobStatus open) แต่คนขับยังไม่กดจบงาน — งานเก่าไม่มี jobStatus ถือว่าจบแล้ว
 // จับคู่รายการคิวกับคนขับ: vehicleId ตรง หรือทะเบียนตรง (กันกรณีพนักงานเพิ่มคิวแล้ว vehicleId ไม่ตรงกับบัญชี)
 function isMyEntry(e){ const u=driverCurrentUser; if(!u) return false; if(e.vehicleId && e.vehicleId===u.vehicleId) return true; const norm=x=>String(x||'').replace(/\s+/g,'').toLowerCase(); return !!norm(e.plate) && norm(e.plate)===norm(u.plate); }
+// ขั้นตอนงานจากคิว (เจ้าหน้าที่ส่งงานจาก SSLS): stage เก็บที่ queue/{loc}/{id}/stage — งานเก่าที่รับแล้วแต่ไม่มี stage = 'accepted'; ยังไม่รับ = 'sent'
+// [stage, ป้ายสถานะ, ปุ่มขั้นถัดไป, ข้อความยืนยัน, stage ถัดไป]
+const QJ_STAGES = [
+  ['sent','รอรับงาน','รับงาน','ยืนยันรับงานนี้?','accepted'],
+  ['accepted','รับงานแล้ว','ผู้โดยสารขึ้นรถ','ยืนยันว่าผู้โดยสารขึ้นรถแล้ว?','boarded'],
+  ['boarded','ผู้โดยสารขึ้นรถแล้ว','เริ่มเดินทางไปส่ง','ยืนยันเริ่มเดินทางไปส่งผู้โดยสาร?','toDrop'],
+  ['toDrop','กำลังไปส่งผู้โดยสาร','ถึงจุดหมาย','ยืนยันว่าถึงจุดหมายแล้ว?','arrived'],
+  ['arrived','ถึงจุดหมายแล้ว','สรุปและกรอกค่าโดยสาร',null,null]
+];
+const QJ_STEP_LABELS = ['ส่งงาน','รับงาน','ขึ้นรถ','กำลังไปส่ง','ถึงจุดหมาย','ค่าโดยสาร','จบงาน'];
+const QJ_HINTS = {
+  sent:'เจ้าหน้าที่ส่งงานให้คุณ กดรับงานเพื่อเริ่ม',
+  accepted:'เมื่อผู้โดยสารขึ้นรถแล้ว กดปุ่มด้านล่าง',
+  boarded:'พร้อมออกเดินทาง กดปุ่มด้านล่างเพื่อเริ่มไปส่ง',
+  toDrop:'ถึงจุดหมายแล้วกดปุ่มด้านล่าง',
+  arrived:'ดูสรุปค่าโดยสาร กรอกค่าตามมิเตอร์และค่าทางด่วน แล้วกดยืนยันจบงาน จึงจะลงคิวครั้งถัดไปได้'
+};
+const qjStageKey = e => !e.acceptedAt ? 'sent' : (QJ_STAGES.some(x=>x[0]===e.stage) ? e.stage : 'accepted');
+const qjStageDef = e => QJ_STAGES.find(x=>x[0]===qjStageKey(e));
+// เลื่อนขั้นแบบ transaction: เลื่อนได้เฉพาะเมื่อยังอยู่ขั้นที่หน้าจอเห็น (กันกดซ้ำ/สองเครื่อง)
+async function advanceQjStage(e){
+  const def = qjStageDef(e), to = def[4]; if(!to) return false;
+  const ref = db.ref('queue/'+e.locKey+'/'+e.id), now = new Date().toISOString(), sv = firebase.database.ServerValue.TIMESTAMP; // stageTimes ใช้เวลาเซิร์ฟเวอร์ (ไม่ขึ้นกับนาฬิกาเครื่องคนขับ)
+  try{
+    if(def[0]==='sent'){ await ref.update({acceptedAt:now, stage:'accepted', ['stageTimes/accepted']:sv}); return true; }
+    const r = await ref.child('stage').transaction(cur=> (cur||'accepted')===def[0] ? to : undefined);
+    if(!r.committed){ appAlert('สถานะงานเปลี่ยนไปแล้ว'); return false; }
+    await ref.update({['stageTimes/'+to]:sv}).catch(()=>{});
+    return true;
+  }catch(err){ appAlert('บันทึกสถานะไม่สำเร็จ: '+err.message); return false; }
+}
 function myOpenJobs(){
   return Object.entries(queueData).flatMap(([locKey,arr])=>
     arr.filter(e=>e.status==='done' && e.jobStatus==='open' && isMyEntry(e)).map(e=>({...e, locKey})));
@@ -1199,12 +1322,17 @@ function blockedReason(){
   return '';
 }
 // ประวัติงานจากคิว → แสดงเป็นใบสรุปค่าเดินทาง (แบบเดียวกับงานจอง)
+// ใบงานจากคิวไม่มีข้อมูลใน CABB — ใช้ข้อมูลจากใบงานคิว (jobs/{id}): จุดบริการ, หน้างาน, สถานะชำระ (ไม่มีช่องทางชำระเงินในระบบคิว)
+function queueInvoiceInfo(job, loc){
+  return { channel: job.locName || (loc ? loc.name : '') || 'คิวสนามบิน', bookingTypeLabel:'งานสนามบิน', airport:true, payLabel:'สถานะการชำระเงิน', payChannel: job.paid ? 'ชำระแล้ว' : 'รอชำระ' };
+}
 async function openQueueReceipt(e){
   const job = await fetchJobDetail(e.jobId) || {};
   const loc = LOCS[e.locKey];
   const fare = e.meterFare != null ? Number(e.meterFare) : Number(job.price||0);
+  const tollFare = Number(e.tollFare)||0, airportFee = Number(e.airportFee)||0, grand = Number(e.totalFare)>0 ? Number(e.totalFare) : fare + tollFare + airportFee;
   openFare({ id:e.id, code:e.jobCode||job.code, pName:job.pName, pPhone:job.pPhone, pCount:job.pCount, date:job.date, time:job.time,
-    pickup:job.pickup||(loc?loc.name:''), dropoff:job.dropoff, source:(LOCS[e.locKey]?LOCS[e.locKey].name:e.locKey), jobType:job.jobType, meterFare:fare, totalFare:fare }, true, {fee:0});
+    pickup:job.pickup||(loc?loc.name:''), dropoff:job.dropoff, source:(LOCS[e.locKey]?LOCS[e.locKey].name:e.locKey), jobType:job.jobType, meterFare:fare, tollFare, airportFee, totalFare:grand, ...queueInvoiceInfo(job, loc) }, true, {fee:0});
 }
 // ข้อมูลการเดินทางของงานจากคิว (อ่านจาก jobs/{jobId}) แสดงในการ์ดงานที่กำลังรับอยู่ — แคชไว้กันอ่านซ้ำทุกครั้งที่วาดใหม่
 const jobInfoCache = {};
@@ -1230,8 +1358,8 @@ async function fillJobInfo(e){
 }
 async function finishQueueJob(e){
   const job = await fetchJobDetail(e.jobId) || {};
-  const b = { id:e.id, code:e.jobCode||job.code, pName:job.pName, pPhone:job.pPhone, pCount:job.pCount, date:job.date, time:job.time, pickup:job.pickup, dropoff:job.dropoff, source:(LOCS[e.locKey]?LOCS[e.locKey].name:e.locKey) };
-  openFare(b, false, { fee:0, save:(m)=> db.ref('queue/'+e.locKey+'/'+e.id).update({jobStatus:'closed', meterFare:m, finishedAt:new Date().toISOString()}) });
+  const b = { id:e.id, code:e.jobCode||job.code, pName:job.pName, pPhone:job.pPhone, pCount:job.pCount, date:job.date, time:job.time, pickup:job.pickup, dropoff:job.dropoff, source:(LOCS[e.locKey]?LOCS[e.locKey].name:e.locKey), ...queueInvoiceInfo(job, LOCS[e.locKey]) };
+  openFare(b, false, { fee:0, save:(m, total, x)=> db.ref('queue/'+e.locKey+'/'+e.id).update({jobStatus:'closed', stage:'done', meterFare:m, tollFare:(x&&x.tollFare)||0, airportFee:(x&&x.airportFee)||0, totalFare:total, finishedAt:new Date().toISOString()}) });
 }
 
 // ===== ภาพรวม =====
@@ -1263,18 +1391,20 @@ function renderDash(){
   const selTxt = k => { const [y,m] = k.split('-'); return TH_MF[+m-1]+' '+y; };
   loadPrices(mo);
   $('headerExtra').innerHTML = `<div class="glass-row">
-      <div class="glass"><div class="lbl">รายได้รวมวันนี้</div><div class="val">${bahtU(DEMO_MODE ? DEMO_AMT : sumPrice(td))}</div></div>
-      <div class="glass"><div class="lbl">ทริปวันนี้</div><div class="val">${td.length}<small>ทริป</small></div></div>
-    </div>${myPlateHtml()}${DEMO_MODE ? '<div style="margin-top:8px;text-align:center;font-size:10.5px;font-weight:800;color:#e0a030;">● โหมดตัวอย่าง — ตัวเลขรายได้ไม่ใช่ข้อมูลจริง</div>' : ''}`;
+      <div class="glass"><span class="gi" aria-hidden="true">฿</span><div class="gt"><div class="lbl">รายได้รวมวันนี้</div><div class="val">${bahtU(DEMO_MODE ? DEMO_AMT : sumPrice(td))}</div></div></div>
+      <div class="glass"><span class="gi t" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16V11l1.6-4.2A2 2 0 0 1 8.5 5.5h7a2 2 0 0 1 1.9 1.3L19 11v5"/><path d="M3.5 16h17v2.5h-17z"/><circle cx="7.5" cy="18.5" r="1.3"/><circle cx="16.5" cy="18.5" r="1.3"/><path d="M5 11h14"/></svg></span><div class="gt"><div class="lbl">ทริปวันนี้</div><div class="val">${td.length}<small>ทริป</small></div></div></div>
+    </div>${DEMO_MODE ? '<div style="margin-top:8px;text-align:center;font-size:10.5px;font-weight:800;color:#e0a030;">● โหมดตัวอย่าง — ตัวเลขรายได้ไม่ใช่ข้อมูลจริง</div>' : ''}`;
+  const moSum = DEMO_MODE ? DEMO_AMT : sumPrice(mo), moAvg = mo.length ? Math.round(moSum / mo.length) : 0;
   $('dashMonth').innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
-      <div><div style="font-size:22px;font-weight:800;">สรุปประจำเดือน</div></div>
-      <label class="mo-sel" style="flex:0 0 auto;margin-top:2px;"><select id="dashMonthSelect" aria-label="เลือกเดือน">${monthsAll.map(k=>`<option value="${k}"${k===dashMonthSel?' selected':''}>${esc(selTxt(k))}${k===curYm?' (เดือนนี้)':''}</option>`).join('')}</select></label>
+    <div class="mc-head">
+      <div class="mc-t"><span class="mc-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></span><div class="mc-tx"><div class="mc-ttl">สรุปประจำเดือน</div><div class="mc-sub">${esc(selTxt(dashMonthSel))}${isCur?' · เดือนนี้':''}</div></div></div>
+      <label class="mo-sel" style="flex:0 0 auto;"><select id="dashMonthSelect" aria-label="เลือกเดือน">${monthsAll.map(k=>`<option value="${k}"${k===dashMonthSel?' selected':''}>${esc(selTxt(k))}${k===curYm?' (เดือนนี้)':''}</option>`).join('')}</select></label>
     </div>
-    <div style="display:flex;gap:12px;margin-top:16px;">
-      <div class="mini-box"><div class="lbl">${isCur?'รายได้เดือนนี้':'รายได้รวม'}</div><div class="val">${bahtU(DEMO_MODE ? DEMO_AMT : sumPrice(mo))}</div></div>
-      <div class="mini-box t"><div class="lbl">${isCur?'ทริปเดือนนี้':'ทริปรวม'}</div><div class="val">${mo.length}<small>ทริป</small></div></div>
-    </div>`;
+    <div class="mc-stats">
+      <div class="mc-tile inc"><span class="mc-gi" aria-hidden="true">฿</span><div><div class="lbl">${isCur?'รายได้เดือนนี้':'รายได้รวม'}</div><div class="val">${bahtU(moSum)}</div></div></div>
+      <div class="mc-tile trip"><span class="mc-gi t" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16V11l1.6-4.2A2 2 0 0 1 8.5 5.5h7a2 2 0 0 1 1.9 1.3L19 11v5"/><path d="M3.5 16h17v2.5h-17z"/><circle cx="7.5" cy="18.5" r="1.3"/><circle cx="16.5" cy="18.5" r="1.3"/><path d="M5 11h14"/></svg></span><div><div class="lbl">${isCur?'ทริปเดือนนี้':'ทริปรวม'}</div><div class="val">${mo.length}<small>ทริป</small></div></div></div>
+    </div>
+    ${mo.length ? `<div class="mc-foot">เฉลี่ยต่อทริป <b>${bahtU(moAvg)}</b></div>` : ''}`;
   $('dashMonthSelect').addEventListener('change', e=>{ dashMonthSel = e.target.value; renderDash(); });
   const mine = Object.entries(queueData).flatMap(([k,a])=>a.map(e=>({...e, locKey:k})))
     .find(e=>e.vehicleId===driverCurrentUser.vehicleId && ['waiting','standby','active'].includes(e.status));
@@ -1282,15 +1412,18 @@ function renderDash(){
   // งานที่กำลังรับอยู่: งานคิวที่ยังไม่จบ + งานจองที่กดรับแล้วและยังไม่จบ (เรียงตามวัน-เวลา)
   const curBk = bookings.filter(b=>b.status==='accepted').sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')) || String(a.time||'').localeCompare(String(b.time||'')));
   let html = '';
+  renderHomeBoxes(); // 2 กล่องใต้ "สรุปประจำเดือน": ประกาศ / แจ้งเตือน PM&CM
   if(oj.length){
-    const e0 = oj[0], accepted = !!e0.acceptedAt; // acceptedAt = คนขับกดรับแล้ว (ฟิลด์เพิ่ม — jobStatus ยังเป็น 'open' เพื่อไม่กระทบปุ่มปลดล็อกฝั่งเจ้าหน้าที่)
+    const e0 = oj[0], def = qjStageDef(e0), sIdx = QJ_STAGES.findIndex(x=>x[0]===def[0]) ; // 0..4 → จุดที่ 0..4 ของ 7 ขั้น
+    const dots = QJ_STEP_LABELS.map((_,i)=>`<span class="${i<sIdx?'done':i===sIdx?'now':''}"></span>`).join('<i></i>');
     html += `<div class="run-card bkrun qjob">
-        <div class="top"><h2>${accepted ? 'งานที่กำลังรับอยู่' : 'งานใหม่จากจุดบริการ'}</h2><span class="pill">${accepted ? 'กำลังไปส่งผู้โดยสาร' : 'รอรับงาน'}</span></div>
-        <div class="qj-steps"><span class="done">รับงาน</span><i></i><span class="${accepted?'now':''}">ไปส่งผู้โดยสาร</span><i></i><span>จบงาน</span></div>
+        <div class="top"><h2>${sIdx>=1 ? 'งานที่กำลังรับอยู่' : 'งานใหม่จากจุดบริการ'}</h2><span class="pill">${esc(def[1])}</span></div>
+        <div class="qj-prog">${dots}</div>
+        <div class="qj-cur">ขั้นที่ ${sIdx+1}/${QJ_STEP_LABELS.length} · ${esc(QJ_STEP_LABELS[sIdx])}</div>
         <div class="bkr-head"><div class="bkr-code"><small>เลขงาน · คิวสนามบิน</small><b>${esc(e0.jobCode||'-')}</b></div><div class="bkr-time"><small>เวลารับ</small><b id="qjTime">--:--</b></div></div>
         <div id="dashJobInfo"></div>
-        <div class="qj-hint">${accepted ? 'ถึงจุดหมายแล้วกดจบงาน และกรอกค่าโดยสารตามมิเตอร์ จึงจะลงคิวครั้งถัดไปได้' : 'เจ้าหน้าที่ส่งงานให้คุณ กดรับงานเพื่อเริ่มเดินทาง'}${oj.length>1 ? ` (ค้างอยู่ ${oj.length} งาน)` : ''}</div>
-        <button class="btn btn-green" id="${accepted ? 'dashFinishBtn' : 'dashAcceptBtn'}">${accepted ? 'กดจบงาน' : 'รับงาน'}</button>
+        <div class="qj-hint">${esc(QJ_HINTS[def[0]]||'')}${oj.length>1 ? ` (ค้างอยู่ ${oj.length} งาน)` : ''}</div>
+        <button class="btn btn-green" id="qjNextBtn">${esc(def[2])}</button>
       </div>`;
   }
   curBk.slice(0,3).forEach(b=>{
@@ -1306,8 +1439,11 @@ function renderDash(){
   });
   $('dashQueue').innerHTML = html; // ไม่มีงานที่กำลังรับอยู่ = ว่าง
   if(oj.length) fillJobInfo(oj[0]);
-  if($('dashAcceptBtn')) $('dashAcceptBtn').addEventListener('click', async ()=>{ if(await appConfirm('ยืนยันรับงานนี้? หลังรับสถานะจะเป็น กำลังไปส่งผู้โดยสาร')){ try{ await db.ref('queue/'+oj[0].locKey+'/'+oj[0].id).update({acceptedAt:new Date().toISOString()}); }catch(err){ appAlert('บันทึกไม่สำเร็จ: '+err.message); } } });
-  if($('dashFinishBtn')) $('dashFinishBtn').addEventListener('click', async ()=>{ if(await appConfirm('ยืนยันจบงานนี้? ต่อไปจะให้กรอกค่าโดยสารตามมิเตอร์')) finishQueueJob(oj[0]); });
+  if($('qjNextBtn')) $('qjNextBtn').addEventListener('click', async ()=>{
+    const e = oj[0], def = qjStageDef(e);
+    if(def[0]==='arrived'){ finishQueueJob(e); return; } // สรุปค่าโดยสาร + กรอกค่าตามมิเตอร์/ทางด่วน + ยืนยันจบงาน
+    if(await appConfirm(def[3])) await advanceQjStage(e);
+  });
   $('dashQueue').querySelectorAll('.dash-bk-btn').forEach(x=>x.addEventListener('click', ()=>{ openBookingId = x.dataset.bk; showScreen('bookingDetail'); }));
 }
 
@@ -1583,8 +1719,8 @@ function renderQueueScreen(){
     li.innerHTML = `<div style="display:flex;align-items:center;gap:10px;min-width:0;">
         <div style="width:26px;height:26px;border-radius:50%;background:${isMe?'var(--blue)':'#eef1f5'};color:${isMe?'#fff':'var(--sub)'};font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:0 0 auto;">${i+1}</div>
         <div style="min-width:0;">
-          <div>${code}${isMe?' (คุณ)':''} · ${e.plate||'-'}</div>
-          <div style="color:var(--sub);font-size:11px;margin-top:1px;">${e.driverName||'-'}</div>
+          <div>${esc(code)}${isMe?' (คุณ)':''} · ${esc(e.plate||'-')}</div>
+          <div style="color:var(--sub);font-size:11px;margin-top:1px;">${esc(e.driverName||'-')}</div>
         </div>
       </div>
       <span style="color:var(--sub);flex:0 0 auto;">เข้าคิว ${t}</span>`;
@@ -1665,7 +1801,7 @@ function renderHistory(){
   list.forEach(e=>{
     const loc = e.isBooking ? null : LOCS[e.locKey];
     const timeOnly = new Date(e.doneAt).toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
-    const p = e.meterFare != null ? e.meterFare : jobPrice[e.jobId];
+    const p = Number(e.totalFare) > 0 ? Number(e.totalFare) : (e.meterFare != null ? e.meterFare : jobPrice[e.jobId]);
     const div = document.createElement('div');
     div.className = 'row-card hist-card';
     div.innerHTML = `<div class="hist-ic">${e.isBooking ? '📅' : esc(loc ? loc.icon : '📍')}</div>
@@ -1713,12 +1849,12 @@ function jobDetailBodyHtml(job){
       <div style="display:flex;align-items:center;gap:8px;">
         <div style="flex:1;min-width:0;">
           <div class="muted" style="font-size:9.3px;">จุดรับ</div>
-          <div style="font-weight:700;font-size:11.5px;word-break:break-word;">${job.pickup || '-'}</div>
+          <div style="font-weight:700;font-size:11.5px;word-break:break-word;">${esc(job.pickup || '-')}</div>
         </div>
         <div style="color:var(--blue);font-size:14px;flex:0 0 auto;">→</div>
         <div style="flex:1;min-width:0;text-align:right;">
           <div class="muted" style="font-size:9.3px;">จุดส่ง</div>
-          <div style="font-weight:700;font-size:11.5px;word-break:break-word;">${job.dropoff || '-'}</div>
+          <div style="font-weight:700;font-size:11.5px;word-break:break-word;">${esc(job.dropoff || '-')}</div>
         </div>
       </div>
     </div>
@@ -1758,8 +1894,264 @@ document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && $('jobDetailM
 //   driverUsername, status:'pending'|'accepted'|'declined' } — ฝั่งเจ้าหน้าที่ยังไม่มีหน้าสร้าง ต้องเขียนข้อมูลตามนี้
 const BK_ST = { pending:['รอรับงาน','gold'], accepted:['รับงานจองแล้ว','green'], declined:['ยกเลิกแล้ว','red'], done:['จบงาน','green'] };
 let bookings = [], bookingsRef = null, bookingsSeen = null, bookingDate = null, openBookingId = null;
+// ===== แจ้งเตือนนัดนำรถเข้า PM&CM ล่วงหน้า 3 วัน =====
+// ข้อมูลจากระบบ Taxi Fleet (ปฏิทินนำรถเข้า PM&CM) — เจ้าหน้าที่ซิงก์เข้า pmNotices/{ทะเบียน}/{เลขใบแจ้งซ่อม} (ไม่มีชื่อ/เบอร์/ข้อมูลส่วนบุคคล) แอปนี้อ่านเฉพาะทะเบียนของตัวเอง
+const PM_NOTICE_DAYS = 3;
+let pmData = [], pmRef = null, pmRefKey = '';
+const pmPlateKey = () => { const u = driverCurrentUser; if(!u) return ''; const v = (vehicles||[]).find(x=>x.id===u.vehicleId); return String(u.plate || (v?v.plate:'') || '').replace(/[\s.#$\[\]\/]/g,'').toLowerCase(); };
+function startPm(){
+  stopPm(); const k = pmPlateKey(); if(!k) return;
+  pmRefKey = k; pmRef = db.ref('pmNotices/'+k);
+  startPmFleet();
+  pmRef.on('value', snap=>{ pmData = Object.entries(snap.val()||{}).map(([id,v])=>({id, ...v})); pmNotify(); renderPmAll(); }, ()=>{ pmData = []; renderPmAll(); });
+}
+function stopPm(){ if(pmRef){ try{ pmRef.off(); }catch(e){} pmRef = null; } pmFleetOff(); pmData = []; pmDirect = []; pmHist = []; pmDirectOk = false; pmSeen.clear(); }
+// ===== เรียลไทม์ตรงจาก Taxi Fleet (ไม่ต้องรอเจ้าหน้าที่ซิงก์) =====
+// ฟัง repairRequests + garages ของ Fleet ผ่านแอป Firebase ตัวที่สอง คัดเฉพาะทะเบียนตัวเองไว้ในเครื่อง · ถ้าอ่านไม่ได้จะใช้ pmNotices (ที่เจ้าหน้าที่ซิงก์) แทน
+// ข้อแลกเปลี่ยน: เครื่องคนขับดาวน์โหลด repairRequests ทั้งก้อนทุกครั้งที่ Fleet เปลี่ยน แล้วคัดเอง — ถ้าไม่ต้องการ ตั้ง PM_DIRECT=false
+const PM_DIRECT = true, FLEET_DB_URL = 'https://taxi-fleet-management-123c1-default-rtdb.asia-southeast1.firebasedatabase.app', FLEET_ROOT = 'taxi-fleet-management-123c1';
+let pmDirect = [], pmHist = [], pmDirectOk = false, pmFleetRefs = [], pmFleetVals = {};
+function pmFleetOff(){ pmFleetRefs.forEach(r=>{ try{ r.off(); }catch(e){} }); pmFleetRefs = []; pmFleetVals = {}; }
+function pmIso(d){
+  const t = String(d||'').trim(); if(/^\d{4}-\d{2}-\d{2}/.test(t)) return t.slice(0,10);
+  const m = t.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/); if(!m) return '';
+  let y = +m[3]; if(y > 2400) y -= 543; return y+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[1]).padStart(2,'0');
+}
+function pmToArr(v){
+  if(typeof v === 'string'){ try{ v = JSON.parse(v); }catch(e){ return []; } }
+  if(Array.isArray(v)) return v.filter(x=>x && typeof x==='object');
+  if(v && typeof v === 'object'){ const e = Object.entries(v); if(e.length===1 && typeof e[0][1]==='string'){ try{ const j = JSON.parse(e[0][1]); return Array.isArray(j) ? j.filter(x=>x&&typeof x==='object') : []; }catch(x){ return []; } }
+    return e.map(([k,x])=>{ if(typeof x==='string'){ try{ x = JSON.parse(x); }catch(err){ return null; } } return x && typeof x==='object' ? (x.id==null ? Object.assign({}, x, {id:k}) : x) : null; }).filter(Boolean); }
+  return [];
+}
+function pmFleetCompute(){
+  const key = pmRefKey; if(!key || pmFleetVals.req === undefined || pmFleetVals.rep === undefined) return;
+  const gl = pmToArr(pmFleetVals.gar), out = [], doneIds = new Set(pmToArr(pmFleetVals.rep).map(x=>String(x.requestId))); // มีบันทึกผลการซ่อมแล้ว = เสร็จ ไม่แจ้งเตือน (ตรงกับปฏิทิน PM ของ Fleet)
+  pmToArr(pmFleetVals.req).forEach(r=>{
+    if(!(r.category==='PM/ซ่อมบำรุงตามแผน' || r.source==='pm' || String(r.problem||'').indexOf('[PM]')===0)) return;
+    if(doneIds.has(String(r.id))) return;
+    const plate = String(r.plate||'').trim(); if(plate.replace(/[\s.#$\[\]\/]/g,'').toLowerCase() !== key) return;
+    const date = pmIso(r.sendToRepairDate) || pmIso(r.date); if(!date) return;
+    const garage = r.garageName || (gl.find(x=>String(x.id)===String(r.garage) || x.name===r.garage)||{}).name || r.branch || '';
+    out.push({ id:String(r.id!=null?r.id:(r.docNo||out.length)).replace(/[.#$\[\]\/]/g,'_'), plate, date, time:String(r.sendToRepairTime||r.time||'').slice(0,5), garage:String(garage).slice(0,120),
+      items:String(r.pmScheduleNames || String(r.problem||'').replace(/^\[PM\]\s*/,'').replace(/\s*—\s*.*$/,'')).slice(0,200), status:String(r.status||'pending'), docNo:String(r.docNo||''),
+      resendAt:String(r.resendAt||''), urgency:String(r.urgency||''), dueDate:pmIso(r.pmDueDate)||'', dueKm:Number(r.pmDueKm)||0, currentKm:Number(r.pmCurrentKm||r.mileage)||0, note:String(r.note||'').slice(0,300) });
+  });
+  // ประวัติการเข้าซ่อมของทะเบียนนี้ (ใบที่บันทึกผลการซ่อมแล้ว) — เฉพาะข้อมูลที่ไม่ใช่ส่วนตัว: วันที่ อู่ รายการ เลขที่ใบ เลขไมล์ (ไม่รวมค่าใช้จ่าย)
+  const reps = {}; pmToArr(pmFleetVals.rep).forEach(x=>{ reps[String(x.requestId)] = x; });
+  const hist = [];
+  pmToArr(pmFleetVals.req).forEach(r=>{
+    if(String(r.plate||'').replace(/[\s.#$\[\]\/]/g,'').toLowerCase() !== key) return;
+    const rp = reps[String(r.id)]; if(!rp || r.status==='cancelled') return;
+    const isPm = r.category==='PM/ซ่อมบำรุงตามแผน' || r.source==='pm' || String(r.problem||'').indexOf('[PM]')===0;
+    hist.push({ id:String(r.id), kind:isPm?'PM':'CM', date:pmIso(rp.endDate) || pmIso(r.repairDoneDate) || pmIso(r.sendToRepairDate) || pmIso(r.date),
+      garage:String(rp.garage || r.garageName || '').slice(0,120), docNo:String(r.docNo||rp.docNo||''), km:Number(rp.endKm)||0,
+      startDate:pmIso(rp.startDate)||pmIso(r.sendToRepairDate)||'', startTime:String(r.sendToRepairTime||'').slice(0,5), endTime:String(rp.endTime||'').slice(0,5), note:String(rp.note||'').slice(0,400), detail:String(rp.detail||'').slice(0,600), parts:(Array.isArray(rp.parts)?rp.parts:[]).map(x=>String(x).slice(0,80)).slice(0,30),
+      items:String(r.pmScheduleNames || String(r.problem||'').replace(/^\[PM\]\s*/,'').replace(/\s*—\s*.*$/,'')).slice(0,200) });
+  });
+  hist.sort((a,b)=>String(b.date).localeCompare(String(a.date))); pmHist = hist.slice(0,30);
+  pmDirect = out; pmDirectOk = true; pmNotify(); renderPmAll();
+}
+function startPmFleet(){
+  if(!PM_DIRECT) return;
+  try{
+    let app; try{ app = firebase.app('fleet'); }catch(e){ app = firebase.initializeApp({databaseURL: FLEET_DB_URL}, 'fleet'); }
+    const fdb = app.database(), bad = ()=>{ pmDirectOk = false; renderPmAll(); };
+    const r1 = fdb.ref(FLEET_ROOT+'/repairRequests'), r2 = fdb.ref(FLEET_ROOT+'/garages');
+    r1.on('value', snap=>{ pmFleetVals.req = snap.val(); if(pmFleetVals.req === null){ bad(); return; } pmFleetCompute(); }, bad);
+    r2.on('value', snap=>{ pmFleetVals.gar = snap.val(); pmFleetCompute(); }, ()=>{});
+    const r3 = fdb.ref(FLEET_ROOT+'/repairs');
+    r3.on('value', snap=>{ pmFleetVals.rep = snap.val() || []; pmFleetCompute(); }, bad);
+    pmFleetRefs = [r1, r2, r3];
+  }catch(e){ pmDirectOk = false; }
+}
+// log การเปิดอ่าน: pmReadLogs/{ทะเบียน}/{เลขใบแจ้งซ่อม}/{username} = {firstReadAt,lastReadAt,count,source,notifiedAt,...} (เวลาจากนาฬิกาเครื่องคนขับ)
+const pmSeen = new Set();
+function pmLogRef(x){ const u = driverCurrentUser; return (u && pmRefKey) ? db.ref('pmReadLogs/'+pmRefKey+'/'+String(x.id).replace(/[.$#\[\]\/]/g,'_')+'/'+String(u.username).replace(/[.$#\[\]\/]/g,'_')) : null; }
+function pmLogEvent(x, fields, countRead){
+  try{
+    const r = pmLogRef(x); if(!r) return; const u = driverCurrentUser, now = new Date().toISOString();
+    r.transaction(cur=>{ cur = cur || {};
+      const o = Object.assign({}, cur, { username:u.username, name:u.fullName||'', plate:x.plate||u.plate||'', noticeDate:x.date, noticeTime:x.time||'', garage:x.garage||'' }, fields);
+      if(countRead){ o.firstReadAt = cur.firstReadAt || now; o.lastReadAt = now; o.count = (cur.count||0)+1; }
+      return o; }).catch(()=>{});
+  }catch(e){}
+}
+// ประวัติแบบต่อท้าย (append-only): pmReadEvents/{ทะเบียน}/{pushId} = {username,name,noticeId,action,source,at} ใช้ดูว่าใครเปิดอะไรเมื่อไรย้อนหลังได้ทุกครั้ง
+function pmEvent(action, src, x){
+  try{ const u = driverCurrentUser; if(!u || !pmRefKey) return;
+    db.ref('pmReadEvents/'+pmRefKey).push({ username:u.username, name:u.fullName||'', action, source:src||'', noticeId:x?String(x.id):'', noticeDate:x?x.date:'', noticeTime:x?(x.time||''):'', at:new Date().toISOString() }).catch(()=>{});
+  }catch(e){}
+}
+function pmLogRead(src){ pmView().forEach(x=>{ const k = x.id+'|'+x.date; if(pmSeen.has(k)) return; pmSeen.add(k); pmLogEvent(x, {source:src, daysLeft:x.diff}, true); pmEvent('open', src, x); }); }
+function pmDiffDays(date){ const t = bkkNow().today, a = Date.parse(date+'T00:00:00Z'), b = Date.parse(t+'T00:00:00Z'); return isNaN(a) ? NaN : Math.round((a-b)/86400000); }
+function pmView(){
+  return (pmDirectOk ? pmDirect : pmData).filter(x=>x && x.date && /^(pending|inprogress|approved)$/i.test(String(x.status||'pending').trim()))
+    .map(x=>Object.assign({}, x, {diff:pmDiffDays(x.date), resendAt: x.resendAt || ((pmData.find(d=>String(d.id)===String(x.id))||{}).resendAt) || ''})) // โหมด Fleet ตรง: resendAt ยังอ่านจาก pmNotices.filter(x=>x.diff>=0 && x.diff<=PM_NOTICE_DAYS)
+    .sort((a,b)=> (a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
+}
+const pmWhen = d => d.diff===0 ? 'วันนี้' : d.diff===1 ? 'พรุ่งนี้' : `อีก ${d.diff} วัน`;
+function pmNotify(){ // เตือนครั้งเดียวต่อรายการ ตอนเข้าช่วง 3 วัน (เด้งแจ้งเตือน + ระฆัง)
+  if(!driverCurrentUser) return;
+  pmView().forEach(x=>{
+    const k = `pmn:${driverCurrentUser.username}:${x.id}:${x.date}:${x.resendAt||''}`;   // resendAt = เจ้าหน้าที่กด "ส่งแจ้งเตือนซ้ำ" จากระบบหลังบ้าน → key เปลี่ยน จึงเด้งแจ้งเตือนอีกครั้ง
+    try{ if(localStorage.getItem(k)) return; localStorage.setItem(k,'1'); }catch(e){}
+    pmLogEvent(x, {notifiedAt:new Date().toISOString()}, false);
+    notifyDriver('นัดนำรถเข้า PM&CM', `${pmWhen(x)} ${fmtDate(parseYmd(x.date))} ${x.time||''}${x.garage?' · '+x.garage:''}`, 'pm');
+  });
+}
+function pmItemsHtml(list){
+  return list.map(x=>`<div class="pm-item go ${x.diff<=1?'t':''}" data-pmid="${esc(x.id)}" role="button" tabindex="0"><div class="pm-top"><span class="pm-when">${esc(pmWhen(x))} · ${esc(fmtDate(parseYmd(x.date)))}</span><span class="pm-time">${esc(x.time||'--:--')} น.</span></div>
+    <div class="pm-row"><small>ทะเบียน</small><b>${esc(x.plate||'-')}</b></div>
+    <div class="pm-row"><small>เรื่อง</small><b>${esc(x.items||'-')}</b></div>
+    <div class="pm-row"><small>ศูนย์บริการ</small><b>${esc(x.garage||'ยังไม่ระบุ')}</b></div>
+    <div class="pm-row"><small>สถานะ</small><b><span class="pm-st ${esc(String(x.status||'pending').toLowerCase())}">${esc(PM_ST[String(x.status||'').toLowerCase()] || 'รอดำเนินการ')}</span></b></div><div class="pm-more">ดูรายละเอียด ›</div></div>`).join('');
+}
+function renderPmCard(){
+  const el = $('profPm'); if(!el) return; const list = pmView();
+  el.innerHTML = `<h3>แจ้งเตือนนำรถเข้า PM&amp;CM${list.length?`<span class="pm-badge">${list.length}</span>`:''}</h3>`;
+  makeCollapsible(el,'pm'); renderPmModalBody();
+}
+function pmModalEl(){
+  let m = $('pmModal');
+  if(!m){
+    m = document.createElement('div'); m.id = 'pmModal';
+    m.innerHTML = '<div class="pm-box"><div class="pm-hd"><h3>นัดนำรถเข้า PM&amp;CM</h3><button type="button" class="pm-x" aria-label="ปิด">×</button></div><div class="pm-bd" id="pmModalBody"></div></div>';
+    ($('deviceFrame') || document.body).appendChild(m);
+    m.addEventListener('mousedown', e=>{ if(e.target === m) closePmModal(); });
+    m.querySelector('.pm-x').addEventListener('click', closePmModal);
+    document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closePmModal(); });
+  }
+  return m;
+}
+document.addEventListener('click', e=>{
+  const tb = e.target.closest('#pmModalBody .pm-tab'); if(tb){ pmTab = tb.dataset.pmtab; renderPmModalBody(); return; }
+  if(e.target.closest('#pmBack')){ pmDetailId = null; renderPmModalBody(); return; }
+  const hi = e.target.closest('#pmModalBody .pm-h[data-hid]'); if(hi){ pmDetailId = 'h:'+hi.dataset.hid; renderPmModalBody(); return; }
+  const it = e.target.closest('#pmModalBody .pm-item[data-pmid]'); if(!it) return;
+  pmDetailId = it.dataset.pmid; const x = pmView().find(v=>String(v.id)===String(pmDetailId));
+  if(x){ pmLogEvent(x, {lastDetailAt:new Date().toISOString()}, false); pmEvent('detail', pmModalSrc, x); }
+  renderPmModalBody();
+});
+function closePmModal(){ const m = $('pmModal'); if(m) m.classList.remove('on'); pmSeen.clear(); pmDetailId = null; pmTab = 'upcoming'; }
+let pmDetailId = null;
+const PM_ST = {pending:'รอดำเนินการ', inprogress:'อยู่ในขั้นตอนดำเนินการ', approved:'อนุมัติแล้ว', done:'เสร็จสิ้น'};
+let pmTab = 'upcoming';
+function pmHistDetailHtml(h){
+  const row = (k, v) => `<div><small>${k}</small>${v}</div>`;
+  return `<button type="button" class="pm-back" id="pmBack">‹ กลับ</button>
+    <div class="pm-h" style="margin-top:0;"><div class="pm-dh" style="color:#0a8a54;margin-bottom:6px;">✓ เสร็จสิ้น · ${esc(h.kind==='PM'?'PM':'CM')}</div>
+    <div class="pm-dl" style="margin-top:0;">
+      ${row('เรื่อง', `<b>${esc(h.items||'-')}</b>`)}
+      ${h.docNo ? row('เลขที่ใบแจ้งซ่อม', `<b>${esc(h.docNo)}</b>`) : ''}
+      ${row('วันที่/เวลาเริ่มซ่อม', `<b>${h.startDate?esc(fmtDate(parseYmd(h.startDate))):'-'}${h.startTime?' · '+esc(h.startTime)+' น.':''}</b>`)}
+      ${row('วันที่ซ่อมเสร็จ', `<b>${h.date?esc(fmtDate(parseYmd(h.date))):'-'}${h.endTime?' · '+esc(h.endTime)+' น.':''}</b>`)}
+      ${row('ศูนย์บริการ', `<b>${esc(h.garage||'ไม่ระบุ')}</b>`)}
+      ${h.km ? row('เลขไมล์ตอนซ่อมเสร็จ', `<b>${Number(h.km).toLocaleString('en-US')} กม.</b>`) : ''}
+      ${(h.detail || (h.parts && h.parts.length) || h.note) ? '<div class="pm-res-h">ผลการซ่อม</div>' : ''}
+      ${h.detail ? row('รายละเอียดการซ่อม', `<b style="font-weight:700;white-space:pre-wrap;">${esc(h.detail)}</b>`) : ''}
+      ${h.parts && h.parts.length ? row('อะไหล่/รายการที่เปลี่ยน', `<ul>${h.parts.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`) : ''}
+      ${h.note ? row('หมายเหตุ', `<b style="font-weight:700;white-space:pre-wrap;">${esc(h.note)}</b>`) : ''}
+    </div></div>`;
+}
+function pmDetailHtml(x){
+  const parts = String(x.items||'').split(/\s*(?:,(?!\d)|[،、;\n])\s*/).filter(Boolean);
+  return `<button type="button" class="pm-back" id="pmBack">‹ กลับ</button>
+    <div class="pm-item ${x.diff<=1?'t':''}" style="margin-top:0;"><div class="pm-when">${esc(pmWhen(x))} · ${esc(fmtDate(parseYmd(x.date)))}</div><div class="pm-dt">${esc(x.time||'--:--')} น.</div>
+    <div class="pm-dl">
+      <div><small>ทะเบียน</small><b>${esc(x.plate||'-')}</b></div>
+      <div><small>รายการที่ต้องทำ</small>${parts.length ? '<ul>'+parts.map(t=>`<li>${esc(t)}</li>`).join('')+'</ul>' : '<b>-</b>'}</div>
+      <div><small>ศูนย์บริการ</small><b>${esc(x.garage||'ยังไม่ระบุ')}</b></div>
+      ${x.urgency==='high' ? `<div><span class="pm-urg">เร่งด่วน</span></div>` : ''}
+      ${x.dueDate ? `<div><small>ครบกำหนด PM</small><b>${esc(fmtDate(parseYmd(x.dueDate)))}</b></div>` : ''}
+      ${x.dueKm ? `<div><small>ครบกำหนดที่เลขไมล์</small><b>${Number(x.dueKm).toLocaleString('en-US')} กม.</b></div>` : ''}
+      ${x.currentKm ? `<div><small>เลขไมล์ล่าสุด</small><b>${Number(x.currentKm).toLocaleString('en-US')} กม.</b></div>` : ''}
+      ${x.note ? `<div><small>หมายเหตุ</small><b style="font-weight:700;white-space:pre-wrap;">${esc(x.note)}</b></div>` : ''}
+      <div><small>สถานะ</small><b>${esc(PM_ST[String(x.status||'').toLowerCase()] || 'รอดำเนินการ')}</b></div>
+      ${x.docNo ? `<div><small>เลขที่ใบแจ้งซ่อม</small><b>${esc(x.docNo)}</b></div>` : ''}
+    </div></div>
+    <div class="pm-note">โปรดนำรถเข้าตามวันและเวลาที่นัด หากติดขัดให้ติดต่อเจ้าหน้าที่</div>`;
+}
+function openPmModal(src){ pmDetailId = null; pmSeen.clear();
+  try{ let ch = false; const t = new Date().toISOString(); notifs.forEach(n=>{ if(n.kind==='pm' && !n.read){ n.read = true; n.readAt = t; ch = true; } }); if(ch){ saveNotifs(); updateBell(); } }catch(e){} pmModalEl().classList.add('on'); pmModalSrc = src || 'profile'; renderPmModalBody(); }
+let pmModalSrc = 'profile';
+function renderPmModalBody(){
+  const m = $('pmModal'); if(!m || !m.classList.contains('on')) return;
+  const list = pmView();
+  if(pmDetailId != null && String(pmDetailId).indexOf('h:') === 0){
+    const hx = pmHist.find(h=>'h:'+h.id === String(pmDetailId));
+    if(hx){ $('pmModalBody').innerHTML = pmHistDetailHtml(hx); return; }
+    pmDetailId = null;
+  }
+  const dx = pmDetailId != null ? list.find(x=>String(x.id)===String(pmDetailId)) : null;
+  if(dx){ $('pmModalBody').innerHTML = pmDetailHtml(dx); pmLogRead(pmModalSrc); return; }
+  pmDetailId = null;
+  const tabs = pmDirectOk ? `<div class="pm-tabs"><button type="button" class="pm-tab ${pmTab==='upcoming'?'on':''}" data-pmtab="upcoming">นัดที่ใกล้ถึง${list.length?' ('+list.length+')':''}</button><button type="button" class="pm-tab ${pmTab==='history'?'on':''}" data-pmtab="history">ประวัติเข้าซ่อม</button></div>` : '';
+  if(pmDirectOk && pmTab === 'history'){
+    $('pmModalBody').innerHTML = tabs + (pmHist.length ? pmHist.map(h=>`<div class="pm-h go" data-hid="${esc(h.id)}" role="button" tabindex="0"><b>${esc(h.items||'-')}</b><small>${h.date?esc(fmtDate(parseYmd(h.date))):'-'} · ${esc(h.kind)} · ${esc(h.garage||'ไม่ระบุอู่')}${h.km?' · '+h.km.toLocaleString('en-US')+' กม.':''}${h.docNo?' · '+esc(h.docNo):''}</small><div class="pm-more">ดูรายละเอียด ›</div></div>`).join('') : '<div class="pm-empty">ยังไม่มีประวัติการเข้าซ่อม</div>') + '<div class="pm-note">แสดงใบที่เจ้าหน้าที่บันทึกผลการซ่อมแล้ว (ล่าสุด 30 รายการ)</div>';
+    return;
+  }
+  $('pmModalBody').innerHTML = tabs + (pmPlateKey() ? (list.length ? pmItemsHtml(list) : `<div class="pm-empty">ไม่มีนัดนำรถเข้า PM&amp;CM ภายใน ${PM_NOTICE_DAYS} วันข้างหน้า</div>`) : '<div class="pm-empty">บัญชีนี้ยังไม่ผูกทะเบียนรถ</div>') + `<div class="pm-note">ข้อมูลจากระบบ Taxi Fleet · อัปเดตเมื่อเจ้าหน้าที่ซิงก์ · แจ้งเตือนล่วงหน้า ${PM_NOTICE_DAYS} วัน</div>`;
+  pmLogRead(pmModalSrc);
+}
+function homeBoxesHtml(){
+  let seen = ''; try{ seen = localStorage.getItem(annSeenKey()) || ''; }catch(e){}
+  const unread = announcements.filter(x=> String(x.ts||'') > seen).length;
+  const latest = announcements.slice().sort((a,b)=> (b.pinned?1:0)-(a.pinned?1:0) || String(b.ts||'').localeCompare(String(a.ts||'')))[0];
+  const pl = pmView(), x = pl[0];
+  const chev = '<span class="hb-chev" aria-hidden="true">›</span>';
+  return `<div class="hb-grid">
+    <button type="button" class="hb" id="hbAnn"><span class="hb-ic">📣</span><span class="hb-tx"><span class="h">ประกาศ</span><span class="s">${latest ? esc(latest.title) : 'ยังไม่มีประกาศ'}</span></span>${unread?`<span class="hb-n">${unread}</span>`:chev}</button>
+    <button type="button" class="hb pm" id="pmHomeBtn"><span class="hb-ic">🔧</span><span class="hb-tx"><span class="h">นัด PM&amp;CM</span><span class="s">${x ? esc(pmWhen(x))+' · '+esc(fmtDate(parseYmd(x.date)).replace(/\s*\d{4}$/,''))+' '+esc(x.time||'') : 'ไม่มีนัดใน '+PM_NOTICE_DAYS+' วัน'}</span></span>${pl.length?`<span class="hb-n">${pl.length}</span>`:chev}</button>
+  </div>`;
+}
+// รูปในประกาศ (staff เก็บเป็น data URL JPEG ย่อแล้ว) — รับเฉพาะรูปแบบ data:image/jpeg;base64 ที่เป็น base64 ล้วน กันฝังสคริปต์/ลิงก์ภายนอก
+function annImgHtml(x){
+  const im = x && x.image;
+  if(typeof im !== 'string' || im.indexOf('data:image/jpeg;base64,') !== 0 || im.length > 400000 || !/^[A-Za-z0-9+\/=]+$/.test(im.slice(23))) return '';
+  return `<img class="an-img" src="${im}" alt="รูปประกาศ" loading="lazy">`;
+}
+document.addEventListener('click', e=>{
+  const im = e.target.closest('img.an-img'); if(!im) return;
+  const box = document.createElement('div'); box.id = 'annLight'; box.innerHTML = `<img src="${im.src}" alt="รูปประกาศ">`;
+  box.addEventListener('click', ()=>box.remove()); ($('deviceFrame') || document.body).appendChild(box);
+});
+function annModalEl(){
+  let m = $('annModal');
+  if(!m){
+    m = document.createElement('div'); m.id = 'annModal';
+    m.innerHTML = '<div class="pm-box"><div class="pm-hd"><h3>ประกาศจากบริษัท</h3><button type="button" class="pm-x" aria-label="ปิด">×</button></div><div class="pm-bd" id="annModalBody"></div></div>';
+    ($('deviceFrame') || document.body).appendChild(m);
+    m.addEventListener('mousedown', e=>{ if(e.target === m) closeAnnModal(); });
+    m.querySelector('.pm-x').addEventListener('click', closeAnnModal);
+    document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeAnnModal(); });
+  }
+  return m;
+}
+function closeAnnModal(){ const m = $('annModal'); if(m) m.classList.remove('on'); }
+function openAnnModal(){
+  annModalEl().classList.add('on');
+  const fmt = ts => { const d = new Date(ts); return isNaN(d) ? '' : `${d.getDate()} ${TH_M[d.getMonth()]} ${d.getFullYear()+543}`; };
+  const list = announcements.slice().sort((a,b)=> (b.pinned?1:0)-(a.pinned?1:0) || String(b.ts||'').localeCompare(String(a.ts||'')));
+  $('annModalBody').innerHTML = list.length ? list.map(x=>`<div class="an-item"><div class="t">${x.pinned?'<i>ปักหมุด</i>':''}${esc(x.title)}</div><div class="d">${esc(fmt(x.ts))}</div>${x.body?`<div class="b">${esc(x.body)}</div>`:''}${annImgHtml(x)}</div>`).join('') : '<div class="pm-empty">ยังไม่มีประกาศ</div>';
+  const newest = announcements.reduce((m,x)=> String(x.ts||'') > m ? String(x.ts) : m, ''); // เปิดดูแล้ว = ถือว่าอ่าน ตัวเลขใหม่หาย
+  if(newest){ try{ localStorage.setItem(annSeenKey(), newest); }catch(e){} }
+  renderHomeBoxes(); try{ renderAnn(); }catch(e){}
+}
+function renderHomeBoxes(){
+  const el = $('dashPm'); if(!el || !driverCurrentUser) return;
+  el.innerHTML = homeBoxesHtml();
+  $('hbAnn').onclick = openAnnModal;
+  $('pmHomeBtn').onclick = ()=>openPmModal('home');
+}
+function pmHomeHtml(){
+  const list = pmView(); if(!list.length) return '';
+  const x = list[0];
+  return `<button type="button" class="pm-home" id="pmHomeBtn"><span class="ic">🔧</span><span><b>นัดนำรถเข้า PM&amp;CM ${list.length>1?list.length+' รายการ':''}</b><small>${esc(pmWhen(x))} ${esc(fmtDate(parseYmd(x.date)))} ${esc(x.time||'')}${x.garage?' · '+esc(x.garage):''}</small></span></button>`;
+}
+function renderPmAll(){ try{ renderPmCard(); if(currentScreen==='home') renderDash(); }catch(e){} }
 function startBookings(){
-  stopBookings(); startPool();
+  stopBookings(); startPool(); startPm();
   bookingsRef = db.ref('bookings').orderByChild('driverUsername').equalTo(driverCurrentUser.username);
   bookingsRef.on('value', snap=>{
     const arr = Object.entries(snap.val()||{}).map(([id,b])=>({id, ...b}));
@@ -2126,16 +2518,15 @@ function renderAnn(){
   const unread = announcements.filter(x=> String(x.ts||'') > seen).length;
   const fmt = ts => { const d = new Date(ts); return isNaN(d) ? '' : `${d.getDate()} ${TH_M[d.getMonth()]} ${d.getFullYear()+543}`; };
   $('profAnn').innerHTML = `<h3>ประกาศ${unread && !openSecs.has('ann') ? `<span class="ann-n">${unread}</span>` : ''}</h3>` + (announcements.length
-    ? announcements.map(x=>`<div class="ann-item"><div class="t">${x.pinned ? '<i>ปักหมุด</i>' : ''}${esc(x.title)}</div><div class="d">${esc(fmt(x.ts))}</div>${x.body ? `<div class="b">${esc(x.body)}</div>` : ''}</div>`).join('')
+    ? announcements.map(x=>`<div class="ann-item"><div class="t">${x.pinned ? '<i>ปักหมุด</i>' : ''}${esc(x.title)}</div><div class="d">${esc(fmt(x.ts))}</div>${x.body ? `<div class="b">${esc(x.body)}</div>` : ''}${annImgHtml(x)}</div>`).join('')
     : '<div class="ann-item"><div class="b">ยังไม่มีประกาศ</div></div>');
   const rd = annReadSet(), unreadList = announcements.filter(x=>!rd.has(annRk(x))), top = unreadList.slice(0,2);
-  $('homeAnn').innerHTML = top.length ? `<div class="card home-ann"><div class="home-ann-h"><b>ประกาศจากบริษัท</b>${unread?`<span class="ann-n">${unread} ใหม่</span>`:''}</div>${top.map(x=>`<div class="ann-item"><div class="t">${x.pinned?'<i>ปักหมุด</i>':''}${esc(x.title)}${String(x.ts||'')>seen?'<span class="ann-new">ใหม่</span>':''}</div><div class="d">${esc(fmt(x.ts))}</div>${x.body?`<div class="b home-ann-b">${esc(x.body)}</div>`:''}<button class="ann-read" data-k="${esc(annRk(x))}" type="button">อ่านแล้ว ✓</button></div>`).join('')}<button class="home-ann-all" id="homeAnnAll" type="button">ดูประกาศทั้งหมด${announcements.length>2?' ('+announcements.length+')':''} ›</button></div>` : '';
+  $('homeAnn').innerHTML = ''; renderHomeBoxes(); // ประกาศบนหน้าแรกย้ายไปเป็นกล่องใต้สรุปประจำเดือน
   document.querySelectorAll('#homeAnn .ann-read').forEach(b=>b.onclick=()=>{ const r=annReadSet(); r.add(b.dataset.k); try{ localStorage.setItem(annSeenKey()+':read', JSON.stringify([...r].slice(-200))); }catch(e){} renderAnn(); });
-  const hb=$('homeAnnAll'); if(hb) hb.onclick=()=>{ openSecs.add('ann'); showScreen('profile'); renderAnn(); };
   makeCollapsible($('profAnn'),'ann');
   if(openSecs.has('ann') && newest && newest > seen){ try{ localStorage.setItem(annSeenKey(), newest); }catch(e){} }
 }
-function stopBookings(){ stopPool(); if(bookingsRef){ try{ bookingsRef.off(); }catch(e){} bookingsRef = null; } bookings = []; bookingsSeen = null; }
+function stopBookings(){ stopPool(); stopPm(); if(bookingsRef){ try{ bookingsRef.off(); }catch(e){} bookingsRef = null; } bookings = []; bookingsSeen = null; }
 // สถานะงานจองที่รับแล้ว: เก็บเป็นฟิลด์ stage ที่ bookings/{id} (คนขับกดทีละขั้น ข้ามขั้นไม่ได้) — งานเก่าที่ไม่มี stage = 'accepted'
 // [stage, ป้ายสถานะ, ปุ่มขั้นถัดไป, ข้อความยืนยัน, stage ถัดไป]
 const BK_STAGES = [
@@ -2251,41 +2642,75 @@ function renderBookingDetail(){
 }
 
 // ===== จบงาน + ใบสรุปค่าโดยสาร (ค่าโดยสาร = ราคามิเตอร์ที่คนขับกรอก + ค่าธรรมเนียมบริการคงที่) =====
+const AIRPORT_FEE = 100; // ค่าบริการสนามบิน (ล็อก ไม่ให้แก้) — คิดเมื่อจุดรับ/ส่งเป็นสนามบิน
+const AIRPORT_RE = /สนามบิน|สุวรรณภูมิ|ดอนเมือง|airport|suvarnabhumi|don\s?mueang|\bBKK\b|\bDMK\b/i;
 const SERVICE_FEE = 50; // สมมติฐานจากตัวอย่างใบสรุป (403 + 50 = 453) — แก้ค่าตรงนี้ถ้าอัตราต่างไป
 const money = n => '฿' + Number(n||0).toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});
+// เติมช่องทางการจอง/ประเภทการจอง/ประเภทงาน จาก CABB (ค่าที่เห็นในข้อมูลจริง: services[0]/createdBy = callcenter|controlroom|airport|web · bookingType = advance|immediate · jobType = transfer|charter)
+// ช่องทางการชำระเงิน: ฐานข้อมูล CABB ไม่มีฟิลด์นี้ จึงแสดง "-" (ยกเว้นงานมีค่า payChannel)
+const jobTypeTh = t => { const k = String(t||'').trim().toLowerCase(); return ({metered:'มิเตอร์', meter:'มิเตอร์', transfer:'มิเตอร์', charter:'เหมา', fixed:'ราคาเหมา', flatrate:'ราคาเหมา'})[k] || (t ? String(t) : 'มิเตอร์'); };
+const INV_CHAN = {callcenter:'Call Center', controlroom:'Control Room', airport:'Airport', web:'Web'};
+async function fillInvoiceFromCabb(b){
+  const id = String(b.id||''); if(!/^[A-Za-z0-9_-]{1,64}$/.test(id) || !String(b.src||'').startsWith('cabb')) return;
+  try{
+    const r = await fetch(`${CABB_BOOKING_URL}/bookings/${encodeURIComponent(id)}.json`); if(!r.ok) return;
+    const c = await r.json(); if(!c) return;
+    const set = (el,v)=>{ const e = $(el); if(e && v) e.textContent = v; };
+    const ch = (c.services && (c.services[0]||Object.values(c.services)[0])) || c.createdBy;
+    set('frChan', INV_CHAN[ch] || ch);
+    set('frBType', c.bookingType==='advance' ? 'จองล่วงหน้า' : c.bookingType==='immediate' ? 'ใช้รถทันที' : c.bookingType);
+    if(!b.jobType) set('frJob', jobTypeTh(c.jobType));
+  }catch(e){}
+}
 function openFare(b, readOnly, opts){
   opts = opts || {}; const FEE = opts.fee != null ? opts.fee : SERVICE_FEE;
+  const withExtra = !readOnly; // ค่าทางด่วน/ค่าสนามบิน ใช้ทั้งงานจองและใบงานจากคิว
+  const AP = withExtra && (b.airport || AIRPORT_RE.test([b.pickup, b.dropoff, b.source].join(' '))) ? AIRPORT_FEE : 0;
   const lg = document.querySelector('.hdr-logo'); if(lg) $('frLogo').src = lg.src;
   $('frNo').innerHTML = 'เลขที่งาน&nbsp;&nbsp;<b>'+esc(b.code||b.id)+'</b>';
   const dt = b.date ? `${fmtDate(parseYmd(b.date))} • ${esc(b.time||'')}` : '-';
   const meter = readOnly ? Number(b.meterFare||0) : 0;
+  const dv = (vehicles||[]).find(x=>x.id===driverCurrentUser.vehicleId), drvName = driverCurrentUser.fullName || driverCurrentUser.username, drvPlate = driverCurrentUser.plate || (dv?dv.plate:'');
   $('frBody').innerHTML = `
     <div class="fr-sec">รายละเอียดลูกค้า</div>
-    <div class="fr-box"><div><div class="k">ชื่อลูกค้า</div><div class="v">${esc(b.pName||'-')}</div></div><div><div class="k">เบอร์ติดต่อ</div><div class="v">${esc(b.pPhone||'-')}</div></div><div><div class="k">ช่องทางการจอง</div><div class="v">${esc(b.source||'งานจองล่วงหน้า')}</div></div><div><div class="k">จำนวนผู้โดยสาร</div><div class="v">${b.pCount!=null&&b.pCount!==''?esc(b.pCount)+' คน':'-'}</div></div></div>
+    <div class="fr-box fr-box4"><div><div class="k">ชื่อลูกค้า</div><div class="v">${esc(b.pName||'-')}</div></div><div><div class="k">ช่องทางการจอง</div><div class="v" id="frChan">${esc(b.channel||'-')}</div></div><div><div class="k">ประเภทการจอง</div><div class="v" id="frBType">${esc(b.bookingTypeLabel||'-')}</div></div><div><div class="k">${esc(b.payLabel||'ช่องทางการชำระเงิน')}</div><div class="v" id="frPay">${esc(b.payChannel||'-')}</div></div></div>
     <div class="fr-sec">รายละเอียดการเดินทาง</div>
-    <div class="fr-box"><div><div class="k">วันที่และเวลาเดินทาง</div><div class="v">${dt}</div></div><div><div class="k">ประเภทงาน</div><div class="v">${esc(b.jobType||'มิเตอร์')}</div></div><div class="w"><div class="k">จุดรับ</div><div class="v">${esc(b.pickup||'-')}</div></div><div class="w"><div class="k">จุดส่ง</div><div class="v">${esc(b.dropoff||'-')}</div></div></div>
+    <div class="fr-box"><div><div class="k">วันที่และเวลาเดินทาง</div><div class="v">${dt}</div></div><div><div class="k">ประเภทงาน</div><div class="v" id="frJob">${esc(jobTypeTh(b.jobType))}</div></div><div class="w"><div class="k">จุดรับ</div><div class="v">${esc(b.pickup||'-')}</div></div><div class="w"><div class="k">จุดส่ง</div><div class="v">${esc(b.dropoff||'-')}</div></div><div class="sep"></div><div><div class="k">ชื่อคนขับ</div><div class="v">${esc(drvName||'-')}</div></div><div><div class="k">ทะเบียนรถ</div><div class="v">${esc(drvPlate||'-')}</div></div></div>
     <div class="fr-sec">สรุปค่าโดยสาร</div>
-    <div class="fr-fare">
-      <div class="r"><span>ค่าโดยสาร (ตามมิเตอร์)</span>${readOnly ? `<b>${money(meter)}</b>` : '<input id="frMeter" type="number" inputmode="decimal" min="0" max="99999" step="0.01" placeholder="0.00" aria-label="ราคาตามมิเตอร์">'}</div>
+    ${readOnly ? ((Number(b.tollFare)>0 || Number(b.airportFee)>0) ? `<div class="fr-fare">
+      <div class="r"><span>ค่าโดยสาร (ตามมิเตอร์)</span><b>${money(Number(b.meterFare||0))}</b></div>
+      ${Number(b.tollFare)>0 ? `<div class="r"><span>ค่าทางด่วน</span><b>${money(Number(b.tollFare))}</b></div>` : ''}
+      ${Number(b.airportFee)>0 ? `<div class="r"><span>ค่าบริการสนามบิน</span><b>${money(Number(b.airportFee))}</b></div>` : ''}
+      ${Number(b.serviceFee)>0 ? `<div class="r"><span>ค่าธรรมเนียมการบริการ</span><b>${money(Number(b.serviceFee))}</b></div>` : ''}
+      <div class="r fr-total"><span>ราคารวม</span><span>${money(Number(b.totalFare||0))}</span></div></div>`
+      : `<div class="fr-fare one"><span>รวมค่าโดยสารและอื่นๆ</span><b>${money(Number(b.totalFare||0))}</b></div>`) : `<div class="fr-fare">
+      <div class="r"><span>ค่าโดยสาร (ตามมิเตอร์)</span><input id="frMeter" type="number" inputmode="decimal" min="0" max="99999" step="0.01" placeholder="0.00" aria-label="ราคาตามมิเตอร์"></div>
+      ${withExtra ? `<div class="r"><span>ค่าทางด่วน</span><input id="frToll" type="number" inputmode="decimal" min="0" max="9999" step="0.01" placeholder="0.00" aria-label="ค่าทางด่วน"></div>
+      <div class="r"><span>ค่าบริการสนามบิน 🔒${AP ? '' : '<small style="color:#6b7c95;font-weight:600;"> (ไม่ใช่งานสนามบิน)</small>'}</span><b>${money(AP)}</b></div>` : ''}
       ${FEE ? `<div class="r"><span>ค่าธรรมเนียมการบริการ</span><b>${money(FEE)}</b></div>` : ''}
-      <div class="r fr-total"><span>ราคารวม</span><span id="frTotal">${money(readOnly ? Number(b.totalFare||0) : FEE)}</span></div>
-    </div>`;
+      <div class="r fr-total"><span>ราคารวม</span><span id="frTotal">${money(FEE + AP)}</span></div>
+    </div>`}`;
+  fillInvoiceFromCabb(b);
   $('frErr').textContent = '';
   $('frFoot').innerHTML = readOnly ? '<button class="btn btn-outline" id="frClose">ปิด</button>'
     : '<button class="btn btn-outline" id="frClose">ยกเลิก</button><button class="btn btn-green" id="frOk">ยืนยันจบงาน</button>';
   $('frClose').onclick = ()=>{ $('fareModal').style.display='none'; };
   if(!readOnly){
     const inp = $('frMeter');
-    inp.addEventListener('input', ()=>{ $('frTotal').textContent = money((parseFloat(inp.value)||0) + FEE); $('frErr').textContent=''; });
+    const toll = $('frToll'), tollV = ()=>{ const t = toll ? parseFloat(toll.value) : 0; return t > 0 && t <= 9999 ? Math.round(t*100)/100 : 0; };
+    const recalc = ()=>{ $('frTotal').textContent = money((parseFloat(inp.value)||0) + tollV() + AP + FEE); $('frErr').textContent=''; };
+    inp.addEventListener('input', recalc); if(toll) toll.addEventListener('input', recalc);
     $('frOk').onclick = async ()=>{
       const v = parseFloat(inp.value);
       if(!(v > 0) || v > 99999){ $('frErr').textContent = 'กรอกราคาตามมิเตอร์ให้ถูกต้อง (มากกว่า 0)'; inp.focus(); return; }
       const m = Math.round(v*100)/100;
-      if(!(await appConfirm('ยืนยันบันทึกค่าโดยสาร '+money(m)+' และจบงาน?'))) return;
+      if(toll && toll.value !== '' && !(parseFloat(toll.value) >= 0 && parseFloat(toll.value) <= 9999)){ $('frErr').textContent = 'ค่าทางด่วนไม่ถูกต้อง (0–9,999)'; toll.focus(); return; }
+      const tl = tollV(), grand = Math.round((m + tl + AP + FEE)*100)/100;
+      if(!(await appConfirm('ยืนยันบันทึกค่าโดยสาร '+money(m)+(tl?' + ค่าทางด่วน '+money(tl):'')+(AP?' + ค่าสนามบิน '+money(AP):'')+' รวม '+money(grand)+' และจบงาน?'))) return;
       $('frOk').disabled = true;
       try{
-        if(opts.save) await opts.save(m, Math.round((m+FEE)*100)/100);
-        else await db.ref('bookings/'+b.id).update({status:'done', meterFare:m, serviceFee:SERVICE_FEE, totalFare:Math.round((m+SERVICE_FEE)*100)/100, doneAt:new Date().toISOString(), updatedAt:new Date().toISOString()});
+        if(opts.save) await opts.save(m, grand, {tollFare:tl, airportFee:AP});
+        else await db.ref('bookings/'+b.id).update({status:'done', meterFare:m, tollFare:tl, airportFee:AP, serviceFee:SERVICE_FEE, totalFare:grand, doneAt:new Date().toISOString(), updatedAt:new Date().toISOString()});
         $('fareModal').style.display='none';
       }catch(e){ $('frOk').disabled = false; $('frErr').textContent = 'บันทึกไม่สำเร็จ: '+e.message; }
     };
@@ -2332,7 +2757,7 @@ function addNotif(title, body, kind){
   if($('notifModal').style.display==='flex') renderNotifs();
 }
 function updateBell(){ const n = notifs.filter(x=>!x.read).length; $('bellBadge').textContent = n>9 ? '9+' : n; $('bellBadge').style.display = n ? '' : 'none'; }
-const NOTIF_KIND = { booking:['งานจอง',''], standby:['คิว','t'], active:['ทริป','t'], cancel:['แจ้งเตือน','r'] };
+const NOTIF_KIND = { pm:['PM&CM','t'], booking:['งานจอง',''], standby:['คิว','t'], active:['ทริป','t'], cancel:['แจ้งเตือน','r'] };
 function renderNotifs(){
   const unread = notifs.filter(x=>!x.read).length;
   $('notifSub').textContent = unread ? `ยังไม่ได้อ่าน ${unread} รายการ` : 'ไม่มีรายการใหม่';
@@ -2340,19 +2765,26 @@ function renderNotifs(){
     const [label, tone] = NOTIF_KIND[n.kind] || ['แจ้งเตือน',''];
     const d = new Date(n.ts);
     const t = `${d.getDate()} ${TH_M[d.getMonth()]} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-    return `<div class="n-item${n.read?'':' unread'}${n.kind==='booking'?' click':''}" data-kind="${esc(n.kind)}">
+    const go = n.kind==='booking' || n.kind==='pm';
+    return `<div class="n-item${n.read?'':' unread'}${go?' click':''}" data-kind="${esc(n.kind)}">
       <div class="n-ic ${tone}">${ico(n.kind==='booking'?'calendar':'send', 26)}</div>
-      <div style="min-width:0;flex:1;"><div class="n-meta"><b class="${tone}">${esc(label)}</b>· ${t}</div><div class="n-title">${esc(n.title)}</div>${n.body?`<div class="muted" style="margin-top:2px;">${esc(n.body)}</div>`:''}</div>
-      ${n.kind==='booking' ? `<span style="color:var(--sub);">${ico('chev',20)}</span>` : (n.read?'':'<span class="n-dot"></span>')}</div>`;
+      <div style="min-width:0;flex:1;"><div class="n-meta"><b class="${tone}">${esc(label)}</b>· ${t}</div><div class="n-title">${esc(n.title)}</div>${n.body?`<div class="muted" style="margin-top:2px;">${esc(n.body)}</div>`:''}${n.kind==='pm' ? `<span class="n-st ${n.read?'ok':'new'}">${n.read?'✓ อ่านแล้ว':'● ยังไม่อ่าน'}</span>` : ''}</div>
+      ${go ? `<span style="color:var(--sub);">${ico('chev',20)}</span>` : (n.read?'':'<span class="n-dot"></span>')}</div>`;
   }).join('') : '<div class="empty-state">ยังไม่มีการแจ้งเตือน</div>';
 }
 function openNotifs(){ renderNotifs(); $('notifModal').style.display = 'flex'; }
-function closeNotifs(){ notifs.forEach(n=>n.read = true); saveNotifs(); updateBell(); $('notifModal').style.display = 'none'; }
+function closeNotifs(){ notifs.forEach(n=>{ if(n.kind!=='pm') n.read = true; }); // PM&CM นับว่าอ่านเมื่อเปิดดูนัดจริงเท่านั้น
+  saveNotifs(); updateBell(); $('notifModal').style.display = 'none'; }
 $('bellBtn').addEventListener('click', openNotifs);
 $('notifCloseBtn').addEventListener('click', closeNotifs);
 $('notifModal').addEventListener('click', e=>{ if(e.target.id==='notifModal') closeNotifs(); });
 $('notifClearBtn').addEventListener('click', ()=>{ notifs = []; saveNotifs(); updateBell(); renderNotifs(); });
-$('notifList').addEventListener('click', e=>{ if(e.target.closest('.n-item.click')){ closeNotifs(); showScreen('job'); } });
+$('notifList').addEventListener('click', e=>{
+  const it = e.target.closest('.n-item.click'); if(!it) return;
+  closeNotifs();
+  if(it.dataset.kind === 'pm'){ pmEvent('notif_tap', 'notif', null); openPmModal('notif'); }
+  else showScreen('job');
+});
 
 // ข้อมูลรถ/เอกสารอ่านจาก vehicles/{vehicleId} และ driver-users/{username} — ฟิลด์ที่ยังไม่มีข้อมูลแสดง "-"
 // vehicles: province, model, color, rentPerDay, actExpiry, insuranceExpiry, taxExpiry (YYYY-MM-DD)
@@ -2390,6 +2822,7 @@ function makeCollapsible(el, key){
 $('screen-profile').addEventListener('click', e=>{
   const h = e.target.closest('.sec-head'); if(!h) return;
   const k = h.dataset.sec, card = h.parentElement;
+  if(k === 'pm'){ openPmModal('profile'); return; }
   if(openSecs.has(k)) openSecs.delete(k); else openSecs.add(k);
   card.classList.toggle('open', openSecs.has(k)); h.setAttribute('aria-expanded', openSecs.has(k));
   if(k === 'ann') renderAnn();
@@ -2401,11 +2834,12 @@ const HOWTO = [
   ['หน้าแรก','ดูรายได้และจำนวนทริป วันนี้/เดือนนี้ (รวมงานจอง) และประกาศใหม่ กด "อ่านแล้ว ✓" เพื่อซ่อน'],
   ['งานจอง','แตะงานเพื่อดูรายละเอียดและโทรหาผู้โดยสาร กดรับงานได้ก่อนเวลา 30 นาที จบงานแล้วกรอกค่ามิเตอร์ ราคาจะแสดงที่การ์ด'],
   ['ประวัติ','เลือกวันที่บนแถบ (เลื่อนหรือกด ‹ › ย้อนหลัง 30 วัน) ดูรายได้ ทริป และงานคิว/งานจองของวันนั้น'],
-  ['โปรไฟล์','ข้อมูลรถ เอกสาร สัญญา ประกาศ แตะหัวข้อเพื่อเปิด/ปิด'],
+  ['โปรไฟล์','ข้อมูลรถ เอกสารและสัญญา ประกาศ แตะหัวข้อเพื่อเปิด/ปิด'],
   ['ขอความช่วยเหลือ','รถเสีย/อุบัติเหตุ/มีปัญหา กดโทรหรือ LINE ที่ปุ่ม "ขอความช่วยเหลือ" ท้ายหน้าโปรไฟล์'],
   ['เข้าสู่ระบบ','ใช้รหัสผู้เช่าขับ (DR…) และเบอร์โทรที่ลงทะเบียนเป็นรหัสผ่าน เข้าไม่ได้ให้แจ้งเจ้าหน้าที่']
 ];
 function renderProfile(){
+  renderPmCard();
   $('profHowto').innerHTML = '<h3>วิธีการใช้งาน</h3><ol class="howto">' + HOWTO.map(x=>`<li><b>${esc(x[0])}</b><span>${esc(x[1])}</span></li>`).join('') + '</ol>';
   makeCollapsible($('profHowto'),'howto');
   $('helpCall').href = 'tel:' + SUPPORT_TEL; $('helpCall').textContent = 'โทร ' + SUPPORT_TEL_SHOW;
@@ -2446,18 +2880,16 @@ function renderProfile(){
     ${kvRow('พ.ร.บ.', datePill(veh.actExpiry))}${kvRow('ประกันภัย', datePill(veh.insuranceExpiry))}
     ${kvRow('ตรวจมิเตอร์', datePill(veh.meterExpiry))}
     ${kvRow('เซอร์วิสล่าสุด', veh.lastService ? fmtBE(veh.lastService) : NONE)}`;
-  $('profDocs').innerHTML = `<h3>เอกสารและเงินประกัน</h3>
+  $('profDocs').innerHTML = `<h3>เอกสาร สัญญา และเงินประกัน</h3>
     ${kvRow('ใบขับขี่สาธารณะ', veh.licenseNo ? esc(veh.licenseNo) : '<span class="v-none">-</span>')}
     ${kvRow('ใบขับขี่หมดอายุ', datePill(veh.licenseExpiry))}
     ${kvRow('เงินประกันที่วางไว้', veh.deposit != null && veh.deposit !== '' ? `<b class="v-strong">${baht2(veh.deposit)}</b>` : '<span class="v-none">-</span>')}
-    ${kvRow('เริ่มงาน', veh.startDate ? fmtBE(veh.startDate) : '<span class="v-none">-</span>')}`;
-  makeCollapsible($('profDocs'),'docs'); makeCollapsible($('profVehicle'),'veh');
-  $('profContract').innerHTML = `<h3>สัญญา</h3>
+    ${kvRow('เริ่มงาน', veh.startDate ? fmtBE(veh.startDate) : '<span class="v-none">-</span>')}
     ${kvRow('เลขที่สัญญา', veh.contractNo ? esc(veh.contractNo) : NONE)}
     ${kvRow('ประเภทสัญญา', veh.contractType ? esc(veh.contractType) : NONE)}
     ${kvRow('เริ่มสัญญา', veh.contractStart ? fmtBE(veh.contractStart) : NONE)}
     ${kvRow('สิ้นสุดสัญญา', veh.contractEnd ? fmtBE(veh.contractEnd) : NONE)}`;
-  makeCollapsible($('profContract'),'contract');
+  makeCollapsible($('profDocs'),'docs'); makeCollapsible($('profVehicle'),'veh');
 }
 
 const MAIN_SCREENS = ['home','history','join','job','profile'];
