@@ -1026,8 +1026,31 @@ let queueData = {}; // {locKey: [entry,...]}
 // ===== Web Push (FCM): แจ้งเตือนตอนปิดแอป =====
 // VAPID_KEY: Firebase Console > Project settings > Cloud Messaging > Web Push certificates > Key pair (ว่าง = ปิดฟีเจอร์)
 const VAPID_KEY = '';
+async function saveFcmToken(token){
+  if(!token || !driverCurrentUser) return;
+  await ensureFirebaseAuth();
+  await db.ref('fcmTokens/'+driverCurrentUser.username+'/'+token.replace(/[.$#\[\]\/]/g,'_')).set({token, vehicleId: driverCurrentUser.vehicleId||null, ts: new Date().toISOString()});
+}
+// แอป APK (Capacitor): ใช้ปลั๊กอิน push เนทีฟ เพราะ WebView ไม่รองรับ Web Push — มีเฉพาะเมื่อบิวต์พร้อม google-services.json
+let nativePushBound = false;
+async function setupNativePush(){
+  const cap = window.Capacitor;
+  const P = cap && cap.isNativePlatform && cap.isNativePlatform() && cap.Plugins && cap.Plugins.PushNotifications;
+  if(!P) return false;
+  let perm = await P.checkPermissions();
+  if(perm.receive === 'prompt' || perm.receive === 'prompt-with-rationale') perm = await P.requestPermissions();
+  if(perm.receive !== 'granted') return true;
+  if(!nativePushBound){
+    nativePushBound = true;
+    P.addListener('registration', t=>{ saveFcmToken(t && t.value).catch(e=>console.warn('save token failed', e)); });
+    P.addListener('registrationError', e=>console.warn('push registration error', e));
+  }
+  await P.register(); // ทุกครั้งที่ล็อกอินจะได้ event 'registration' ใหม่ → ผูก token กับผู้ใช้ปัจจุบัน
+  return true;
+}
 async function setupPush(){
   try{
+    if(await setupNativePush()) return;
     if(!VAPID_KEY || !driverCurrentUser || !firebase.messaging.isSupported() || !('serviceWorker' in navigator)) return;
     if(Notification.permission === 'default') await Notification.requestPermission();
     if(Notification.permission !== 'granted') return;
@@ -1922,9 +1945,9 @@ document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && $('jobDetailM
 //   driverUsername, status:'pending'|'accepted'|'declined' } — ฝั่งเจ้าหน้าที่ยังไม่มีหน้าสร้าง ต้องเขียนข้อมูลตามนี้
 const BK_ST = { pending:['รอรับงาน','gold'], accepted:['รับงานจองแล้ว','green'], declined:['ยกเลิกแล้ว','red'], done:['จบงาน','green'] };
 let bookings = [], bookingsRef = null, bookingsSeen = null, bookingDate = null, openBookingId = null;
-// ===== แจ้งเตือนนัดนำรถเข้า PM&CM ล่วงหน้า 3 วัน =====
+// ===== แจ้งเตือนนัดนำรถเข้า PM&CM ล่วงหน้า 7 วัน =====
 // ข้อมูลจากระบบ Taxi Fleet (ปฏิทินนำรถเข้า PM&CM) — เจ้าหน้าที่ซิงก์เข้า pmNotices/{ทะเบียน}/{เลขใบแจ้งซ่อม} (ไม่มีชื่อ/เบอร์/ข้อมูลส่วนบุคคล) แอปนี้อ่านเฉพาะทะเบียนของตัวเอง
-const PM_NOTICE_DAYS = 3;
+const PM_NOTICE_DAYS = 7;
 let pmData = [], pmRef = null, pmRefKey = '';
 const pmPlateKey = () => { const u = driverCurrentUser; if(!u) return ''; const v = (vehicles||[]).find(x=>x.id===u.vehicleId); return String(u.plate || (v?v.plate:'') || '').replace(/[\s.#$\[\]\/]/g,'').toLowerCase(); };
 function startPm(){
@@ -2019,7 +2042,7 @@ function pmView(){
     .sort((a,b)=> (a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
 }
 const pmWhen = d => d.diff===0 ? 'วันนี้' : d.diff===1 ? 'พรุ่งนี้' : `อีก ${d.diff} วัน`;
-function pmNotify(){ // เตือนครั้งเดียวต่อรายการ ตอนเข้าช่วง 3 วัน (เด้งแจ้งเตือน + ระฆัง)
+function pmNotify(){ // เตือนครั้งเดียวต่อรายการ ตอนเข้าช่วง 7 วัน (เด้งแจ้งเตือน + ระฆัง)
   if(!driverCurrentUser) return;
   pmView().forEach(x=>{
     const k = `pmn:${driverCurrentUser.username}:${x.id}:${x.date}:${x.resendAt||''}`;   // resendAt = เจ้าหน้าที่กด "ส่งแจ้งเตือนซ้ำ" จากระบบหลังบ้าน → key เปลี่ยน จึงเด้งแจ้งเตือนอีกครั้ง
