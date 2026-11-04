@@ -62,16 +62,28 @@ jobs:
           trap 'echo "::error::ล้มที่คำสั่ง: $BASH_COMMAND (บรรทัด $LINENO)"' ERR
           pip install pillow
           python3 icons.py
+          # แจ้งเตือนตอนปิดแอป (FCM เนทีฟ): ต้องมี google-services.json ไว้ที่ root ของ repo — ถ้าไม่มี ข้ามปลั๊กอิน (แอปยังบิวต์ได้ แต่ไม่มี push ตอนปิดแอป)
+          if [ -f ../google-services.json ]; then
+            node -e "const f='package.json',p=require('./'+f);p.dependencies['@capacitor/push-notifications']='^6.0.0';require('fs').writeFileSync(f,JSON.stringify(p,null,1))"
+            echo "::notice::พบ google-services.json — เปิดใช้ push เนทีฟ"
+          else
+            echo "::warning::ไม่พบ google-services.json ที่ root ของ repo — บิวต์โดยไม่มี push ตอนปิดแอป"
+          fi
           npm install
           npx cap add android
+          [ -f ../google-services.json ] && cp ../google-services.json android/app/google-services.json || true
           cp -r android-res/. android/app/src/main/res/
           rm -f android/app/src/main/res/drawable-v24/ic_launcher_foreground.xml android/app/src/main/res/drawable/ic_launcher_background.xml
           echo '--- launcher resources after copy ---'; find android/app/src/main/res -name 'ic_launcher*' | sort
           echo '--- manifest icon ---'; grep -n 'android:icon\|roundIcon' android/app/src/main/AndroidManifest.xml
           f=android/app/src/main/AndroidManifest.xml
-          for p in INTERNET ACCESS_FINE_LOCATION ACCESS_COARSE_LOCATION CAMERA; do
+          for p in INTERNET ACCESS_FINE_LOCATION ACCESS_COARSE_LOCATION CAMERA POST_NOTIFICATIONS; do
             grep -q "android.permission.$p" $f || sed -i "s#<application#<uses-permission android:name=\"android.permission.$p\" />\n    <application#" $f
           done
+          # ล็อกแนวตั้งเท่านั้น (บล็อกหมุนจอแนวนอน)
+          grep -q 'android:screenOrientation' $f || sed -i '0,/<activity\b/s##<activity android:screenOrientation="portrait"#' $f
+          grep -q 'android:screenOrientation="portrait"' $f || { echo "::error::ใส่ล็อกแนวตั้งไม่สำเร็จ"; exit 1; }
+          echo '--- manifest activity ---'; grep -n -A3 '<activity' $f
           npm run build:android
       - name: Verify icon is inside APK
         working-directory: app
