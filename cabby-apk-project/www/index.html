@@ -76,6 +76,9 @@
   .btn-blue{background:var(--navy);color:#fff;}
   .btn-red{background:linear-gradient(135deg,#ef6b78,#d94a5c);color:#fff;box-shadow:0 8px 18px rgba(217,74,92,.25);}
   .btn-outline{background:#fff;border:1.5px solid #d5dde9;color:var(--ink);}
+  /* ปุ่มยืนยัน = เขียว / ปุ่มยกเลิก = แดง (ใช้ทั้งแอป) */
+  .btn-ok{background:linear-gradient(135deg,#34d399,#16a34a);color:#fff;box-shadow:0 8px 18px rgba(22,163,74,.28);}
+  .btn-no{background:linear-gradient(135deg,#ef6b78,#d94a5c);color:#fff;box-shadow:0 8px 18px rgba(217,74,92,.25);}
   .btn-row{display:flex;gap:12px;margin-bottom:12px;}
   .btn-row .btn{flex:1;}
   .stat-row{display:flex;gap:10px;margin:12px 0;}
@@ -350,6 +353,11 @@
   .bkd-dot{position:absolute;left:0;width:14px;height:14px;border-radius:50%;border:3px solid #0a2556;}
   .bkd-dot.a{top:2px;background:var(--teal);box-shadow:0 0 0 1.5px var(--teal);} .bkd-dot.b{bottom:3px;background:#fff;box-shadow:0 0 0 1.5px #fff;}
   .bkd-pt small{display:block;font-size:10px;font-weight:800;letter-spacing:.6px;color:var(--teal);}
+  /* ปุ่มนำทาง (เปิด Google Maps) ท้ายจุดรับ/จุดส่ง ในรายละเอียดงานจอง */
+  .bkd-pt{position:relative;padding-right:58px;}
+  .bkd-pt .qj-map{position:absolute;right:0;top:50%;transform:translateY(-50%);width:48px;height:44px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;background:linear-gradient(160deg,#17d3df,#0fa9b8);color:#05303a;text-decoration:none;box-shadow:0 5px 12px rgba(18,201,214,.3);}
+  .bkd-pt .qj-map em{font-style:normal;font-size:9px;font-weight:800;line-height:1;}
+  .bkd-pt .qj-map:active{transform:translateY(-50%) scale(.95);}
   .bkd-pt span{display:block;font-size:13px;font-weight:700;line-height:1.45;color:#dbe7f7;} .bkd-pt.to{margin-top:12px;} .bkd-pt.to span{color:#fff;}
   .bkd-pax{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:14px 16px;margin-bottom:12px;box-shadow:0 4px 12px rgba(10,31,68,.04);}
   .bkd-av{width:44px;height:44px;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:800;font-size:18px;color:#fff;background:linear-gradient(135deg,var(--teal),var(--navy2));}
@@ -807,7 +815,7 @@
     <div style="padding:0 16px;">
       <div class="muted" style="text-align:center;margin-bottom:10px;" id="scanHintText">เล็งกล้องไปที่ QR เช็คอินที่ติดอยู่จุดรับคิว</div>
       <div class="err-text" id="scanErr" style="display:none;text-align:center;margin-bottom:10px;"></div>
-      <button class="btn btn-outline" id="scanCancelBtn">ยกเลิก</button>
+      <button class="btn btn-no" id="scanCancelBtn">ยกเลิก</button>
     </div>
     <canvas id="scanCanvas" style="display:none;"></canvas>
 
@@ -900,7 +908,7 @@
 
 <div id="alertBox"><div class="box"><div id="alertMsg" style="margin-bottom:16px;font-size:13.5px;line-height:1.6;"></div><button class="btn btn-blue" id="alertOkBtn">ตกลง</button></div></div>
 <div id="confirmBox"><div class="box"><div id="confirmMsg" style="margin-bottom:16px;font-size:13.5px;line-height:1.6;"></div>
-  <div class="btn-row" style="margin-bottom:0;"><button class="btn btn-outline" id="confirmNoBtn">ยกเลิก</button><button class="btn btn-red" id="confirmYesBtn">ยืนยัน</button></div>
+  <div class="btn-row" style="margin-bottom:0;"><button class="btn btn-no" id="confirmNoBtn">ยกเลิก</button><button class="btn btn-ok" id="confirmYesBtn">ยืนยัน</button></div>
 </div></div>
 
 <div id="fareModal">
@@ -1044,6 +1052,12 @@ async function setupNativePush(){
     nativePushBound = true;
     P.addListener('registration', t=>{ saveFcmToken(t && t.value).catch(e=>console.warn('save token failed', e)); });
     P.addListener('registrationError', e=>console.warn('push registration error', e));
+  }
+  // ช่องแจ้งเตือนแยกเสียง (ไฟล์เสียงอยู่ใน res/raw ของแอป) — id ต้องตรงกับ functions/index.js
+  if(P.createChannel){
+    for(const [id,name,sound] of [['ch_queue_arrive','ถึงคิว','snd_queue_arrive.wav'],['ch_queue_out','ออกคิว/คิวถูกยกเลิก','snd_queue_out.wav'],['ch_job_new','งานเข้า','snd_job_new.wav'],['ch_job_cancel','ยกเลิกงาน','snd_job_cancel.wav']]){
+      try{ await P.createChannel({id, name, description:name, sound, importance:5, visibility:1, vibration:true}); }catch(e){ console.warn('createChannel', id, e); }
+    }
   }
   await P.register(); // ทุกครั้งที่ล็อกอินจะได้ event 'registration' ใหม่ → ผูก token กับผู้ใช้ปัจจุบัน
   return true;
@@ -1340,6 +1354,7 @@ const qjStageDef = e => QJ_STAGES.find(x=>x[0]===qjStageKey(e));
 // เลื่อนขั้นแบบ transaction: เลื่อนได้เฉพาะเมื่อยังอยู่ขั้นที่หน้าจอเห็น (กันกดซ้ำ/สองเครื่อง)
 async function advanceQjStage(e){
   const def = qjStageDef(e), to = def[4]; if(!to) return false;
+  if(def[0]==='sent'){ const m = acceptConflict('queue'); if(m){ appAlert(m); return false; } }
   const ref = db.ref('queue/'+e.locKey+'/'+e.id), now = new Date().toISOString(), sv = firebase.database.ServerValue.TIMESTAMP; // stageTimes ใช้เวลาเซิร์ฟเวอร์ (ไม่ขึ้นกับนาฬิกาเครื่องคนขับ)
   try{
     if(def[0]==='sent'){ await ref.update({acceptedAt:now, stage:'accepted', ['stageTimes/accepted']:sv}); return true; }
@@ -1355,6 +1370,12 @@ function myOpenJobs(){
 }
 // งานจองที่รับแล้วของวันนี้หรือเลยมาแล้วที่ยังไม่จบ
 function myOpenBookings(){ const t = ymd(new Date()); return bookings.filter(b=>b.status==='accepted' && b.date && b.date <= t); }
+// รับได้ทีละงาน: งานคิว (สแตนด์) กับงานจองห้ามซ้อนกัน ต้องจบงานที่รับแล้วก่อนจึงรับงานอีกประเภทได้
+function acceptConflict(kind){ // kind: 'booking' = กำลังจะรับงานจอง, 'queue' = กำลังจะรับงานคิว
+  if(kind==='booking'){ const q = myOpenJobs().find(e=>e.acceptedAt); if(q) return `คุณมีงานคิวที่ยังไม่จบ (${q.jobCode||'-'}) กรุณาจบงานและกรอกค่าโดยสารก่อน จึงจะรับงานจองได้`; }
+  if(kind==='queue'){ const b = myOpenBookings()[0]; if(b) return `คุณมีงานจองที่ยังไม่จบ (${b.code||b.id}) กรุณาจบงานก่อน จึงจะรับงานคิวได้`; }
+  return '';
+}
 function blockedReason(){
   const oj = myOpenJobs(), ob = myOpenBookings();
   if(oj.length) return `มีงานค้างจากคิว (${oj[0].jobCode||'-'}) กรุณากดจบงานและกรอกค่าโดยสารตามมิเตอร์ก่อนลงคิวครั้งถัดไป`;
@@ -1493,6 +1514,7 @@ function renderDash(){
   if($('qjNextBtn')) $('qjNextBtn').addEventListener('click', async ()=>{
     const e = oj[0], def = qjStageDef(e);
     if(def[0]==='arrived'){ finishQueueJob(e); return; } // สรุปค่าโดยสาร + กรอกค่าตามมิเตอร์/ทางด่วน + ยืนยันจบงาน
+    if(def[0]==='sent'){ const m = acceptConflict('queue'); if(m){ appAlert(m); return; } }
     if(await appConfirm(def[3])) await advanceQjStage(e);
   });
   $('dashQueue').querySelectorAll('.dash-bk-btn').forEach(x=>x.addEventListener('click', ()=>{ openBookingId = x.dataset.bk; showScreen('bookingDetail'); }));
@@ -1508,8 +1530,8 @@ function askBatteryPhoto(){
       <div class="batt-pv"><video id="battVid" playsinline autoplay muted style="width:100%;display:block;"></video><img id="battImg" alt="รูปแบตเตอรี่" style="display:none;width:100%;"></div>
       <div class="err-text" id="battErr" style="display:none;margin-bottom:8px;"></div>
       <button class="btn btn-outline" id="battShoot" type="button" disabled>📷 ถ่ายภาพ</button>
-      <button class="btn btn-green" id="battOk" type="button" disabled style="margin-top:8px;display:none;">ยืนยันและลงคิว</button>
-      <button class="btn btn-outline" id="battNo" type="button" style="margin-top:8px;">ยกเลิก</button></div>`;
+      <button class="btn btn-ok" id="battOk" type="button" disabled style="margin-top:8px;display:none;">ยืนยันและลงคิว</button>
+      <button class="btn btn-no" id="battNo" type="button" style="margin-top:8px;">ยกเลิก</button></div>`;
     document.body.appendChild(ov);
     const q = id=>ov.querySelector('#'+id); let stream = null, data = null;
     const stop = ()=>{ if(stream){ stream.getTracks().forEach(t=>t.stop()); stream = null; } };
@@ -2669,8 +2691,8 @@ function renderBookingDetail(){
       <span class="pill pill-${tone}" style="flex:0 0 auto;">${esc(label)}</span></div>
       <div class="bkd-when"><div><small>วันเดินทาง</small><b>${b.date ? fmtDate(parseYmd(b.date)) : '-'}</b></div><div><small>เวลารับ</small><b>${esc(b.time||'-')}</b></div></div>
       <div class="bkd-route"><span class="bkd-dot a"></span><span class="bkd-dot b"></span>
-        <div class="bkd-pt"><small>จุดรับ</small><span>${esc(b.pickup||'-')}</span></div>
-        <div class="bkd-pt to"><small>จุดส่ง</small><span>${esc(b.dropoff||'-')}</span></div></div></div>
+        <div class="bkd-pt"><small>จุดรับ</small><span>${esc(b.pickup||'-')}</span>${b.pickup&&b.pickup!=='-'?mapsLink(b.pickup):''}</div>
+        <div class="bkd-pt to"><small>จุดส่ง</small><span>${esc(b.dropoff||'-')}</span>${b.dropoff&&b.dropoff!=='-'?mapsLink(b.dropoff):''}</div></div></div>
     <div class="bkd-pax">
       <div class="bkd-av">${esc((String(b.pName||'?').trim().charAt(0)||'?').toUpperCase())}</div>
       <div class="bkd-pn"><small>ผู้โดยสาร</small><b>${esc(b.pName||'-')}</b><span>${b.pCount!=null&&b.pCount!=='' ? esc(b.pCount)+' คน' : '-'}</span></div>
@@ -2688,7 +2710,7 @@ function renderBookingDetail(){
     if(await advanceBkStage(b) && def[4]==='fare') openFare(Object.assign({}, b, {stage:'fare'}), false);
   });
   if($('bkViewBtn')) $('bkViewBtn').addEventListener('click', ()=> openFare(b, true));
-  if($('bkAcceptBtn')) $('bkAcceptBtn').addEventListener('click', async ()=>{ if(await appConfirm('ยืนยันรับงานจองนี้?')) setBookingStatus(b.id,'accepted',{acceptedAt:new Date().toISOString()}); });
+  if($('bkAcceptBtn')) $('bkAcceptBtn').addEventListener('click', async ()=>{ { const m = acceptConflict('booking'); if(m){ appAlert(m); return; } } if(await appConfirm('ยืนยันรับงานจองนี้?')) setBookingStatus(b.id,'accepted',{acceptedAt:new Date().toISOString()}); });
   if($('bkDeclineBtn')) $('bkDeclineBtn').addEventListener('click', async ()=>{ const why = await askDeclineReason(); if(why){ await setBookingStatus(b.id,'declined',{declineReason:why, declinedAt:new Date().toISOString()}); if(b.src==='cabb-ev-booking-pool') releasePoolClaim(b); } });
 }
 
@@ -2714,9 +2736,10 @@ async function fillInvoiceFromCabb(b){
   }catch(e){}
 }
 function openFare(b, readOnly, opts){
-  opts = opts || {}; const FEE = opts.fee != null ? opts.fee : SERVICE_FEE;
+  opts = opts || {}; let FEE = opts.fee != null ? opts.fee : SERVICE_FEE;
   const withExtra = !readOnly; // ค่าทางด่วน/ค่าสนามบิน ใช้ทั้งงานจองและใบงานจากคิว
   const AP = withExtra && (b.airport || AIRPORT_RE.test([b.pickup, b.dropoff, b.source].join(' '))) ? AIRPORT_FEE : 0;
+  if(opts.fee == null && AP) FEE = 0; // งานจองที่รับ/ส่งสนามบิน: เก็บค่าบริการสนามบิน 100 บาทอย่างเดียว ไม่เก็บค่าธรรมเนียมงานจอง 50 ซ้ำ (งานจองทั่วไปยังเก็บ 50)
   const lg = document.querySelector('.hdr-logo'); if(lg) $('frLogo').src = lg.src;
   $('frNo').innerHTML = 'เลขที่งาน&nbsp;&nbsp;<b>'+esc(b.code||b.id)+'</b>';
   const dt = b.date ? `${fmtDate(parseYmd(b.date))} • ${esc(b.time||'')}` : '-';
@@ -2744,7 +2767,7 @@ function openFare(b, readOnly, opts){
   fillInvoiceFromCabb(b);
   $('frErr').textContent = '';
   $('frFoot').innerHTML = readOnly ? '<button class="btn btn-outline" id="frClose">ปิด</button>'
-    : '<button class="btn btn-outline" id="frClose">ยกเลิก</button><button class="btn btn-green" id="frOk">ยืนยันจบงาน</button>';
+    : '<button class="btn btn-no" id="frClose">ยกเลิก</button><button class="btn btn-ok" id="frOk">ยืนยันจบงาน</button>';
   $('frClose').onclick = ()=>{ $('fareModal').style.display='none'; };
   if(!readOnly){
     const inp = $('frMeter');
@@ -2761,7 +2784,7 @@ function openFare(b, readOnly, opts){
       $('frOk').disabled = true;
       try{
         if(opts.save) await opts.save(m, grand, {tollFare:tl, airportFee:AP});
-        else await db.ref('bookings/'+b.id).update({status:'done', meterFare:m, tollFare:tl, airportFee:AP, serviceFee:SERVICE_FEE, totalFare:grand, doneAt:new Date().toISOString(), updatedAt:new Date().toISOString()});
+        else await db.ref('bookings/'+b.id).update({status:'done', meterFare:m, tollFare:tl, airportFee:AP, serviceFee:FEE, totalFare:grand, doneAt:new Date().toISOString(), updatedAt:new Date().toISOString()});
         $('fareModal').style.display='none';
       }catch(e){ $('frOk').disabled = false; $('frErr').textContent = 'บันทึกไม่สำเร็จ: '+e.message; }
     };
@@ -2777,7 +2800,7 @@ function askDeclineReason(){
     ov.innerHTML = `<div class="box"><h3>ยกเลิกงานจองนี้?</h3><div class="muted" style="margin:2px 0 10px;">กรุณาเลือกเหตุผล</div>
       <div class="dr-list">${DECLINE_REASONS.map((r,i)=>`<label class="dr-opt"><input type="radio" name="drReason" value="${i}"><span>${esc(r)}</span></label>`).join('')}</div>
       <textarea id="drOther" rows="2" maxlength="200" placeholder="ระบุเหตุผล" style="display:none;"></textarea>
-      <div class="btn-row" style="margin:12px 0 0;"><button type="button" class="btn btn-outline" id="drNo">ไม่ยกเลิก</button><button type="button" class="btn btn-red" id="drYes" disabled>ยืนยันยกเลิก</button></div></div>`;
+      <div class="btn-row" style="margin:12px 0 0;"><button type="button" class="btn btn-outline" id="drNo">ไม่ยกเลิก</button><button type="button" class="btn btn-ok" id="drYes" disabled>ยืนยันยกเลิก</button></div></div>`;
     (document.getElementById('deviceFrame') || document.body).appendChild(ov);
     const yes = ov.querySelector('#drYes'), other = ov.querySelector('#drOther');
     const cur = ()=>{ const r = ov.querySelector('input[name=drReason]:checked'); return r ? DECLINE_REASONS[+r.value] : ''; };
@@ -2789,6 +2812,7 @@ function askDeclineReason(){
   });
 }
 async function setBookingStatus(id, status, extra){
+  if(status==='accepted'){ const m = acceptConflict('booking'); if(m){ appAlert(m); return; } }
   if(status==='accepted'){ const bk = bookings.find(x=>x.id===id); const at = bk && bkAcceptOpenAt(bk);
     if(at && Date.now() < at.getTime()){ appAlert('รับงานได้ตั้งแต่ 30 นาทีก่อนเวลาเดินทาง'); return; } }
   try{ await db.ref('bookings/'+id).update(Object.assign({status, updatedAt:new Date().toISOString()}, extra||{})); }
