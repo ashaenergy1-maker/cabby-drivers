@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "842068265635",
+    "firebase_url": "https://job-system-29d9b-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "job-system-29d9b",
+    "storage_bucket": "job-system-29d9b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:842068265635:android:e1977a99390e6a8a02cd16",
+        "android_client_info": {
+          "package_name": "com.ashaenergy.cabbydrivers"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxLCkECEDROngErVa7tIpGZgZLJ_SIMac"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
