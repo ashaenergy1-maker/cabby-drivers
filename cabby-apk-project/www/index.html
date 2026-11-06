@@ -844,13 +844,7 @@
       <div class="empty-state" id="queueListEmpty" style="display:none;padding:14px 0;">ยังไม่มีรถในคิว</div>
     </div>
     <div class="btn-row">
-      <button class="btn btn-outline" id="reportIssueBtn">แจ้งปัญหา</button>
       <button class="btn btn-red" id="cancelQueueBtn">ยกเลิกคิว</button>
-    </div>
-    <div class="card" id="reportIssueBox" style="display:none;">
-      <label style="font-size:11.5px;font-weight:700;color:var(--sub);display:block;margin-bottom:6px;">รายละเอียดปัญหา</label>
-      <textarea id="reportIssueText" rows="3" style="width:100%;margin-bottom:10px;padding:8px;border:1.5px solid #d7dee8;border-radius:8px;font-family:inherit;"></textarea>
-      <button class="btn btn-blue" id="submitIssueBtn">ส่งเรื่อง</button>
     </div>
   </div>
   </div>
@@ -1108,7 +1102,7 @@ function detectQueueChangesDriver(locKey, oldArr, newArr){
   if(myOld && myNew && myOld.status !== myNew.status){
     if(myNew.status === 'standby') notifyDriver('ขึ้นสแตนด์บายแล้ว!', `คุณอยู่คิวที่ ${myNew.slot} ที่ ${LOCS[locKey]?LOCS[locKey].name:locKey}`, 'standby');
     else if(myNew.status === 'active') notifyDriver('ถึงคิวคุณแล้ว!', 'ไปรับผู้โดยสารได้เลย', 'active');
-  } else if(myOld && !myNew && ['waiting','standby'].includes(myOld.status)){
+  } else if(myOld && !myNew && ['waiting','standby'].includes(myOld.status) && !newArr.some(e=>e.id===myOld.id)){ // ยกเลิกจริง = รายการถูกลบ (ถ้ารายการยังอยู่แต่เป็น done/มี jobId = เจ้าหน้าที่ยิงงานให้ ไม่ใช่ยกเลิก)
     if(suppressCancelNotifyIds.has(myOld.id)){ suppressCancelNotifyIds.delete(myOld.id); }
     else notifyDriver('คิวถูกยกเลิก', `เจ้าหน้าที่ยกเลิกคิวของคุณที่ ${LOCS[locKey]?LOCS[locKey].name:locKey}`, 'cancel');
   }
@@ -1828,23 +1822,6 @@ $('cancelQueueBtn').addEventListener('click', async ()=>{
   catch(e){ suppressCancelNotifyIds.delete(entryId); appAlert('ยกเลิกไม่สำเร็จ: '+e.message); return; }
   await shiftStandbySlots(currentQueueLoc);
 });
-$('reportIssueBtn').addEventListener('click', ()=>{
-  $('reportIssueBox').style.display = $('reportIssueBox').style.display==='none' ? 'block' : 'none';
-});
-$('submitIssueBtn').addEventListener('click', async ()=>{
-  const note = $('reportIssueText').value.trim();
-  if(!note){ appAlert('กรอกรายละเอียดปัญหาก่อน'); return; }
-  try{
-    await db.ref('queue-issues/'+currentQueueLoc).push({
-      driverUsername: driverCurrentUser.username, plate: driverCurrentUser.plate||'',
-      note, ts: new Date().toISOString()
-    });
-  }catch(e){ appAlert('ส่งเรื่องไม่สำเร็จ: '+e.message); return; }
-  $('reportIssueText').value = '';
-  $('reportIssueBox').style.display = 'none';
-  appAlert('ส่งเรื่องแจ้งปัญหาแล้ว เจ้าหน้าที่จะติดต่อกลับ');
-});
-
 // ประวัติงาน — เลือกดูวันนี้ + ย้อนหลังได้สูงสุด 4 วัน (ตามดีไซน์)
 let historyDate = null; const HIST_DAYS = 30; // ย้อนหลังได้ 30 วัน (เลื่อนแถบวันไปทางซ้าย)
 function renderHistory(){
