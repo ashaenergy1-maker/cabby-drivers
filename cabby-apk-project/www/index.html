@@ -1225,18 +1225,18 @@ function checkGeofenceWarning(){
     const d = haversineKm(myLatLng.lat, myLatLng.lng, l.lat, l.lng);
     if(!nearest || d < nearest.d) nearest = {key, l, d};
   });
-  const isOut = !!(nearest && nearest.d > CHECKIN_GEOFENCE_RADIUS_KM);
+  const isOut = !!(nearest && nearest.d > geofenceKm(nearest.l));
   if(isOut && lastGeofenceOutOfRange !== true){
     notifyDriver(
       'อยู่นอกระยะจุดรับคิว',
-      `จุดใกล้ที่สุดคือ ${nearest.l.name} ห่าง ~${nearest.d.toFixed(2)} กม. (ต้องอยู่ในรัศมี ${(CHECKIN_GEOFENCE_RADIUS_KM*1000).toFixed(0)} ม. ถึงจะลงคิวได้)`,
+      `จุดใกล้ที่สุดคือ ${nearest.l.name} ห่าง ~${nearest.d.toFixed(2)} กม. (ต้องอยู่ในรัศมี ${(geofenceKm(nearest.l)*1000).toFixed(0)} ม. ถึงจะลงคิวได้)`,
       'cancel'
     );
   }
   lastGeofenceOutOfRange = isOut;
 }
 
-// ระยะที่ถือว่า "ใกล้เคียงพอจะโชว์การ์ด" — กว้างกว่ารัศมีเช็คอินจริง (300 ม.) มาก เพราะแค่กรองจุดที่อยู่ไกลเกินจะไปถึงจริงๆ ออกไป ไม่ใช่บังคับต้องยืนอยู่ตรงนั้นถึงจะเห็นการ์ด
+// ระยะที่ถือว่า "ใกล้เคียงพอจะโชว์การ์ด" — กว้างกว่ารัศมีเช็คอินจริง (100 ม.) มาก เพราะแค่กรองจุดที่อยู่ไกลเกินจะไปถึงจริงๆ ออกไป ไม่ใช่บังคับต้องยืนอยู่ตรงนั้นถึงจะเห็นการ์ด
 const NEARBY_VISIBLE_RADIUS_KM = 10;
 // ===== หน้าลงคิว (รายการสนามบิน) — เดิมคือ renderHome =====
 function renderJoin(){
@@ -1258,8 +1258,8 @@ function renderJoin(){
       d = haversineKm(myLatLng.lat, myLatLng.lng, l.lat, l.lng);
       if(!nearest || d < nearest.d) nearest = {l, d};
       distText = `~${d.toFixed(1)} กม. จากคุณ (ระยะเส้นตรง ไม่ใช่ระยะทางถนน)`;
-      if(d > CHECKIN_GEOFENCE_RADIUS_KM){
-        outOfRangeHtml = `<div style="color:var(--red);font-size:12.5px;font-weight:700;margin-top:6px;">⚠ อยู่นอกระยะจุดรับคิว (ต้องอยู่ในรัศมี ${(CHECKIN_GEOFENCE_RADIUS_KM*1000).toFixed(0)} ม.)</div>`;
+      if(d > geofenceKm(l)){
+        outOfRangeHtml = `<div style="color:var(--red);font-size:12.5px;font-weight:700;margin-top:6px;">⚠ อยู่นอกระยะจุดรับคิว (ต้องอยู่ในรัศมี ${(geofenceKm(l)*1000).toFixed(0)} ม.)</div>`;
       }
     }
     // ซ่อนจุดที่อยู่ไกลเกิน NEARBY_VISIBLE_RADIUS_KM — ยกเว้นจุดที่ลงคิวอยู่แล้ว หรือยังไม่รู้ตำแหน่งตัวเอง (d เป็น null)
@@ -1295,7 +1295,7 @@ function renderJoin(){
         <div><small>ลานจอดรอใกล้ที่สุดจาก GPS</small><b>${esc(nearest.l.name)}</b></div>
         <span class="jq-km">${nearest.d.toFixed(1)}<em>กม.</em></span>
       </div>
-      <div class="jq-near-note">ต้องเข้าใกล้ลานจอดรอภายใน ${(CHECKIN_GEOFENCE_RADIUS_KM*1000).toFixed(0)} เมตรเพื่อเปิดการลงคิว${acc}</div>
+      <div class="jq-near-note">ต้องเข้าใกล้ลานจอดรอภายใน ${(geofenceKm(nearest.l)*1000).toFixed(0)} เมตรเพื่อเปิดการลงคิว${acc}</div>
     </div>`;
   } else {
     $('nearCard').innerHTML = `<div class="jq-hint"><span>📡</span><div>ยังไม่ทราบตำแหน่งของคุณ กดปุ่มรีเฟรชมุมขวาบนเพื่อค้นหาลานจอดรอที่ใกล้ที่สุด</div></div>`;
@@ -1682,7 +1682,8 @@ async function handleScanResult(text){
   await verifyGeofenceAndJoin(locKey);
 }
 // รัศมีที่ยอมรับว่า "อยู่ที่จุดรับคิวจริง" หลังสแกน QR ผ่านแล้ว — ตั้งไว้ในโค้ด ยังไม่มี UI ให้แอดมินปรับต่อจุดจากหน้าเว็บ (ถ้าจะปรับต้องแก้ตัวเลขนี้ตรงๆ)
-const CHECKIN_GEOFENCE_RADIUS_KM = 0.3; // 300 เมตร
+const CHECKIN_GEOFENCE_RADIUS_KM = 0.1; // ค่าเริ่มต้น 100 เมตร (ตั้งรายจุดได้ที่ SSLS → จัดการจุดบริการ → checkinRadiusM)
+function geofenceKm(l){ const m = Number(l && l.checkinRadiusM); return (m > 0 ? m : CHECKIN_GEOFENCE_RADIUS_KM*1000) / 1000; }
 function showGeoCheckUi(){
   $('scanCameraBox').style.display = 'none';
   $('scanHintText').style.display = 'none';
@@ -1712,7 +1713,7 @@ async function verifyGeofenceAndJoin(locKey){
   navigator.geolocation.getCurrentPosition(
     async pos=>{
       const d = haversineKm(pos.coords.latitude, pos.coords.longitude, loc.lat, loc.lng);
-      if(d <= CHECKIN_GEOFENCE_RADIUS_KM){
+      if(d <= geofenceKm(loc)){
         $('scanGeoStatus').textContent = 'ยืนยันตำแหน่งสำเร็จ — ถ่ายรูปแบตเตอรี่ก่อนลงคิว';
         const photo = await askBatteryPhoto();
         if(!photo){
@@ -1731,7 +1732,7 @@ async function verifyGeofenceAndJoin(locKey){
         }, photo);
       } else {
         $('scanGeoStatus').textContent = 'อยู่ไกลจากจุดรับคิวเกินไป';
-        $('scanGeoDetail').textContent = `ระยะห่างจากตำแหน่งปัจจุบัน ~${d.toFixed(2)} กม. (ต้องอยู่ในรัศมี ${(CHECKIN_GEOFENCE_RADIUS_KM*1000).toFixed(0)} เมตร) — ลองขยับเข้าใกล้จุดรับคิวแล้วกดลองใหม่`;
+        $('scanGeoDetail').textContent = `ระยะห่างจากตำแหน่งปัจจุบัน ~${d.toFixed(2)} กม. (ต้องอยู่ในรัศมี ${(geofenceKm(loc)*1000).toFixed(0)} เมตร) — ลองขยับเข้าใกล้จุดรับคิวแล้วกดลองใหม่`;
         $('scanGeoActions').style.display = '';
         $('scanGeoRetryBtn').style.display = '';
       }
