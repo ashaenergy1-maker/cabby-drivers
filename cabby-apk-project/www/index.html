@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="theme-color" content="#071a3e">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>SSLS · คนขับ</title>
+<title>Driver · App</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='30' y='8' width='12' height='24' rx='6' fill='%233EC6CE'/%3E%3Crect x='58' y='8' width='12' height='24' rx='6' fill='%233EC6CE'/%3E%3Cpath d='M20 28 h60 v14 c0 17-13 30-30 30 s-30-13-30-30 z' fill='%233EC6CE'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
@@ -2037,7 +2037,7 @@ function pmEvent(action, src, x){
 function pmLogRead(src){ pmView().forEach(x=>{ const k = x.id+'|'+x.date; if(pmSeen.has(k)) return; pmSeen.add(k); pmLogEvent(x, {source:src, daysLeft:x.diff}, true); pmEvent('open', src, x); }); }
 function pmDiffDays(date){ const t = bkkNow().today, a = Date.parse(date+'T00:00:00Z'), b = Date.parse(t+'T00:00:00Z'); return isNaN(a) ? NaN : Math.round((a-b)/86400000); }
 function pmView(){
-  return (pmDirectOk ? pmDirect : pmData).filter(x=>x && x.date && /^(pending|inprogress|approved)$/i.test(String(x.status||'pending').trim()))
+  return (pmDirectOk ? pmDirect : pmData).filter(x=>x && x.date && /^approved$/i.test(String(x.status||'').trim()))
     .map(x=>Object.assign({}, x, {diff:pmDiffDays(x.date), resendAt: x.resendAt || ((pmData.find(d=>String(d.id)===String(x.id))||{}).resendAt) || ''})) // โหมด Fleet ตรง: resendAt ยังอ่านจาก pmNotices.filter(x=>x.diff>=0 && x.diff<=PM_NOTICE_DAYS)
     .sort((a,b)=> (a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
 }
@@ -2056,7 +2056,7 @@ function pmItemsHtml(list){
     <div class="pm-row"><small>ทะเบียน</small><b>${esc(x.plate||'-')}</b></div>
     <div class="pm-row"><small>เรื่อง</small><b>${esc(x.items||'-')}</b></div>
     <div class="pm-row"><small>ศูนย์บริการ</small><b>${esc(x.garage||'ยังไม่ระบุ')}</b></div>
-    <div class="pm-row"><small>สถานะ</small><b><span class="pm-st ${esc(String(x.status||'pending').toLowerCase())}">${esc(PM_ST[String(x.status||'').toLowerCase()] || 'รอดำเนินการ')}</span></b></div><div class="pm-more">ดูรายละเอียด ›</div></div>`).join('');
+<div class="pm-more">ดูรายละเอียด ›</div></div>`).join('');
 }
 function renderPmCard(){
   const el = $('profPm'); if(!el) return; const list = pmView();
@@ -2118,7 +2118,6 @@ function pmDetailHtml(x){
       ${x.dueKm ? `<div><small>ครบกำหนดที่เลขไมล์</small><b>${Number(x.dueKm).toLocaleString('en-US')} กม.</b></div>` : ''}
       ${x.currentKm ? `<div><small>เลขไมล์ล่าสุด</small><b>${Number(x.currentKm).toLocaleString('en-US')} กม.</b></div>` : ''}
       ${x.note ? `<div><small>หมายเหตุ</small><b style="font-weight:700;white-space:pre-wrap;">${esc(x.note)}</b></div>` : ''}
-      <div><small>สถานะ</small><b>${esc(PM_ST[String(x.status||'').toLowerCase()] || 'รอดำเนินการ')}</b></div>
       ${x.docNo ? `<div><small>เลขที่ใบแจ้งซ่อม</small><b>${esc(x.docNo)}</b></div>` : ''}
     </div></div>
     <div class="pm-note">โปรดนำรถเข้าตามวันและเวลาที่นัด หากติดขัดให้ติดต่อเจ้าหน้าที่</div>`;
@@ -2142,7 +2141,7 @@ function renderPmModalBody(){
     $('pmModalBody').innerHTML = tabs + (pmHist.length ? pmHist.map(h=>`<div class="pm-h go" data-hid="${esc(h.id)}" role="button" tabindex="0"><b>${esc(h.items||'-')}</b><small>${h.date?esc(fmtDate(parseYmd(h.date))):'-'} · ${esc(h.kind)} · ${esc(h.garage||'ไม่ระบุอู่')}${h.km?' · '+h.km.toLocaleString('en-US')+' กม.':''}${h.docNo?' · '+esc(h.docNo):''}</small><div class="pm-more">ดูรายละเอียด ›</div></div>`).join('') : '<div class="pm-empty">ยังไม่มีประวัติการเข้าซ่อม</div>') + '<div class="pm-note">แสดงใบที่เจ้าหน้าที่บันทึกผลการซ่อมแล้ว (ล่าสุด 30 รายการ)</div>';
     return;
   }
-  $('pmModalBody').innerHTML = tabs + (pmPlateKey() ? (list.length ? pmItemsHtml(list) : `<div class="pm-empty">ไม่มีนัดนำรถเข้า PM&amp;CM ภายใน ${PM_NOTICE_DAYS} วันข้างหน้า</div>`) : '<div class="pm-empty">บัญชีนี้ยังไม่ผูกทะเบียนรถ</div>') + `<div class="pm-note">ข้อมูลจากระบบ Taxi Fleet · อัปเดตเมื่อเจ้าหน้าที่ซิงก์ · แจ้งเตือนล่วงหน้า ${PM_NOTICE_DAYS} วัน</div>`;
+  $('pmModalBody').innerHTML = tabs + (pmPlateKey() ? (list.length ? pmItemsHtml(list) : `<div class="pm-empty">ไม่มีนัดนำรถเข้า PM&amp;CM ภายใน ${PM_NOTICE_DAYS} วันข้างหน้า</div>`) : '<div class="pm-empty">บัญชีนี้ยังไม่ผูกทะเบียนรถ</div>');
   pmLogRead(pmModalSrc);
 }
 function homeBoxesHtml(){
