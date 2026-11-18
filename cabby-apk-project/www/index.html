@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="theme-color" content="#071a3e">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Driver · App</title>
+<title>SSLS · คนขับ</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='30' y='8' width='12' height='24' rx='6' fill='%233EC6CE'/%3E%3Crect x='58' y='8' width='12' height='24' rx='6' fill='%233EC6CE'/%3E%3Cpath d='M20 28 h60 v14 c0 17-13 30-30 30 s-30-13-30-30 z' fill='%233EC6CE'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
@@ -80,6 +80,9 @@
   .btn-ok{background:linear-gradient(135deg,#34d399,#16a34a);color:#fff;box-shadow:0 8px 18px rgba(22,163,74,.28);}
   .btn-no{background:linear-gradient(135deg,#ef6b78,#d94a5c);color:#fff;box-shadow:0 8px 18px rgba(217,74,92,.25);}
   .btn-row{display:flex;gap:12px;margin-bottom:12px;}
+  #retakeBattBtn{background:linear-gradient(135deg,#19d8e2,#0a8f9a);color:#fff;border:none;box-shadow:0 8px 18px rgba(10,143,154,.32);display:flex;align-items:center;justify-content:center;gap:7px;}
+  #retakeBattBtn:active,#cancelQueueBtn:active{transform:scale(.97);}
+  #cancelQueueBtn{background:#fff;color:#d94a5c;border:1.5px solid #f3b6bd;box-shadow:none;}
   .btn-row .btn{flex:1;}
   .stat-row{display:flex;gap:10px;margin:12px 0;}
   .stat{flex:1;background:var(--bg);border-radius:14px;padding:10px;text-align:center;}
@@ -844,6 +847,7 @@
       <div class="empty-state" id="queueListEmpty" style="display:none;padding:14px 0;">ยังไม่มีรถในคิว</div>
     </div>
     <div class="btn-row">
+      <button class="btn btn-outline" id="retakeBattBtn" style="display:none;"><span style="font-size:15px;line-height:1;">🔋</span>ถ่ายรูปแบตเตอรี่ใหม่</button>
       <button class="btn btn-red" id="cancelQueueBtn">ยกเลิกคิว</button>
     </div>
   </div>
@@ -1107,6 +1111,41 @@ function detectQueueChangesDriver(locKey, oldArr, newArr){
     else notifyDriver('คิวถูกยกเลิก', `เจ้าหน้าที่ยกเลิกคิวของคุณที่ ${LOCS[locKey]?LOCS[locKey].name:locKey}`, 'cancel');
   }
 }
+// ===== สลับคิว: เจ้าหน้าที่ส่งคำขอจากคิวหลังมาที่คิวของเรา (queue/{loc}/{myId}/swapReq) ต้องกดยินยอมก่อนถึงจะสลับ =====
+const SWAP_TTL_MS = 5*60*1000;
+let swapPrompted = new Set(), swapPrompting = false;
+function swapSvNow(){ return Date.now() + (typeof poolOffset==='number' ? poolOffset : 0); }
+function swapFresh(r){ return !!(r && r.at && swapSvNow() - Number(r.at) < SWAP_TTL_MS); }
+async function checkSwapRequest(locKey, arr){
+  if(!driverCurrentUser || swapPrompting) return;
+  const me = arr.find(e=>e.status==='standby' && isMyEntry(e) && e.swapReq && e.swapReq.status==='pending' && swapFresh(e.swapReq));
+  if(!me) return;
+  const pk = me.id+'|'+me.swapReq.at; if(swapPrompted.has(pk)) return;
+  if($('confirmBox').style.display==='flex'){ setTimeout(()=>checkSwapRequest(locKey, queueData[locKey]||arr), 3000); return; }
+  swapPrompted.add(pk); swapPrompting = true;
+  notifyDriver('มีคำขอสลับคิว', `${me.swapReq.fromPlate||'คิวถัดไป'} ขอสลับคิวกับคุณ`, 'standby');
+  const ok = await appConfirm(`คิวที่ ${me.slot+1} (${me.swapReq.fromPlate||'-'}) ขอสลับคิวกับคุณ ถ้ายินยอม คุณจะเลื่อนไปคิวที่ ${me.slot+1} และเขาจะได้คิวที่ ${me.slot} ยินยอมสลับคิวหรือไม่?`);
+  swapPrompting = false;
+  const path = 'queue/'+locKey;
+  try{
+    if(ok){
+      let why = '';
+      const res = await db.ref(path).transaction(val=>{
+        why = '';
+        if(!val || !val[me.id]){ why='gone'; return; }
+        const a = val[me.id], b = a.swapReq && val[a.swapReq.fromId];
+        if(!b || a.status!=='standby' || b.status!=='standby' || a.slot!==1 || b.slot!==2){ why='changed'; return; } // สลับได้เฉพาะคิว 1 กับ 2
+        if(!(a.swapReq.status==='pending' && swapFresh(a.swapReq))){ why='expired'; return; }
+        const t = a.slot; a.slot = b.slot; b.slot = t; delete a.swapReq; a.swappedAt = b.swappedAt = new Date().toISOString();
+        return val;
+      });
+      if(res.committed) notifyDriver('สลับคิวแล้ว', 'คุณเลื่อนไปคิวหลังตามที่ยินยอม', 'standby');
+      else appAlert(why==='expired' ? 'คำขอสลับหมดเวลาแล้ว' : 'คิวมีการเปลี่ยนแปลง จึงสลับไม่สำเร็จ');
+    } else {
+      await db.ref(path+'/'+me.id+'/swapReq/status').set('declined');
+    }
+  }catch(e){ appAlert('ดำเนินการไม่สำเร็จ: '+e.message); }
+}
 let queueRefs = [];
 function stopQueuesRealtime(){ queueRefs.forEach(r=>{ try{ r.off(); }catch(e){} }); queueRefs = []; queueData = {}; queueLoadedOnce = {}; }
 function loadQueuesRealtime(){
@@ -1124,6 +1163,7 @@ function loadQueuesRealtime(){
         detectQueueChangesDriver(key, queueData[key]||[], newArr);
         queueData[key] = newArr;
       }
+      checkSwapRequest(key, newArr);
       renderAll();
     });
   });
@@ -1515,7 +1555,7 @@ function renderDash(){
 }
 
 // ถ่ายรูปเปอร์เซ็นต์แบตเตอรี่ด้วยกล้องสดเท่านั้น (ไม่เปิดคลังภาพ/ไฟล์ — กันแนบรูปเก่า) → JPEG ด้านยาว ≤ 960px คืน dataURL หรือ null ถ้ายกเลิก
-function askBatteryPhoto(){
+function askBatteryPhoto(okLabel){
   return new Promise(async resolve=>{
     if(typeof stopScan === 'function'){ try{ stopScan(); }catch(e){} }
     const ov = document.createElement('div'); ov.className = 'batt-ov';
@@ -1524,7 +1564,7 @@ function askBatteryPhoto(){
       <div class="batt-pv"><video id="battVid" playsinline autoplay muted style="width:100%;display:block;"></video><img id="battImg" alt="รูปแบตเตอรี่" style="display:none;width:100%;"></div>
       <div class="err-text" id="battErr" style="display:none;margin-bottom:8px;"></div>
       <button class="btn btn-outline" id="battShoot" type="button" disabled>📷 ถ่ายภาพ</button>
-      <button class="btn btn-ok" id="battOk" type="button" disabled style="margin-top:8px;display:none;">ยืนยันและลงคิว</button>
+      <button class="btn btn-ok" id="battOk" type="button" disabled style="margin-top:8px;display:none;">${okLabel||'ยืนยันและลงคิว'}</button>
       <button class="btn btn-no" id="battNo" type="button" style="margin-top:8px;">ยกเลิก</button></div>`;
     document.body.appendChild(ov);
     const q = id=>ov.querySelector('#'+id); let stream = null, data = null;
@@ -1771,6 +1811,12 @@ function renderQueueScreen(){
   $('queueLocTitle').textContent = LOCS[key].name;
   const entries = (queueData[key]||[]).filter(e=>['waiting','standby','active'].includes(e.status))
     .sort((a,b)=> String(a.enqueuedAt||'').localeCompare(String(b.enqueuedAt||'')));
+  { // หลังสลับคิว: ช่องที่สแตนด์บายครองอยู่ในลิสต์ ให้เรียงตาม slot (ไม่ใช่เวลาเข้าคิว) — ลำดับของรายการอื่นไม่เปลี่ยน
+    const pos = [], sb = [];
+    entries.forEach((e,i)=>{ if(e.status==='standby'){ pos.push(i); sb.push(e); } });
+    sb.sort((x,y)=>(x.slot||99)-(y.slot||99));
+    pos.forEach((p,k)=>{ entries[p] = sb[k]; });
+  }
   $('queueUpdatedAt').textContent = '· อัปเดตล่าสุด ' + new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
 
   const ul = $('queueListUl');
@@ -1799,7 +1845,7 @@ function renderQueueScreen(){
     $('myQueueCode').textContent = '-';
     $('myQueueStatus').textContent = 'ไม่ได้อยู่ในคิวนี้แล้ว';
     $('myQueueCard').className = 'card-hero status-none';
-    $('cancelQueueBtn').style.display = 'none';
+    $('cancelQueueBtn').style.display = 'none'; $('retakeBattBtn').style.display = 'none';
   } else {
     const mine = entries[myIndex];
     $('myQueueCode').textContent = 'A'+String(myIndex+1).padStart(2,'0');
@@ -1812,8 +1858,30 @@ function renderQueueScreen(){
     $('myQueueCard').className = 'card-hero' + (statusClass ? ' '+statusClass : '');
     $('cancelQueueBtn').style.display = mine.status==='active' ? 'none' : '';
     $('cancelQueueBtn').dataset.entryId = mine.id;
+    $('retakeBattBtn').style.display = (mine.status==='waiting'||mine.status==='standby') ? '' : 'none';
+    $('retakeBattBtn').dataset.entryId = mine.id;
   }
 }
+let retaking = false;
+$('retakeBattBtn').addEventListener('click', async ()=>{
+  const id = $('retakeBattBtn').dataset.entryId, loc = currentQueueLoc;
+  if(!id || retaking) return;
+  retaking = true;
+  try{
+    const photo = await askBatteryPhoto('ยืนยันรูปใหม่');
+    if(!photo) return;
+    const cur = (queueData[loc]||[]).find(e=>e.id===id);
+    if(!cur || !['waiting','standby'].includes(cur.status)){ appAlert('สถานะคิวเปลี่ยนแล้ว ส่งรูปใหม่ไม่ได้'); return; }
+    const ts = new Date().toISOString();
+    await db.ref().update({
+      ['queue/'+loc+'/'+id+'/batteryPhoto']: true,
+      ['queue/'+loc+'/'+id+'/batteryAt']: ts,
+      ['battery-photos/'+id]: {img: photo, ts, locKey: loc, plate: cur.plate, by: 'driver:'+driverCurrentUser.username}
+    });
+    appAlert('ส่งรูปแบตเตอรี่ใหม่แล้ว');
+  }catch(e){ appAlert('ส่งรูปไม่สำเร็จ: '+e.message); }
+  finally{ retaking = false; }
+});
 $('cancelQueueBtn').addEventListener('click', async ()=>{
   const entryId = $('cancelQueueBtn').dataset.entryId;
   if(!entryId) return;
