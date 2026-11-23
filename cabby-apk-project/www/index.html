@@ -30,6 +30,12 @@
     body{padding:24px 0;}
     #deviceFrame{height:calc(100vh - 48px);height:calc(100dvh - 48px);min-height:0;border-radius:28px;overflow:hidden;box-shadow:0 20px 60px rgba(15,25,45,.25);}
   }
+  /* แท็บเล็ต/จอสัมผัส (เช่น iPad): เต็มจอ ไม่ลอยเป็นกรอบมือถือ — เดสก์ท็อปที่ใช้เมาส์ยังเป็นกรอบเหมือนเดิม */
+  @media (min-width:431px) and (pointer:coarse){
+    .screen:not(.nopad){padding-left:max(18px,calc((100vw - 760px)/2));padding-right:max(18px,calc((100vw - 760px)/2));}
+    body{padding:0;}
+    #deviceFrame{max-width:none;width:100%;height:100vh;height:100dvh;border-radius:0;box-shadow:none;}
+  }
   button{font-family:inherit;}
   svg{display:block;}
   .screen{flex:1;overflow-y:auto;padding:18px 18px 52px;width:100%;}
@@ -587,8 +593,9 @@
 .pl-open .pl-ic{flex:none;width:40px;height:40px;border-radius:13px;background:#12c9d6;color:#04323a;display:flex;align-items:center;justify-content:center;} .pl-open.wait .pl-ic{background:#e0a030;color:#3a2600;}
 .pl-open .pl-tx{flex:1;min-width:0;display:flex;flex-direction:column;} .pl-open b{font-size:14px;color:#0a1f44;} .pl-open small{font-size:11.5px;color:#4a5d7a;font-weight:700;}
 .pl-open .pl-n{flex:none;min-width:30px;height:30px;padding:0 9px;border-radius:99px;background:#0a1f44;color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;}
-#poolModal,#pmModal,#annModal{display:none;position:absolute;inset:0;z-index:2800;background:rgba(7,26,62,.55);align-items:center;justify-content:center;padding:18px;}
-#poolModal.on,#pmModal.on,#annModal.on{display:flex;}
+#poolModal,#pmModal,#annModal,#dltModal{display:none;position:absolute;inset:0;z-index:2800;background:rgba(7,26,62,.55);align-items:center;justify-content:center;padding:18px;}
+#poolModal.on,#pmModal.on,#annModal.on,#dltModal.on{display:flex;}
+.hb.dlt{grid-column:1/-1;} .dl-st{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;background:#f1f5f9;color:#475569;} .dl-st.booked{background:#dbeafe;color:#1d4ed8;} .dl-st.postponed{background:#fef3c7;color:#b45309;} .dl-od{display:inline-block;margin-left:4px;padding:2px 8px;border-radius:999px;background:#fee2e2;color:#dc2626;font-size:10px;font-weight:800;}
 .pm-box{width:100%;max-width:380px;max-height:84%;display:flex;flex-direction:column;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 24px 60px rgba(7,26,62,.45);animation:pmPop .2s ease;}
 @keyframes pmPop{from{transform:translateY(12px) scale(.97);opacity:0}to{transform:none;opacity:1}}
 .pm-hd{position:relative;padding:16px 50px 14px 20px;background:linear-gradient(135deg,#061636 0%,#0a2556 60%,#0c3563 100%);border-bottom:3px solid #12c9d6;} .pm-hd h3{margin:0;color:#fff;font-size:17px;font-weight:800;}
@@ -1197,6 +1204,34 @@ function showDriverToast(title, body, kind){
   box.addEventListener('click', ()=> box.remove());
   $('toastBox').appendChild(box);
   setTimeout(()=>{ box.style.transition='opacity .3s'; box.style.opacity='0'; setTimeout(()=>box.remove(), 300); }, 6000);
+}
+function docExpiryNotify(al){ // เตือนครั้งเดียวต่อเอกสารต่อช่วง (หมดแล้ว/วันนี้/≤1/≤7/≤30 วัน) — เฉพาะตอนเปิดแอป
+  if(!driverCurrentUser) return;
+  al.forEach(([k,n])=>{
+    const b = n<0?'x':n<=0?'0':n<=1?'1':n<=7?'7':'30';
+    const key = `docn:${driverCurrentUser.username}:${k}:${b}`;
+    try{ if(localStorage.getItem(key)) return; localStorage.setItem(key,'1'); }catch(e){}
+    notifyDriver('เอกสารรถ: '+k, n<0?`หมดอายุแล้ว ${-n} วัน`:n===0?'หมดอายุวันนี้':`จะหมดอายุในอีก ${n} วัน`, 'doc');
+  });
+}
+// เช็กเวอร์ชันแอป (เฉพาะ APK) — เทียบกับ appRelease/apk.version ที่ตั้งใน SSLS
+const APK_DL_URL = 'https://ssls.asha-energy.co.th/download.html';
+function verNewer(a,b){ const x=String(a).split('.').map(n=>parseInt(n,10)||0), y=String(b).split('.').map(n=>parseInt(n,10)||0); for(let i=0;i<Math.max(x.length,y.length);i++){ const d=(x[i]||0)-(y[i]||0); if(d) return d>0; } return false; }
+function checkAppUpdate(){
+  if(!window.Capacitor) return;
+  try{
+    db.ref('appRelease/apk/version').once('value').then(sn=>{
+      const v = String(sn.val()||'').replace(/^v/i,'').trim(); if(!v || !verNewer(v, APP_VERSION)) return;
+      try{ if(localStorage.getItem('updDismiss')===v) return; }catch(e){}
+      let bar = document.getElementById('updBar'); if(bar) bar.remove();
+      bar = document.createElement('div'); bar.id = 'updBar';
+      bar.style.cssText = 'position:absolute;left:12px;right:12px;top:12px;z-index:9999;background:#0b2a5b;color:#fff;border-radius:14px;padding:10px 12px;display:flex;gap:10px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.3);font-size:14px;';
+      bar.innerHTML = '<span style="flex:1">มีเวอร์ชันใหม่ <b></b> กดเพื่ออัปเดต</span><a style="background:#19d8e2;color:#06223f;font-weight:700;border-radius:10px;padding:7px 12px;text-decoration:none" target="_blank" rel="noopener">อัปเดต</a><button type="button" aria-label="ปิด" style="background:none;border:0;color:#fff;font-size:20px">×</button>';
+      bar.querySelector('b').textContent = v; bar.querySelector('a').href = APK_DL_URL;
+      bar.querySelector('button').onclick = ()=>{ try{ localStorage.setItem('updDismiss', v); }catch(e){} bar.remove(); };
+      ($('deviceFrame')||document.body).appendChild(bar);
+    }).catch(()=>{});
+  }catch(e){}
 }
 function notifyDriver(title, body, kind){
   showDriverToast(title, body, kind);
@@ -2029,8 +2064,9 @@ function stopPm(){ if(pmRef){ try{ pmRef.off(); }catch(e){} pmRef = null; } pmFl
 // ฟัง repairRequests + garages ของ Fleet ผ่านแอป Firebase ตัวที่สอง คัดเฉพาะทะเบียนตัวเองไว้ในเครื่อง · ถ้าอ่านไม่ได้จะใช้ pmNotices (ที่เจ้าหน้าที่ซิงก์) แทน
 // ข้อแลกเปลี่ยน: เครื่องคนขับดาวน์โหลด repairRequests ทั้งก้อนทุกครั้งที่ Fleet เปลี่ยน แล้วคัดเอง — ถ้าไม่ต้องการ ตั้ง PM_DIRECT=false
 const PM_DIRECT = true, FLEET_DB_URL = 'https://taxi-fleet-management-123c1-default-rtdb.asia-southeast1.firebasedatabase.app', FLEET_ROOT = 'taxi-fleet-management-123c1';
+let dltData = [], dltVals, dltOk = false;
 let pmDirect = [], pmHist = [], pmDirectOk = false, pmFleetRefs = [], pmFleetVals = {};
-function pmFleetOff(){ pmFleetRefs.forEach(r=>{ try{ r.off(); }catch(e){} }); pmFleetRefs = []; pmFleetVals = {}; }
+function pmFleetOff(){ pmFleetRefs.forEach(r=>{ try{ r.off(); }catch(e){} }); pmFleetRefs = []; pmFleetVals = {}; dltData = []; dltVals = undefined; dltOk = false; }
 function pmIso(d){
   const t = String(d||'').trim(); if(/^\d{4}-\d{2}-\d{2}/.test(t)) return t.slice(0,10);
   const m = t.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/); if(!m) return '';
@@ -2071,6 +2107,57 @@ function pmFleetCompute(){
   hist.sort((a,b)=>String(b.date).localeCompare(String(a.date))); pmHist = hist.slice(0,30);
   pmDirect = out; pmDirectOk = true; pmNotify(); renderPmAll();
 }
+const DLT_NOTICE_DAYS = 7, DLT_ACTIVE = ['planned','booked','postponed'];
+const DLT_LABEL = {planned:'วางแผน', booked:'นัดแล้ว', postponed:'เลื่อนนัด'};
+function dltCompute(){
+  const key = pmRefKey; if(!key || dltVals === undefined) return;
+  dltData = pmToArr(dltVals).filter(x=> DLT_ACTIVE.includes(x.status) && String(x.plate||'').replace(/[\s.#$\[\]\/]/g,'').toLowerCase() === key && pmIso(x.planDate))
+    .map(x=>({ id:String(x.id!=null?x.id:(x.planDate+x.plate)).replace(/[.#$\[\]\/]/g,'_'), plate:String(x.plate||''), date:pmIso(x.planDate), time:dltTimes(x).time, timeEnd:dltTimes(x).timeEnd,
+      station:String(x.station||'').slice(0,160), topic:String(x.topic||'').slice(0,160), status:x.status, note:String(x.note||'').slice(0,300) }));
+  dltOk = true; dltNotify(); renderPmAll();
+}
+function dltTimes(x){
+  const tm=v=>{const m=String(v==null?'':v).match(/(\d{1,2})[:.](\d{2})/);return m?m[1].padStart(2,'0')+':'+m[2]:''};
+  const all=String(x.planTime==null?'':x.planTime).match(/\d{1,2}[:.]\d{2}/g)||[];
+  const end=x.planTimeEnd||x.planTimeTo||x.timeEnd||x.timeTo||x.planEndTime||x.endTime||x.planTimeUntil||x.planTime2||x.toTime||x.timeUntil||all[1];
+  return { time:tm(all[0]||x.planTimeFrom||x.timeFrom||x.fromTime), timeEnd:tm(end) };
+}
+function dltRange(x){ return x.time ? (x.timeEnd && x.timeEnd>x.time ? x.time+'–'+x.timeEnd : x.time) : ''; }
+function dltView(){ return dltData.map(x=>Object.assign({}, x, {diff:pmDiffDays(x.date)})).filter(x=>!isNaN(x.diff) && x.diff <= 30).sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||''))); }
+function dltNotify(){ // เตือนครั้งเดียวต่อรายการ ตอนเข้าช่วง 7 วัน (เด้ง + ระฆัง) — ต้องเปิดแอปอยู่ ไม่มี push ตอนปิดแอป
+  if(!driverCurrentUser) return;
+  dltView().filter(x=>x.diff>=0 && x.diff<=DLT_NOTICE_DAYS).forEach(x=>{
+    const k = `dltn:${driverCurrentUser.username}:${x.id}:${x.date}:${x.status}`;
+    try{ if(localStorage.getItem(k)) return; localStorage.setItem(k,'1'); }catch(e){}
+    notifyDriver('นัดนำรถเข้าตรวจกับกรมขนส่งฯ', `${pmWhen(x)} ${fmtDate(parseYmd(x.date))} ${dltRange(x)}${x.station?' · '+x.station:''}`, 'dlt');
+  });
+}
+function dltItemsHtml(list){
+  return list.map(x=>`<div class="pm-item ${x.diff<=1?'t':''}"><div class="pm-top"><span class="pm-when">${esc(x.diff<0?'เลยกำหนด '+(-x.diff)+' วัน':pmWhen(x))} · ${esc(fmtDate(parseYmd(x.date)))}</span><span class="pm-time">${esc(dltRange(x)||'--:--')} น.</span></div>
+    <div class="pm-row"><small>ทะเบียน</small><b>${esc(x.plate||'-')}</b></div>
+    <div class="pm-row"><small>เรื่อง</small><b>${esc(x.topic||'ตรวจสภาพรถ')}</b></div>
+    <div class="pm-row"><small>สถานที่ตรวจ</small><b>${esc(x.station||'ยังไม่ระบุ')}</b></div>
+    <div class="pm-row"><small>สถานะ</small><span><span class="dl-st ${esc(x.status)}">${esc(DLT_LABEL[x.status]||x.status)}</span>${x.diff<0?'<span class="dl-od">เลยกำหนด</span>':''}</span></div>
+    ${x.note?`<div class="pm-row"><small>หมายเหตุ</small><b>${esc(x.note)}</b></div>`:''}</div>`).join('');
+}
+function dltModalEl(){
+  let m = $('dltModal');
+  if(!m){
+    m = document.createElement('div'); m.id = 'dltModal';
+    m.innerHTML = '<div class="pm-box"><div class="pm-hd"><h3>นัดตรวจกับกรมขนส่งฯ</h3><button type="button" class="pm-x" aria-label="ปิด">×</button></div><div class="pm-bd" id="dltModalBody"></div></div>';
+    ($('deviceFrame') || document.body).appendChild(m);
+    m.addEventListener('mousedown', e=>{ if(e.target === m) closeDltModal(); });
+    m.querySelector('.pm-x').addEventListener('click', closeDltModal);
+  }
+  return m;
+}
+function closeDltModal(){ const m = $('dltModal'); if(m) m.classList.remove('on'); }
+function openDltModal(){
+  try{ let ch = false; notifs.forEach(n=>{ if(n.kind==='dlt' && !n.read){ n.read = true; ch = true; } }); if(ch){ saveNotifs(); updateBell(); } }catch(e){}
+  const list = dltView();
+  dltModalEl().classList.add('on');
+  $('dltModalBody').innerHTML = list.length ? dltItemsHtml(list) : '<div class="muted" style="text-align:center;padding:18px 6px;">ไม่มีนัดตรวจกับกรมขนส่งฯ ใน 30 วันข้างหน้า</div>';
+}
 function startPmFleet(){
   if(!PM_DIRECT) return;
   try{
@@ -2081,7 +2168,10 @@ function startPmFleet(){
     r2.on('value', snap=>{ pmFleetVals.gar = snap.val(); pmFleetCompute(); }, ()=>{});
     const r3 = fdb.ref(FLEET_ROOT+'/repairs');
     r3.on('value', snap=>{ pmFleetVals.rep = snap.val() || []; pmFleetCompute(); }, bad);
-    pmFleetRefs = [r1, r2, r3];
+    // แผนนำรถเข้าตรวจกับกรมขนส่งฯ (Fleet: dltPlans) — คัดเฉพาะทะเบียนของคนขับ สถานะ วางแผน/นัดแล้ว/เลื่อนนัด · อ่านไม่ได้ = ไม่แสดง ไม่กระทบส่วน PM&CM
+    const r4 = fdb.ref(FLEET_ROOT+'/dltPlans');
+    r4.on('value', snap=>{ dltVals = snap.val(); dltCompute(); }, ()=>{ dltOk = false; dltData = []; renderPmAll(); });
+    pmFleetRefs = [r1, r2, r3, r4];
   }catch(e){ pmDirectOk = false; }
 }
 // log การเปิดอ่าน: pmReadLogs/{ทะเบียน}/{เลขใบแจ้งซ่อม}/{username} = {firstReadAt,lastReadAt,count,source,notifiedAt,...} (เวลาจากนาฬิกาเครื่องคนขับ)
@@ -2212,6 +2302,11 @@ function renderPmModalBody(){
   $('pmModalBody').innerHTML = tabs + (pmPlateKey() ? (list.length ? pmItemsHtml(list) : `<div class="pm-empty">ไม่มีนัดนำรถเข้า PM&amp;CM ภายใน ${PM_NOTICE_DAYS} วันข้างหน้า</div>`) : '<div class="pm-empty">บัญชีนี้ยังไม่ผูกทะเบียนรถ</div>');
   pmLogRead(pmModalSrc);
 }
+function dltHomeTile(chev){
+  if(!dltOk) return '';
+  const dl = dltView(), y = dl[0], near = dl.filter(x=>x.diff<=DLT_NOTICE_DAYS).length;
+  return `<button type="button" class="hb dlt" id="dltHomeBtn"><span class="hb-ic">🏛️</span><span class="hb-tx"><span class="h">นัดตรวจกับกรมขนส่งฯ</span><span class="s">${y ? esc(y.diff<0?'เลยกำหนด '+(-y.diff)+' วัน':pmWhen(y))+' · '+esc(fmtDate(parseYmd(y.date)).replace(/\s*\d{4}$/,''))+' '+esc(y.time||'') : 'ไม่มีนัดใน 30 วัน'}</span></span>${near?`<span class="hb-n">${near}</span>`:chev}</button>`;
+}
 function homeBoxesHtml(){
   let seen = ''; try{ seen = localStorage.getItem(annSeenKey()) || ''; }catch(e){}
   const unread = announcements.filter(x=> String(x.ts||'') > seen).length;
@@ -2221,6 +2316,7 @@ function homeBoxesHtml(){
   return `<div class="hb-grid">
     <button type="button" class="hb" id="hbAnn"><span class="hb-ic">📣</span><span class="hb-tx"><span class="h">ประกาศ</span><span class="s">${latest ? esc(latest.title) : 'ยังไม่มีประกาศ'}</span></span>${unread?`<span class="hb-n">${unread}</span>`:chev}</button>
     <button type="button" class="hb pm" id="pmHomeBtn"><span class="hb-ic">🔧</span><span class="hb-tx"><span class="h">นัด PM&amp;CM</span><span class="s">${x ? esc(pmWhen(x))+' · '+esc(fmtDate(parseYmd(x.date)).replace(/\s*\d{4}$/,''))+' '+esc(x.time||'') : 'ไม่มีนัดใน '+PM_NOTICE_DAYS+' วัน'}</span></span>${pl.length?`<span class="hb-n">${pl.length}</span>`:chev}</button>
+    ${dltHomeTile(chev)}
   </div>`;
 }
 // รูปในประกาศ (staff เก็บเป็น data URL JPEG ย่อแล้ว) — รับเฉพาะรูปแบบ data:image/jpeg;base64 ที่เป็น base64 ล้วน กันฝังสคริปต์/ลิงก์ภายนอก
@@ -2261,6 +2357,7 @@ function renderHomeBoxes(){
   el.innerHTML = homeBoxesHtml();
   $('hbAnn').onclick = openAnnModal;
   $('pmHomeBtn').onclick = ()=>openPmModal('home');
+  if($('dltHomeBtn')) $('dltHomeBtn').onclick = openDltModal;
 }
 function pmHomeHtml(){
   const list = pmView(); if(!list.length) return '';
@@ -2877,7 +2974,7 @@ function addNotif(title, body, kind){
   if($('notifModal').style.display==='flex') renderNotifs();
 }
 function updateBell(){ const n = notifs.filter(x=>!x.read).length; $('bellBadge').textContent = n>9 ? '9+' : n; $('bellBadge').style.display = n ? '' : 'none'; }
-const NOTIF_KIND = { pm:['PM&CM','t'], booking:['งานจอง',''], standby:['คิว','t'], active:['ทริป','t'], cancel:['แจ้งเตือน','r'] };
+const NOTIF_KIND = { pm:['PM&CM','t'], dlt:['ตรวจขนส่ง','t'], doc:['เอกสารรถ','t'], booking:['งานจอง',''], standby:['คิว','t'], active:['ทริป','t'], cancel:['แจ้งเตือน','r'] };
 function renderNotifs(){
   const unread = notifs.filter(x=>!x.read).length;
   $('notifSub').textContent = unread ? `ยังไม่ได้อ่าน ${unread} รายการ` : 'ไม่มีรายการใหม่';
@@ -2885,7 +2982,7 @@ function renderNotifs(){
     const [label, tone] = NOTIF_KIND[n.kind] || ['แจ้งเตือน',''];
     const d = new Date(n.ts);
     const t = `${d.getDate()} ${TH_M[d.getMonth()]} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-    const go = n.kind==='booking' || n.kind==='pm';
+    const go = n.kind==='booking' || n.kind==='pm' || n.kind==='dlt';
     return `<div class="n-item${n.read?'':' unread'}${go?' click':''}" data-kind="${esc(n.kind)}">
       <div class="n-ic ${tone}">${ico(n.kind==='booking'?'calendar':'send', 26)}</div>
       <div style="min-width:0;flex:1;"><div class="n-meta"><b class="${tone}">${esc(label)}</b>· ${t}</div><div class="n-title">${esc(n.title)}</div>${n.body?`<div class="muted" style="margin-top:2px;">${esc(n.body)}</div>`:''}${n.kind==='pm' ? `<span class="n-st ${n.read?'ok':'new'}">${n.read?'✓ อ่านแล้ว':'● ยังไม่อ่าน'}</span>` : ''}</div>
@@ -2903,6 +3000,7 @@ $('notifList').addEventListener('click', e=>{
   const it = e.target.closest('.n-item.click'); if(!it) return;
   closeNotifs();
   if(it.dataset.kind === 'pm'){ pmEvent('notif_tap', 'notif', null); openPmModal('notif'); }
+  else if(it.dataset.kind === 'dlt'){ openDltModal(); }
   else showScreen('job');
 });
 
@@ -2943,8 +3041,10 @@ $('screen-profile').addEventListener('click', e=>{
   const h = e.target.closest('.sec-head'); if(!h) return;
   const k = h.dataset.sec, card = h.parentElement;
   if(k === 'pm'){ openPmModal('profile'); return; }
-  if(openSecs.has(k)) openSecs.delete(k); else openSecs.add(k);
-  card.classList.toggle('open', openSecs.has(k)); h.setAttribute('aria-expanded', openSecs.has(k));
+  const was = openSecs.has(k);
+  openSecs.clear(); if(!was) openSecs.add(k);
+  document.querySelectorAll('#screen-profile .sec-head').forEach(x=>{ const on = openSecs.has(x.dataset.sec); x.parentElement.classList.toggle('open', on); x.setAttribute('aria-expanded', on); });
+  if(!was) setTimeout(()=>card.scrollIntoView({block:'nearest',behavior:'smooth'}),50);
   if(k === 'ann') renderAnn();
 });
 // ช่องทางติดต่อ — ค่าจากใบสรุปค่าเดินทาง (ยังไม่ยืนยันว่าเป็นช่องทางสำหรับคนขับ) แก้ที่นี่ที่เดียว
@@ -2997,6 +3097,7 @@ function renderProfile(){
   const today0 = parseYmd(ymd(new Date()));
   const al = [['พ.ร.บ.',veh.actExpiry],['ประกันภัย',veh.insuranceExpiry],['ภาษีรถ',veh.taxExpiry],['ตรวจมิเตอร์',veh.meterExpiry],['ใบขับขี่',veh.licenseExpiry]]
     .filter(([,d])=>d).map(([k,d])=>[k, Math.round((parseYmd(d)-today0)/864e5)]).filter(([,n])=>!isNaN(n) && n<=30).sort((a,b)=>a[1]-b[1]);
+  docExpiryNotify(al);
   $('profAlerts').innerHTML = al.map(([k,n])=>`<div class="exp-alert ${n<0?'bad':'warn'}"><span class="dot"></span><span>${esc(k)} ${n<0?`หมดอายุแล้ว ${-n} วัน`:n===0?'หมดอายุวันนี้':`จะหมดอายุในอีก ${n} วัน`}</span></div>`).join('');
   
   const sub = [veh.color, veh.rentPerDay != null && veh.rentPerDay !== '' ? `ค่าเช่า ${baht2(veh.rentPerDay)}/วัน` : ''].filter(Boolean).join(' · ');
@@ -3071,7 +3172,7 @@ $('queueBackBtn').addEventListener('click', ()=>showScreen(lastMain));
 // เก็บ session ไว้ใน localStorage กันหลุดล็อกอินทุกครั้งที่รีเฟรช — เก็บแค่ username ไม่เก็บรหัสผ่าน/hash ใดๆ ทั้งสิ้น
 // ถ้าบัญชีถูกลบ/ระงับไปหลังล็อกอินไว้ ตอน refresh จะเช็คซ้ำกับ DB เสมอแล้วเด้งกลับไปหน้า login เอง ไม่ใช่ session ที่ปลอมข้อมูลค้างอยู่ตลอดไป
 // เวอร์ชันของตัวแอป (เนื้อหาเว็บ driver.html) — เพิ่มเลขทุกครั้งที่ส่งมอบรุ่นใหม่ ไม่ใช่ versionName ของ APK
-const APP_VERSION = '1', APP_BUILD = '01/11/2026';
+const APP_VERSION = '1.03', APP_BUILD = '23/11/2026';
 document.querySelectorAll('.app-ver').forEach(el=>{ el.textContent = 'V.' + APP_VERSION + '_' + APP_BUILD; });
 const DRIVER_SESSION_KEY = 'ssls_driver_session_username';
 const DRIVER_LOGIN_AT_KEY = 'ssls_driver_login_at'; // เวลา (ms) ที่ล็อกอินล่าสุด เก็บค้างในเครื่องจนกว่าจะกดออกจากระบบ
@@ -3088,22 +3189,37 @@ function enterApp(u){
   startBookings();
   startAnnouncements(); startBanners();
   loadQueuesRealtime();
-  setupPush();
+  setupPush(); checkAppUpdate();
   showScreen('home');
   requestMyLocation(true); // บังคับขอสิทธิ์ตำแหน่งทันทีที่เข้าแอป ไม่ต้องรอผู้ใช้กดปุ่มเอง — ถ้าปฏิเสธก็ยังกดปุ่ม ⟳ เองทีหลังได้
   startLocationAutoRefresh(); // รีเฟรชตำแหน่งอัตโนมัติทุก 5 นาที ตราบใดที่ยัง login อยู่
   if(typeof Notification !== 'undefined' && Notification.permission === 'default'){ Notification.requestPermission().catch(()=>{}); } // ขอสิทธิ์แจ้งเตือนระบบไว้เผื่อ — ปฏิเสธก็ไม่เป็นไร ยังมี toast+เสียงในแอปอยู่ดี
+}
+const FN_BASE = 'https://asia-southeast1-job-system-29d9b.cloudfunctions.net/', SESS_TOKEN_KEY = 'ssls_driver_token';
+async function fnPost(name, body){ // ผล {st, j} · ถ้า function ยังไม่ deploy/เครือข่ายล้ม → st=0 (ให้ใช้วิธีเดิมแทน)
+  try{
+    const r = await fetch(FN_BASE+name, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+    let j = null; try{ j = await r.json(); }catch(e){}
+    if(!j || (!r.ok && !j.error)) return {st:0, j:null};
+    return {st:r.status, j};
+  }catch(e){ return {st:0, j:null}; }
 }
 async function doLogin(){
   const username = $('loginUser').value.trim();
   const pin = $('loginPin').value.trim();
   $('loginErr').style.display = 'none';
   if(!username || !pin){ $('loginErr').textContent='กรอก username และรหัสผ่านให้ครบ'; $('loginErr').style.display=''; return; }
-  const list = await loadDriverAccountsRaw();
-  const u = list.find(x=>x.username===username);
-  if(!u || u.active===false){ $('loginErr').textContent='ไม่พบบัญชีนี้ หรือบัญชีถูกระงับ'; $('loginErr').style.display=''; return; }
-  const hash = await hashPin(pin);
-  if(hash !== u.pinHash){ $('loginErr').textContent='รหัสผ่านไม่ถูกต้อง'; $('loginErr').style.display=''; return; }
+  let u = null;
+  const fr = await fnPost('driverLogin', {username, pin});
+  if(fr.st === 200 && fr.j && fr.j.user){ u = fr.j.user; try{ localStorage.setItem(SESS_TOKEN_KEY, fr.j.token||''); }catch(e){} }
+  else if(fr.st){ $('loginErr').textContent = fr.j.error || 'เข้าสู่ระบบไม่สำเร็จ'; $('loginErr').style.display=''; return; }
+  else { // วิธีเดิม (function ยังไม่พร้อม) — อ่าน driver-users ตรงๆ
+    const list = await loadDriverAccountsRaw();
+    u = list.find(x=>x.username===username);
+    if(!u || u.active===false){ $('loginErr').textContent='ไม่พบบัญชีนี้ หรือบัญชีถูกระงับ'; $('loginErr').style.display=''; return; }
+    const hash = await hashPin(pin);
+    if(hash !== u.pinHash){ $('loginErr').textContent='รหัสผ่านไม่ถูกต้อง'; $('loginErr').style.display=''; return; }
+  }
   await loadVehiclesRaw();
   try{ localStorage.setItem(DRIVER_SESSION_KEY, username); localStorage.setItem(DRIVER_LOGIN_AT_KEY, String(Date.now())); const {pinHash:_ph, ...safe} = u; localStorage.setItem('ssls_driver_user_cache', JSON.stringify(safe)); }catch(e){ /* บาง browser ปิด localStorage (private mode บางตัว) — ไม่ critical แค่รีเฟรชแล้วต้องล็อกอินใหม่เหมือนเดิม */ }
   enterApp(u);
@@ -3119,7 +3235,7 @@ $('logoutBtn').addEventListener('click', ()=>{
   myLatLng = null;
   lastGeofenceOutOfRange = null;
   stopLocationAutoRefresh();
-  try{ localStorage.removeItem(DRIVER_SESSION_KEY); localStorage.removeItem(DRIVER_LOGIN_AT_KEY); localStorage.removeItem('ssls_driver_user_cache'); }catch(e){}
+  try{ localStorage.removeItem(DRIVER_SESSION_KEY); localStorage.removeItem(DRIVER_LOGIN_AT_KEY); localStorage.removeItem('ssls_driver_user_cache'); localStorage.removeItem(SESS_TOKEN_KEY); }catch(e){}
   $('app').style.display = 'none';
   showLoginScreen();
   $('loginPin').value = '';
@@ -3136,7 +3252,11 @@ $('logoutBtn').addEventListener('click', ()=>{
   if(savedUsername){
     // เช็คบัญชีซ้ำกับ DB — ถ้าเครือข่ายล้มเหลว (ไม่ใช่ "ไม่พบบัญชี") ใช้สำเนาที่แคชไว้ตอนล็อกอินแทน เพื่อไม่ให้หลุดล็อกอินเพราะเน็ตช้า
     let u = null, netFail = false;
-    try{
+    let tok = ''; try{ tok = localStorage.getItem(SESS_TOKEN_KEY) || ''; }catch(e){}
+    const sr = tok ? await fnPost('driverSession', {username:savedUsername, token:tok}) : {st:0};
+    if(sr.st === 200 && sr.j && sr.j.user) u = sr.j.user;
+    else if(sr.st === 401 || sr.st === 404){ u = null; } // session หมดอายุ/บัญชีถูกระงับ → ล็อกอินใหม่
+    else try{
       const snap = await db.ref('driver-users').once('value'), val = snap.val() || {};
       if(val[savedUsername]) u = {username:savedUsername, ...val[savedUsername]};
     }catch(e){ netFail = true; }
