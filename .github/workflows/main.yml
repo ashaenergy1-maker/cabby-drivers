@@ -57,6 +57,10 @@ jobs:
           EOF
       - name: Build
         working-directory: app
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KS_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: |
           set -eE
           trap 'echo "::error::ล้มที่คำสั่ง: $BASH_COMMAND (บรรทัด $LINENO)"' ERR
@@ -84,7 +88,29 @@ jobs:
           grep -q 'android:screenOrientation' $f || sed -i '0,/<activity\b/s##<activity android:screenOrientation="portrait"#' $f
           grep -q 'android:screenOrientation="portrait"' $f || { echo "::error::ใส่ล็อกแนวตั้งไม่สำเร็จ"; exit 1; }
           echo '--- manifest activity ---'; grep -n -A3 '<activity' $f
+          # ===== เซ็น APK ด้วย keystore คงที่ + versionCode เพิ่มทุกบิลด์ → ติดตั้งทับเวอร์ชันเก่าได้ไม่ต้องลบแอป =====
+          G=android/app/build.gradle
+          VN=$(grep -o "APP_VERSION = '[^']*'" www/index.html | head -1 | sed "s/.*'\(.*\)'/\1/"); VN=${VN:-1.0}
+          sed -i "s/versionCode [0-9]*/versionCode ${{ github.run_number }}/; s/versionName \"[^\"]*\"/versionName \"$VN\"/" $G
+          if [ -n "$KS_B64" ]; then
+            echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/cabby.jks"
+            export KS_FILE="$RUNNER_TEMP/cabby.jks"
+            python3 - <<'PY'
+          import re
+          g = open('android/app/build.gradle').read()
+          sc = "signingConfigs {\n        cabby {\n            storeFile file(System.getenv('KS_FILE'))\n            storePassword System.getenv('KS_PASS')\n            keyAlias System.getenv('KS_ALIAS')\n            keyPassword System.getenv('KS_PASS')\n        }\n    }\n    buildTypes {\n        debug { signingConfig signingConfigs.cabby }"
+          assert 'buildTypes {' in g
+          open('android/app/build.gradle', 'w').write(g.replace('buildTypes {', sc, 1))
+          PY
+            echo "::notice::เซ็นด้วย keystore คงที่ · versionCode=${{ github.run_number }} versionName=$VN"
+          else
+            echo "::warning::ไม่พบ secret ANDROID_KEYSTORE_B64 — ใช้ debug key สุ่ม (ติดตั้งทับเวอร์ชันเก่าไม่ได้ ต้องลบแอปก่อน)"
+          fi
           npm run build:android
+      - name: Show APK signature
+        run: |
+          BT=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -1)
+          $BT/apksigner verify --print-certs app/android/app/build/outputs/apk/debug/app-debug.apk | grep -i 'SHA-256' || true
       - name: Verify icon is inside APK
         working-directory: app
         run: |
