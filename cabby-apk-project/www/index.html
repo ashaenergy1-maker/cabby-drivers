@@ -2673,23 +2673,29 @@ const CMP_FB = {apiKey:"AIzaSyDOQ2KPcqDycNVLSH32AR_5cRKSnD5MEoU", authDomain:"te
 let banners = [], bnRef = null;
 const bnName = n => String(n||'').replace(/\[\[|\]\]/g,'');
 const bnNameHtml = n => esc(String(n||'')).replace(/\[\[(.+?)\]\]/g,'<em>$1</em>');
+let bnRef2 = null, bnRaw = {cmp:{}, own:{}};
+function bnRecompute(){
+  const d = new Date(), today = bnToday();
+  const all = Object.entries(bnRaw.cmp||{}).map(([id,x])=>({id,...x})).concat(Object.entries(bnRaw.own||{}).map(([id,x])=>({id:'own_'+id,...x})));
+  banners = all.filter(x=>x && !x.deleted && x.name && /^\d{4}-\d{2}-\d{2}$/.test(x.from||'') && /^\d{4}-\d{2}-\d{2}$/.test(x.to||'') && x.from<=today && x.to>=today)
+    .map(x=>({...x, daysLeft: Math.ceil((new Date(x.to+'T23:59:59') - d)/86400000)}))
+    .sort((a,b)=>a.daysLeft-b.daysLeft);
+  renderBanners();
+}
 function startBanners(){
-  stopBanners();
+  stopBanners(); bnRaw = {cmp:{}, own:{}};
+  // แหล่งที่ 1: ระบบแคมเปญเดิม · แหล่งที่ 2: appBanners (ตั้งจาก SSLS)
   try{
     let app; try{ app = firebase.app('cmp'); }catch(e){ app = firebase.initializeApp(CMP_FB,'cmp'); }
     bnRef = app.database().ref('workspaces/campaigns/list');
-  }catch(e){ banners = []; renderBanners(); return; }
-  bnRef.on('value', snap=>{
-    const v = snap.val() || {}, d = new Date();
-    const today = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-    banners = Object.entries(v).map(([id,x])=>({id,...x}))
-      .filter(x=>x && !x.deleted && x.name && /^\d{4}-\d{2}-\d{2}$/.test(x.from||'') && /^\d{4}-\d{2}-\d{2}$/.test(x.to||'') && x.from<=today && x.to>=today)
-      .map(x=>({...x, daysLeft: Math.ceil((new Date(x.to+'T23:59:59') - d)/86400000)}))
-      .sort((a,b)=>a.daysLeft-b.daysLeft);
-    renderBanners();
-  }, ()=>{ banners = []; renderBanners(); });
+    bnRef.on('value', snap=>{ bnRaw.cmp = snap.val() || {}; bnRecompute(); }, ()=>{ bnRaw.cmp = {}; bnRecompute(); });
+  }catch(e){ bnRaw.cmp = {}; }
+  try{
+    bnRef2 = db.ref('appBanners');
+    bnRef2.on('value', snap=>{ bnRaw.own = snap.val() || {}; bnRecompute(); }, ()=>{ bnRaw.own = {}; bnRecompute(); });
+  }catch(e){ bnRaw.own = {}; }
 }
-function stopBanners(){ bnPopupDone = false; { const p = $('bnPopup'); if(p) p.remove(); } if(bnRef){ try{ bnRef.off(); }catch(e){} bnRef = null; } banners = []; renderBanners(); }
+function stopBanners(){ bnPopupDone = false; { const p = $('bnPopup'); if(p) p.remove(); } if(bnRef){ try{ bnRef.off(); }catch(e){} bnRef = null; } if(bnRef2){ try{ bnRef2.off(); }catch(e){} bnRef2 = null; } banners = []; renderBanners(); }
 const bnKey = () => 'ssls_bn_x_' + ((driverCurrentUser && driverCurrentUser.username) || '');
 const bnToday = () => { const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
 let bnPopupDone = false; // โชว์ป๊อปอัปครั้งเดียวต่อการล็อกอิน/เปิดแอป
