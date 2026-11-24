@@ -604,6 +604,7 @@
 .pl-empty{text-align:center;color:#5b6b85;font-size:13px;padding:22px 8px;}
 </style>
 <style id="pooldetail-style">
+.pv-card{border:1.5px dashed #b9c8e2;border-radius:16px;padding:11px 12px;margin-bottom:9px;background:#f6f9ff;} .pv-card.can{border-style:solid;border-color:#19d8e2;cursor:pointer;} .pv-tag{display:inline-block;margin-top:6px;font-size:11.5px;font-weight:800;color:#8a5200;background:#fff3d6;border-radius:99px;padding:3px 10px;} .pv-card.can .pv-tag{color:#066b73;background:#d9f7f9;}
 .pl-item{cursor:pointer;} .pl-more{font-size:11.5px;color:#0a8c97;font-weight:700;text-align:right;margin:4px 0 8px;}
 #poolDetail{display:none;position:absolute;inset:0;z-index:2850;background:rgba(7,26,62,.6);align-items:center;justify-content:center;padding:14px;} #poolDetail.on{display:flex;}
 .pd-box{width:100%;max-width:380px;max-height:90%;display:flex;flex-direction:column;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 24px 60px rgba(7,26,62,.5);animation:pmPop .2s ease;}
@@ -873,6 +874,7 @@
     <div class="day-strip" id="bookingStrip"></div>
     <div class="sec-title" id="bookingHead"></div>
     <div id="bookingList"></div>
+    <div id="bookingPoolPrev"></div>
   </div>
 
   <div id="screen-bookingDetail" class="screen nopad" style="display:none;">
@@ -1420,6 +1422,24 @@ const QJ_HINTS = {
 };
 const qjStageKey = e => !e.acceptedAt ? 'sent' : (QJ_STAGES.some(x=>x[0]===e.stage) ? e.stage : 'accepted');
 const qjStageDef = e => QJ_STAGES.find(x=>x[0]===qjStageKey(e));
+// ขั้นที่เสี่ยงต่ำ (ขึ้นรถ/เริ่มเดินทาง/ถึงจุดหมาย) ไม่ถามยืนยัน — กดพลาดแล้วกด "ย้อนกลับ" ได้ภายใน 6 วินาที (เวลาของขั้นเดิมถูกลบ)
+function undoToast(label, undo){
+  const old = document.getElementById('undoToast'); if(old) old.remove();
+  const el = document.createElement('div'); el.id = 'undoToast';
+  el.style.cssText = 'position:absolute;left:14px;right:14px;bottom:96px;z-index:3000;background:#0b2a5b;color:#fff;border-radius:14px;padding:10px 14px;display:flex;gap:10px;align-items:center;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.3);';
+  el.innerHTML = '<span style="flex:1"></span><button type="button" style="background:#19d8e2;color:#06223f;font-weight:800;border:0;border-radius:10px;padding:7px 14px">ย้อนกลับ</button>';
+  el.firstChild.textContent = label;
+  const t = setTimeout(()=>el.remove(), 6000);
+  el.querySelector('button').onclick = async ()=>{ clearTimeout(t); el.remove(); await undo(); };
+  (document.getElementById('deviceFrame') || document.body).appendChild(el);
+}
+async function revertStage(path, from, to){
+  const ref = db.ref(path);
+  try{
+    const r = await ref.child('stage').transaction(cur=> cur===to ? from : undefined);
+    if(r.committed) await ref.child('stageTimes/'+to).remove().catch(()=>{}); else appAlert('ย้อนกลับไม่ได้ สถานะเปลี่ยนไปแล้ว');
+  }catch(err){ appAlert('ย้อนกลับไม่สำเร็จ: '+err.message); }
+}
 // เลื่อนขั้นแบบ transaction: เลื่อนได้เฉพาะเมื่อยังอยู่ขั้นที่หน้าจอเห็น (กันกดซ้ำ/สองเครื่อง)
 async function advanceQjStage(e){
   const def = qjStageDef(e), to = def[4]; if(!to) return false;
@@ -1584,7 +1604,11 @@ function renderDash(){
     const e = oj[0], def = qjStageDef(e);
     if(def[0]==='arrived'){ finishQueueJob(e); return; } // สรุปค่าโดยสาร + กรอกค่าตามมิเตอร์/ทางด่วน + ยืนยันจบงาน
     if(def[0]==='sent'){ const m = acceptConflict('queue'); if(m){ appAlert(m); return; } }
-    if(await appConfirm(def[3])) await advanceQjStage(e);
+    if(def[0]==='sent'){ if(await appConfirm(def[3])) await advanceQjStage(e); return; } // รับงาน = ยังถามยืนยัน
+    const from = def[0], to = def[4], path = 'queue/'+e.locKey+'/'+e.id;
+    if(!(await advanceQjStage(e))) return;
+    if(to==='arrived'){ finishQueueJob(Object.assign({}, e, {stage:'arrived'})); return; } // ถึงจุดหมาย → เปิดฟอร์มค่าโดยสารต่อทันที (ปิดฟอร์มแล้วกลับมากรอกทีหลังได้)
+    undoToast('บันทึก: '+(QJ_STAGES.find(x=>x[0]===to)||[])[1]+' ✓', ()=>revertStage(path, from, to));
   });
   $('dashQueue').querySelectorAll('.dash-bk-btn').forEach(x=>x.addEventListener('click', ()=>{ openBookingId = x.dataset.bk; showScreen('bookingDetail'); }));
 }
@@ -2304,7 +2328,8 @@ function renderPmModalBody(){
 }
 function dltHomeTile(chev){
   if(!dltOk) return '';
-  const dl = dltView(), y = dl[0], near = dl.filter(x=>x.diff<=DLT_NOTICE_DAYS).length;
+  const dl = dltView(); if(!dl.length) return '';
+  const y = dl[0], near = dl.filter(x=>x.diff<=DLT_NOTICE_DAYS).length;
   return `<button type="button" class="hb dlt" id="dltHomeBtn"><span class="hb-ic">🏛️</span><span class="hb-tx"><span class="h">นัดตรวจกับกรมขนส่งฯ</span><span class="s">${y ? esc(y.diff<0?'เลยกำหนด '+(-y.diff)+' วัน':pmWhen(y))+' · '+esc(fmtDate(parseYmd(y.date)).replace(/\s*\d{4}$/,''))+' '+esc(y.time||'') : 'ไม่มีนัดใน 30 วัน'}</span></span>${near?`<span class="hb-n">${near}</span>`:chev}</button>`;
 }
 function homeBoxesHtml(){
@@ -2313,10 +2338,14 @@ function homeBoxesHtml(){
   const latest = announcements.slice().sort((a,b)=> (b.pinned?1:0)-(a.pinned?1:0) || String(b.ts||'').localeCompare(String(a.ts||'')))[0];
   const pl = pmView(), x = pl[0];
   const chev = '<span class="hb-chev" aria-hidden="true">›</span>';
+  // แสดงเฉพาะกล่องที่มีการแจ้งเตือนจริง: ประกาศที่ยังไม่อ่าน · นัด PM&CM ในช่วงแจ้งเตือน · นัดตรวจขนส่ง
+  const showAnn = unread > 0, showPm = pl.length > 0, one = (showAnn ? 1 : 0) + (showPm ? 1 : 0) === 1 ? ' style="grid-column:1/-1"' : '';
+  const dlt = dltHomeTile(chev);
+  if(!showAnn && !showPm && !dlt) return '';
   return `<div class="hb-grid">
-    <button type="button" class="hb" id="hbAnn"><span class="hb-ic">📣</span><span class="hb-tx"><span class="h">ประกาศ</span><span class="s">${latest ? esc(latest.title) : 'ยังไม่มีประกาศ'}</span></span>${unread?`<span class="hb-n">${unread}</span>`:chev}</button>
-    <button type="button" class="hb pm" id="pmHomeBtn"><span class="hb-ic">🔧</span><span class="hb-tx"><span class="h">นัด PM&amp;CM</span><span class="s">${x ? esc(pmWhen(x))+' · '+esc(fmtDate(parseYmd(x.date)).replace(/\s*\d{4}$/,''))+' '+esc(x.time||'') : 'ไม่มีนัดใน '+PM_NOTICE_DAYS+' วัน'}</span></span>${pl.length?`<span class="hb-n">${pl.length}</span>`:chev}</button>
-    ${dltHomeTile(chev)}
+    ${showAnn ? `<button type="button" class="hb" id="hbAnn"${one}><span class="hb-ic">📣</span><span class="hb-tx"><span class="h">ประกาศ</span><span class="s">${latest ? esc(latest.title) : ''}</span></span><span class="hb-n">${unread}</span></button>` : ''}
+    ${showPm ? `<button type="button" class="hb pm" id="pmHomeBtn"${one}><span class="hb-ic">🔧</span><span class="hb-tx"><span class="h">นัด PM&amp;CM</span><span class="s">${esc(pmWhen(x))+' · '+esc(fmtDate(parseYmd(x.date)).replace(/\s*\d{4}$/,''))+' '+esc(x.time||'')}</span></span><span class="hb-n">${pl.length}</span></button>` : ''}
+    ${dlt}
   </div>`;
 }
 // รูปในประกาศ (staff เก็บเป็น data URL JPEG ย่อแล้ว) — รับเฉพาะรูปแบบ data:image/jpeg;base64 ที่เป็น base64 ล้วน กันฝังสคริปต์/ลิงก์ภายนอก
@@ -2355,8 +2384,8 @@ function openAnnModal(){
 function renderHomeBoxes(){
   const el = $('dashPm'); if(!el || !driverCurrentUser) return;
   el.innerHTML = homeBoxesHtml();
-  $('hbAnn').onclick = openAnnModal;
-  $('pmHomeBtn').onclick = ()=>openPmModal('home');
+  if($('hbAnn')) $('hbAnn').onclick = openAnnModal;
+  if($('pmHomeBtn')) $('pmHomeBtn').onclick = ()=>openPmModal('home');
   if($('dltHomeBtn')) $('dltHomeBtn').onclick = openDltModal;
 }
 function pmHomeHtml(){
@@ -2425,17 +2454,30 @@ function bkkNow(){
 // หมายเหตุที่ระบุทะเบียนรถ = งานเจาะจงรถคันนั้น ไม่เอาเข้ากลาง (ตรวจจากคำว่า "ทะเบียน" หรือรูปแบบป้ายไทย เช่น 1กข 1234 / กก-1234 / 1nn796) — จับด้วยรูปแบบ อาจพลาดบางกรณี
 const PLATE_RE = /(?<![ก-๛0-9A-Za-z])(?:\d{1,2}\s?[ก-ฮ]{1,3}|[ก-ฮ]{2,3})\s?-?\s?\d{1,4}(?!\d)|(?<![0-9A-Za-z])\d{1,2}\s?[A-Za-z]{1,3}\s?-?\s?\d{3,4}(?!\d)/;
 const noteHasPlate = n => { n = String(n||''); return /ทะเบียน/.test(n) || PLATE_RE.test(n); };
+// งานที่ระบุคนขับ/ทะเบียนไว้แล้ว = ไม่ใช่งานกลาง: ดูจากฟิลด์ driverName/driverPlate และเทียบหมายเหตุกับทะเบียน+ชื่อคนขับที่ระบุไว้ใน SSLS (vehicles)
+const plateNorm = x => String(x||'').toLowerCase().replace(/[\s.\-_]/g,'');
+function cabbAssigned(b){
+  if(String(b.driverName||'').trim() || String(b.driverPlate||'').trim() || b.driverCode) return true;
+  const text = String(b.note||'')+' '+String(b.driverNote||''); if(!text.trim()) return false;
+  if(noteHasPlate(text)) return true;
+  const tn = plateNorm(text), tl = text.toLowerCase();
+  return vehicles.some(v=>{
+    const pl = plateNorm(v.plate);
+    if(pl.length>=4 && tn.includes(pl)) return true;
+    return [v.driver1Name, v.driver2Name].some(n=>{ n = String(n||'').trim().toLowerCase(); return n.length>=4 && tl.includes(n); });
+  });
+}
 function startPool(){
   stopPool();
   poolOffRef = db.ref('.info/serverTimeOffset'); poolOffRef.on('value', s=>{ poolOffset = Number(s.val())||0; });
   poolRef = db.ref('bookingPool');
   poolRef.on('value', snap=>{
     poolData = Object.entries(snap.val()||{}).map(([id,v])=>({id, ...v}));
-    if(currentScreen === 'job') renderPool();
+    if(currentScreen === 'job'){ renderPool(); renderPoolPreview(); }
   }, ()=>{ poolData = []; });
   poolClaimRef = null; poolClaimDate = '';
   if(!window.__stageTick) window.__stageTick = setInterval(()=>{ if(driverCurrentUser){ try{ if(currentScreen==='job') renderBookings(); renderDash(); }catch(e){} } }, 60000);
-  if(!window.__poolTick) window.__poolTick = setInterval(()=>{ if(driverCurrentUser && currentScreen === 'job'){ renderPool(); ingestPool(false).catch(()=>{ poolLastIngest = Date.now() + 240000; }); } }, 20000); // ตรวจซ้ำกับ CABB ทุก ~20 วินาที: งานที่ถูกแมตช์/ยกเลิกใน CABB แล้วจะหายจากรายการ
+  if(!window.__poolTick) window.__poolTick = setInterval(()=>{ if(driverCurrentUser && currentScreen === 'job'){ renderPool(); renderPoolPreview(); ingestPool(false).catch(()=>{ poolLastIngest = Date.now() + 240000; }); } }, 20000); // ตรวจซ้ำกับ CABB ทุก ~20 วินาที: งานที่ถูกแมตช์/ยกเลิกใน CABB แล้วจะหายจากรายการ
 }
 function stopPool(){
   if(poolRef){ try{ poolRef.off(); }catch(e){} poolRef = null; }
@@ -2452,7 +2494,7 @@ async function ingestPool(force){
   let res; try{ res = await fetch(url, {signal:ctl.signal}); } finally { clearTimeout(tm); }
   if(!res.ok) throw new Error(`ต้นทางตอบกลับ HTTP ${res.status} (ต้องตั้ง .indexOn: status ที่ต้นทาง)`);
   const data = await res.json(), now = bkkNow(), cut = (v,n)=> String(v==null?'':v).slice(0,n);
-  const list = Object.values(data||{}).filter(b=>b && b.status===CABB_POOL_STATUS && !b.driverCode && !noteHasPlate(b.note) && /^[A-Za-z0-9_-]{1,64}$/.test(String(b.bookingId||'')) && cabbDate((b.trip||{}).date) >= now.today);
+  const list = Object.values(data||{}).filter(b=>b && b.status===CABB_POOL_STATUS && !cabbAssigned(b) && /^[A-Za-z0-9_-]{1,64}$/.test(String(b.bookingId||'')) && cabbDate((b.trip||{}).date) >= now.today);
   const keep = new Set(list.map(b=>b.bookingId)); let added = 0, removed = 0;
   for(const b of list){
     const t = b.trip||{};
@@ -2511,7 +2553,7 @@ async function claimPoolJob(p){
   try{
     const detRes = await fetch(`${CABB_BOOKING_URL}/bookings/${encodeURIComponent(p.id)}.json`);
     const d = detRes.ok ? await detRes.json() : null;
-    if(!d || d.status !== CABB_POOL_STATUS || d.driverCode || noteHasPlate(d.note)){ appAlert('งานจองถูกรับไปแล้ว'); return; }
+    if(!d || d.status !== CABB_POOL_STATUS || cabbAssigned(d)){ appAlert('งานจองถูกรับไปแล้ว'); return; }
     if(isTarget){ // โควตา: ตรวจและนับใน transaction เดียว
       const q = await db.ref(`bookingClaims/${p.date}/${me}`).transaction(cur=>{ const n = Number(cur)||0; if(now.phase==='r1' && n >= POOL_R1_LIMIT) return undefined; return n+1; });
       if(!q.committed){ appAlert(`รอบแรกกดรับได้ ${POOL_R1_LIMIT} งานเท่านั้น (รอบถัดไปเปิด 16:20 น.)`); return; }
@@ -2764,7 +2806,7 @@ const bkStage = b => [bkStageDef(b)[1], 'green'];
 async function advanceBkStage(b){
   const def = bkStageDef(b), to = def[4]; if(!to) return false;
   const at = bkAcceptOpenAt(b);
-  if(def[0]==='accepted' && at && Date.now() < at.getTime()){ appAlert('เริ่มงานได้ตั้งแต่ 30 นาทีก่อนเวลารับผู้โดยสาร'); return false; }
+  if(def[0]==='accepted' && at && Date.now() < at.getTime()){ appAlert('เริ่มงานได้ตั้งแต่ 1 ชั่วโมงก่อนเวลารับผู้โดยสาร'); return false; }
   try{
     const r = await db.ref('bookings/'+b.id+'/stage').transaction(cur=> (cur||'accepted')===def[0] ? to : undefined);
     if(!r.committed){ appAlert('สถานะงานเปลี่ยนไปแล้ว'); return false; }
@@ -2791,6 +2833,20 @@ function bkCard(b, withDate){
         <div class="bk-from"><small>รับ</small><span class="bk-t">${esc(b.pickup||'-')}</span></div>
         <div class="bk-to"><small>ส่ง</small><span class="bk-t">${esc(b.dropoff||'-')}</span></div></div></div>`;
 }
+// งานกลางที่ยังไม่มีคนขับ แสดงในแถบ 5 วันให้ดูล่วงหน้า — กดรับไม่ได้ (รับได้เฉพาะวันพรุ่งนี้ ตั้งแต่ 16:00 ผ่านกล่อง "งานจองรอกดรับ" ตามกติกาเดิม)
+function renderPoolPreview(){
+  const box = $('bookingPoolPrev'); if(!box) return;
+  const now = bkkNow(), list = poolData.filter(p=>!p.claimedBy && p.date===bookingDate).sort((a,b)=>String(a.time||'').localeCompare(String(b.time||'')));
+  if(!list.length){ box.innerHTML = ''; return; }
+  const prev = parseYmd(bookingDate); prev.setDate(prev.getDate()-1);
+  box.innerHTML = `<div class="sec-title" style="margin-top:14px;"><span>งานรอกดรับ</span><span class="muted">${list.length} งาน</span></div>` + list.map(p=>{
+    const can = p.date===now.tomorrow && (now.phase==='r1' || now.phase==='r2');
+    const tag = can ? '✓ กดรับได้ตอนนี้ — แตะเพื่อไปรับ' : p.date<=now.today ? '🔒 ยังไม่มีคนขับ · รอเจ้าหน้าที่จัดให้' : `🔒 ยังกดรับไม่ได้ · เปิดรับ ${prev.getDate()} ${TH_M[prev.getMonth()]} เวลา 16:00 น.`;
+    return `<div class="pv-card${can?' can':''}" ${can?'data-pv="1"':''}><div class="pl-top"><b>${esc(p.time||'-')}</b><span>${esc(p.source||'งานจอง')}${p.pCount!==''&&p.pCount!=null?' · '+esc(p.pCount)+' คน':''}</span></div>
+      <div class="pl-rt"><span class="bkr-tag a">รับ</span><span>${esc(p.pickup||'-')}</span></div><div class="pl-rt"><span class="bkr-tag b">ส่ง</span><span>${esc(p.dropoff||'-')}</span></div><span class="pv-tag">${tag}</span></div>`;
+  }).join('');
+}
+$('bookingPoolPrev').addEventListener('click', e=>{ if(e.target.closest('[data-pv]')) openPoolModal(); });
 function renderBookings(){
   renderPool(); ingestPool(false).catch(()=>{ poolLastIngest = Date.now() + 240000; }); // ล้มเหลว: พัก ~5 นาทีก่อนลองอัตโนมัติอีก
   const days = dayRange(0, 5);
@@ -2812,12 +2868,13 @@ function renderBookings(){
   const overdue = bookings.filter(b=>b.date && b.date < today && b.status !== 'declined' && b.status !== 'done').sort((a,b)=> (a.date+a.time).localeCompare(b.date+b.time));
   if(overdue.length) html += `<div class="sec-title" style="margin-top:18px;"><span>งานค้าง</span><span class="muted">${overdue.length} งาน</span></div>` + overdue.map(b=>bkCard(b,true)).join('');
   $('bookingList').innerHTML = html;
+  renderPoolPreview();
 }
 $('bookingStrip').addEventListener('click', e=>{ const b = e.target.closest('.day-chip'); if(b){ bookingDate = b.dataset.day; renderBookings(); } });
 $('bookingList').addEventListener('click', e=>{ const c = e.target.closest('[data-bk]'); if(c){ openBookingId = c.dataset.bk; showScreen('bookingDetail'); } });
 
-// กดรับงานจองได้ตั้งแต่ 30 นาทีก่อนเวลาเดินทาง (ถ้าอ่านวันเวลาไม่ได้ = ไม่ล็อก)
-const ACCEPT_LEAD_MIN = 30;
+// กดรับงานจองได้ตั้งแต่ 1 ชั่วโมงก่อนเวลาเดินทาง (ถ้าอ่านวันเวลาไม่ได้ = ไม่ล็อก)
+const ACCEPT_LEAD_MIN = 60;
 function bkAcceptOpenAt(b){
   const m = /^(\d{1,2})[:.](\d{2})/.exec(String(b.time||'').trim());
   if(!b.date || !m) return null;
@@ -2846,19 +2903,24 @@ function renderBookingDetail(){
       <div class="bkd-pn"><small>ผู้โดยสาร</small><b>${esc(b.pName||'-')}</b><span>${b.pCount!=null&&b.pCount!=='' ? esc(b.pCount)+' คน' : '-'}</span></div>
       ${b.pPhone ? `<a class="bkd-call" href="tel:${esc(String(b.pPhone).replace(/[^0-9+]/g,''))}"><span>📞</span>${esc(b.pPhone)}</a>` : '<span class="bkd-nocall">ไม่มีเบอร์</span>'}
     </div>
+    ${b.changeReq ? `<div class="card" style="margin:10px 0;padding:10px 12px;border:1.5px solid ${b.changeReq.status==='pending'?'#e0a64a':'#9fb4d4'};background:${b.changeReq.status==='pending'?'#fff8e6':'#f3f6fb'};font-size:13px;"><b>${b.changeReq.type==='swap'?'คำขอเปลี่ยนคนเข้ารับ':'คำขอยกเลิกงาน'} · ${b.changeReq.status==='pending'?'รอเจ้าหน้าที่ดำเนินการ':esc(b.changeReq.status==='rejected'?'เจ้าหน้าที่ไม่อนุมัติ':'เจ้าหน้าที่ดำเนินการแล้ว')}</b><div class="muted" style="margin-top:3px;">เหตุผล: ${esc(b.changeReq.reason||'-')}</div></div>` : ''}
     <div class="bkd-notes"><div><small>ความต้องการพิเศษ</small><b>${esc(b.special||'-')}</b></div><div><small>หมายเหตุ</small><b>${esc(b.note||'-')}</b></div></div>
-    ${st==='declined' ? '' : st==='done' ? `<div class="btn-row"><button class="btn btn-green" id="bkViewBtn">ดูใบสรุปค่าโดยสาร</button></div>` : `<div class="btn-row">${(st==='pending'||(st==='accepted'&&['accepted','started'].includes(b.stage||'accepted'))) ? '<button class="btn btn-red" id="bkDeclineBtn">ยกเลิกงาน</button>' : ''}${st==='pending' ? (()=>{ const at = bkAcceptOpenAt(b); const locked = at && Date.now() < at.getTime(); return locked ? `<button class="btn btn-green" id="bkAcceptBtn" disabled>รับงานได้ ${fmtDate(at)} ${String(at.getHours()).padStart(2,'0')}:${String(at.getMinutes()).padStart(2,'0')}</button>` : '<button class="btn btn-green" id="bkAcceptBtn">รับงาน</button>'; })() : (()=>{ const def = bkStageDef(b), at = bkAcceptOpenAt(b), locked = def[0]==='accepted' && at && Date.now() < at.getTime(); return locked ? `<button class="btn btn-green" id="bkStageBtn" disabled>เริ่มงานได้ ${String(at.getHours()).padStart(2,'0')}:${String(at.getMinutes()).padStart(2,'0')} น.</button>` : `<button class="btn btn-green" id="bkStageBtn">${esc(def[2])}</button>`; })()}</div>`}`;
+    ${st==='declined' ? '' : st==='done' ? `<div class="btn-row"><button class="btn btn-green" id="bkViewBtn">ดูใบสรุปค่าโดยสาร</button></div>` : `<div class="btn-row">${st==='pending' ? '<button class="btn btn-red" id="bkDeclineBtn">ยกเลิกงาน</button>' : (st==='accepted'&&['accepted','started'].includes(b.stage||'accepted')) ? (b.changeReq&&b.changeReq.status==='pending' ? '<button class="btn btn-no" id="bkReqBtn" disabled>ส่งคำขอแล้ว · รอเจ้าหน้าที่</button>' : '<button class="btn btn-red" id="bkReqBtn">แจ้งเจ้าหน้าที่</button>') : ''}${st==='pending' ? (()=>{ const at = bkAcceptOpenAt(b); const locked = at && Date.now() < at.getTime(); return locked ? `<button class="btn btn-green" id="bkAcceptBtn" disabled>รับงานได้ ${fmtDate(at)} ${String(at.getHours()).padStart(2,'0')}:${String(at.getMinutes()).padStart(2,'0')}</button>` : '<button class="btn btn-green" id="bkAcceptBtn">รับงาน</button>'; })() : (()=>{ const def = bkStageDef(b), at = bkAcceptOpenAt(b), locked = def[0]==='accepted' && at && Date.now() < at.getTime(); return locked ? `<button class="btn btn-green" id="bkStageBtn" disabled>เริ่มงานได้ ${String(at.getHours()).padStart(2,'0')}:${String(at.getMinutes()).padStart(2,'0')} น.</button>` : `<button class="btn btn-green" id="bkStageBtn">${esc(def[2])}</button>`; })()}</div>`}`;
   clearTimeout(bkUnlockTimer);
   { const at = (st==='pending' || (st==='accepted' && (b.stage||'accepted')==='accepted')) ? bkAcceptOpenAt(b) : null; const ms = at ? at.getTime() - Date.now() : 0;
     if(ms > 0 && ms < 2147483647) bkUnlockTimer = setTimeout(()=>{ if(openBookingId===b.id) renderBookingDetail(); }, ms + 500); }
   if($('bkStageBtn')) $('bkStageBtn').addEventListener('click', async ()=>{
     const def = bkStageDef(b);
     if(def[0]==='fare'){ openFare(b, false); return; } // กลับมากรอกค่าโดยสารต่อ
-    if(!(await appConfirm(def[3]))) return;
-    if(await advanceBkStage(b) && def[4]==='fare') openFare(Object.assign({}, b, {stage:'fare'}), false);
+    const from = def[0], to = def[4], path = 'bookings/'+b.id;
+    if(from==='arrived'){ if(await advanceBkStage(Object.assign({}, b, {stage:'arrived'}))) openFare(Object.assign({}, b, {stage:'fare'}), false); return; } // เผื่อค้างที่ขั้น "ถึงจุดหมาย"
+    if(!(await advanceBkStage(b))) return;
+    if(to==='arrived'){ if(await advanceBkStage(Object.assign({}, b, {stage:'arrived'}))) openFare(Object.assign({}, b, {stage:'fare'}), false); return; } // ถึงจุดหมาย → ไปกรอกค่าโดยสารทันที
+    undoToast('บันทึกแล้ว ✓', ()=>revertStage(path, from, to));
   });
   if($('bkViewBtn')) $('bkViewBtn').addEventListener('click', ()=> openFare(b, true));
   if($('bkAcceptBtn')) $('bkAcceptBtn').addEventListener('click', async ()=>{ { const m = acceptConflict('booking'); if(m){ appAlert(m); return; } } if(await appConfirm('ยืนยันรับงานจองนี้?')) setBookingStatus(b.id,'accepted',{acceptedAt:new Date().toISOString()}); });
+  if($('bkReqBtn') && !$('bkReqBtn').disabled) $('bkReqBtn').addEventListener('click', ()=> openChangeReq(b));
   if($('bkDeclineBtn')) $('bkDeclineBtn').addEventListener('click', async ()=>{ const why = await askDeclineReason(); if(why){ await setBookingStatus(b.id,'declined',{declineReason:why, declinedAt:new Date().toISOString()}); if(b.src==='cabb-ev-booking-pool') releasePoolClaim(b); } });
 }
 
@@ -2940,6 +3002,34 @@ function openFare(b, readOnly, opts){
   $('fareModal').style.display = 'flex';
   if(!readOnly) setTimeout(()=>$('frMeter').focus(), 50);
 }
+// งานที่รับแล้ว: คนขับยกเลิกเองไม่ได้ — ส่งคำขอให้เจ้าหน้าที่ยกเลิกให้ หรือแจ้งเปลี่ยนคนเข้ารับ (ต้องแจ้งล่วงหน้า ≥ 1 ชม. ก่อนเวลาเดินทาง)
+const SWAP_LEAD_MIN = 60;
+function openChangeReq(b){
+  if(b.changeReq && b.changeReq.status==='pending'){ appAlert('ส่งคำขอไปแล้ว รอเจ้าหน้าที่ดำเนินการ'); return; }
+  const ov = document.createElement('div'); ov.id = 'declineBox';
+  ov.innerHTML = `<div class="box"><h3>แจ้งเจ้าหน้าที่</h3><div class="muted" style="margin:2px 0 10px;">งานที่รับแล้ว คนขับยกเลิกเองไม่ได้ ต้องให้เจ้าหน้าที่ดำเนินการให้</div>
+    <div class="dr-list"><label class="dr-opt"><input type="radio" name="crType" value="cancel" checked><span>ขอยกเลิกงาน (เจ้าหน้าที่ยกเลิกให้)</span></label>
+    <label class="dr-opt"><input type="radio" name="crType" value="swap"><span>ขอเปลี่ยนคนเข้ารับ (แจ้งล่วงหน้าอย่างน้อย 1 ชั่วโมง)</span></label></div>
+    <textarea id="crWhy" rows="2" maxlength="200" placeholder="เหตุผล (จำเป็น)"></textarea>
+    <div class="btn-row" style="margin:12px 0 0;"><button type="button" class="btn btn-outline" id="crNo">ปิด</button><button type="button" class="btn btn-ok" id="crYes">ส่งคำขอ</button></div></div>`;
+  (document.getElementById('deviceFrame') || document.body).appendChild(ov);
+  ov.querySelector('#crNo').addEventListener('click', ()=>ov.remove());
+  ov.querySelector('#crYes').addEventListener('click', async ()=>{
+    const type = ov.querySelector('input[name=crType]:checked').value, why = ov.querySelector('#crWhy').value.trim();
+    if(!why){ appAlert('กรอกเหตุผลก่อน'); return; }
+    if(type==='swap'){
+      const at = bkAcceptOpenAt(b); // = เวลาเดินทาง − ACCEPT_LEAD_MIN ; คำนวณเวลาเดินทางตรงๆ แทน
+      const m = /^(\d{1,2})[:.](\d{2})/.exec(String(b.time||'').trim()); let trip = null;
+      if(b.date && m){ const d = parseYmd(b.date); if(!isNaN(d)){ d.setHours(+m[1], +m[2], 0, 0); trip = d; } }
+      if(trip && Date.now() > trip.getTime() - SWAP_LEAD_MIN*60000){ appAlert('เหลือเวลาไม่ถึง 1 ชั่วโมงก่อนเดินทาง ขอเปลี่ยนคนไม่ได้แล้ว กรุณาโทรแจ้งเจ้าหน้าที่ทันที'); return; }
+    }
+    ov.querySelector('#crYes').disabled = true;
+    try{
+      await db.ref('bookings/'+b.id).update({ changeReq:{ type, reason:why, status:'pending', at:new Date().toISOString(), by:driverCurrentUser.username }, updatedAt:new Date().toISOString() });
+      ov.remove(); appAlert('ส่งคำขอให้เจ้าหน้าที่แล้ว กรุณารอการยืนยัน (ถ้าเร่งด่วนโทรหาเจ้าหน้าที่)');
+    }catch(e){ ov.querySelector('#crYes').disabled = false; appAlert('ส่งคำขอไม่สำเร็จ: '+e.message); }
+  });
+}
 // ถามเหตุผลก่อนยกเลิกงานจอง — คืนข้อความเหตุผล หรือ null ถ้ากดยกเลิก
 const DECLINE_REASONS = ['รถเสีย / ขัดข้อง','มีธุระฉุกเฉิน','ไม่สะดวกเดินทางตามเวลา','ติดต่อผู้โดยสารไม่ได้','ผู้โดยสารขอยกเลิก','อื่นๆ'];
 function askDeclineReason(){
@@ -2962,7 +3052,7 @@ function askDeclineReason(){
 async function setBookingStatus(id, status, extra){
   if(status==='accepted'){ const m = acceptConflict('booking'); if(m){ appAlert(m); return; } }
   if(status==='accepted'){ const bk = bookings.find(x=>x.id===id); const at = bk && bkAcceptOpenAt(bk);
-    if(at && Date.now() < at.getTime()){ appAlert('รับงานได้ตั้งแต่ 30 นาทีก่อนเวลาเดินทาง'); return; } }
+    if(at && Date.now() < at.getTime()){ appAlert('รับงานได้ตั้งแต่ 1 ชั่วโมงก่อนเวลาเดินทาง'); return; } }
   try{ await db.ref('bookings/'+id).update(Object.assign({status, updatedAt:new Date().toISOString()}, extra||{})); }
   catch(e){ appAlert('บันทึกไม่สำเร็จ: '+e.message); }
 }
@@ -3064,7 +3154,7 @@ const CONTACTS = [
 const HOWTO = [
   ['ลงคิวสนามบิน','กดปุ่มสแกนกลางเมนู → สแกน QR จุดรับคิว → อนุญาต GPS → ถ่ายรูปเปอร์เซ็นต์แบตเตอรี่ (กล้องสดเท่านั้น แนบจากคลังภาพไม่ได้) → ได้รหัสคิว ต้องปิดงานคิวเดิมและกรอกค่ามิเตอร์ก่อนจึงลงคิวใหม่ได้'],
   ['หน้าแรก','ดูรายได้และจำนวนทริป วันนี้/เดือนนี้ (รวมงานจอง) และประกาศใหม่ กด "อ่านแล้ว ✓" เพื่อซ่อน'],
-  ['งานจอง','แตะงานเพื่อดูรายละเอียดและโทรหาผู้โดยสาร กดรับงานได้ก่อนเวลา 30 นาที จบงานแล้วกรอกค่ามิเตอร์ ราคาจะแสดงที่การ์ด'],
+  ['งานจอง','แตะงานเพื่อดูรายละเอียดและโทรหาผู้โดยสาร กดรับงานได้ก่อนเวลา 1 ชั่วโมง จบงานแล้วกรอกค่ามิเตอร์ ราคาจะแสดงที่การ์ด'],
   ['ประวัติ','เลือกวันที่บนแถบ (เลื่อนหรือกด ‹ › ย้อนหลัง 30 วัน) ดูรายได้ ทริป และงานคิว/งานจองของวันนั้น'],
   ['โปรไฟล์','ข้อมูลรถ เอกสารและสัญญา ประกาศ แตะหัวข้อเพื่อเปิด/ปิด'],
   ['ช่องทางการติดต่อ','ปัญหางานจอง/รถเสีย/อุบัติเหตุ กดโทรหรือ LINE ที่กล่อง "ช่องทางการติดต่อ" ท้ายหน้าโปรไฟล์'],
@@ -3178,7 +3268,7 @@ $('queueBackBtn').addEventListener('click', ()=>showScreen(lastMain));
 // เก็บ session ไว้ใน localStorage กันหลุดล็อกอินทุกครั้งที่รีเฟรช — เก็บแค่ username ไม่เก็บรหัสผ่าน/hash ใดๆ ทั้งสิ้น
 // ถ้าบัญชีถูกลบ/ระงับไปหลังล็อกอินไว้ ตอน refresh จะเช็คซ้ำกับ DB เสมอแล้วเด้งกลับไปหน้า login เอง ไม่ใช่ session ที่ปลอมข้อมูลค้างอยู่ตลอดไป
 // เวอร์ชันของตัวแอป (เนื้อหาเว็บ driver.html) — เพิ่มเลขทุกครั้งที่ส่งมอบรุ่นใหม่ ไม่ใช่ versionName ของ APK
-const APP_VERSION = '1.03', APP_BUILD = '23/11/2026';
+const APP_VERSION = '1.08', APP_BUILD = '23/11/2026';
 document.querySelectorAll('.app-ver').forEach(el=>{ el.textContent = 'V.' + APP_VERSION + '_' + APP_BUILD; });
 const DRIVER_SESSION_KEY = 'ssls_driver_session_username';
 const DRIVER_LOGIN_AT_KEY = 'ssls_driver_login_at'; // เวลา (ms) ที่ล็อกอินล่าสุด เก็บค้างในเครื่องจนกว่าจะกดออกจากระบบ
