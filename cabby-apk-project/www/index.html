@@ -3298,6 +3298,7 @@ function enterApp(u){
   if(typeof Notification !== 'undefined' && Notification.permission === 'default'){ Notification.requestPermission().catch(()=>{}); } // ขอสิทธิ์แจ้งเตือนระบบไว้เผื่อ — ปฏิเสธก็ไม่เป็นไร ยังมี toast+เสียงในแอปอยู่ดี
 }
 const FN_BASE = 'https://asia-southeast1-job-system-29d9b.cloudfunctions.net/', SESS_TOKEN_KEY = 'ssls_driver_token';
+const appInfo = ()=>({v:APP_VERSION, ua:navigator.userAgent, native:!!(window.Capacitor && Capacitor.getPlatform && Capacitor.getPlatform()!=='web')});
 async function fnPost(name, body){ // ผล {st, j} · ถ้า function ยังไม่ deploy/เครือข่ายล้ม → st=0 (ให้ใช้วิธีเดิมแทน)
   try{
     const r = await fetch(FN_BASE+name, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
@@ -3312,7 +3313,7 @@ async function doLogin(){
   $('loginErr').style.display = 'none';
   if(!username || !pin){ $('loginErr').textContent='กรอก username และรหัสผ่านให้ครบ'; $('loginErr').style.display=''; return; }
   let u = null;
-  const fr = await fnPost('driverLogin', {username, pin});
+  const fr = await fnPost('driverLogin', {username, pin, app:appInfo()});
   if(fr.st === 200 && fr.j && fr.j.user){ u = fr.j.user; try{ localStorage.setItem(SESS_TOKEN_KEY, fr.j.token||''); }catch(e){} }
   else if(fr.st){ $('loginErr').textContent = fr.j.error || 'เข้าสู่ระบบไม่สำเร็จ'; $('loginErr').style.display=''; return; }
   else { // วิธีเดิม (function ยังไม่พร้อม) — อ่าน driver-users ตรงๆ
@@ -3355,27 +3356,11 @@ $('logoutBtn').addEventListener('click', ()=>{
     // เช็คบัญชีซ้ำกับ DB — ถ้าเครือข่ายล้มเหลว (ไม่ใช่ "ไม่พบบัญชี") ใช้สำเนาที่แคชไว้ตอนล็อกอินแทน เพื่อไม่ให้หลุดล็อกอินเพราะเน็ตช้า
     let u = null, netFail = false;
     let tok = ''; try{ tok = localStorage.getItem(SESS_TOKEN_KEY) || ''; }catch(e){}
-    const sr = tok ? await fnPost('driverSession', {username:savedUsername, token:tok}) : {st:0};
+    const sr = tok ? await fnPost('driverSession', {username:savedUsername, token:tok, app:appInfo()}) : {st:0};
     if(sr.st === 200 && sr.j && sr.j.user) u = sr.j.user;
     else if(sr.st === 401 || sr.st === 404){ u = null; } // session หมดอายุ/บัญชีถูกระงับ → ล็อกอินใหม่
     else try{
       const snap = await db.ref('driver-users').once('value'), val = snap.val() || {};
       if(val[savedUsername]) u = {username:savedUsername, ...val[savedUsername]};
     }catch(e){ netFail = true; }
-    if(netFail){ try{ u = JSON.parse(localStorage.getItem('ssls_driver_user_cache')||'null'); if(u && u.username !== savedUsername) u = null; }catch(e){ u = null; } }
-    if(u && u.active !== false){
-      try{ const {pinHash, ...safe} = u; localStorage.setItem('ssls_driver_user_cache', JSON.stringify(safe)); }catch(e){} // ไม่เก็บ pinHash ลงเครื่อง
-      await loadVehiclesRaw();
-      try{ if(!localStorage.getItem(DRIVER_LOGIN_AT_KEY)) localStorage.setItem(DRIVER_LOGIN_AT_KEY, String(Date.now())); }catch(e){}
-      enterApp(u);
-      return;
-    }
-    try{ localStorage.removeItem(DRIVER_SESSION_KEY); localStorage.removeItem(DRIVER_LOGIN_AT_KEY); }catch(e){} // บัญชีถูกลบ/ระงับไปแล้ว เคลียร์ session เก่าทิ้ง
-  }
-  showLoginScreen(); // ไม่มี session (หรือใช้ไม่ได้แล้ว) → หน้า login
-})();
-
-}
-</script>
-</body>
-</html>
+    if(netFail){ try{ u = JSON.parse(localStorage.getItem('ssls_driver_user_cache')||'null');
