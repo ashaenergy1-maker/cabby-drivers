@@ -1188,9 +1188,9 @@ function playDriverTone(freqs, o){
     freqs.forEach(f=>{
       const osc = driverAudioCtx.createOscillator();
       const gain = driverAudioCtx.createGain();
-      osc.type = 'sine'; osc.frequency.value = f;
+      osc.type = o.t || 'square'; osc.frequency.value = f; // square = เสียงทะลุ ดังกว่า sine
       gain.gain.setValueAtTime(0.0001, t);
-      gain.gain.exponentialRampToValueAtTime(0.35, t+0.02);
+      gain.gain.exponentialRampToValueAtTime(o.v || 0.8, t+0.02);
       gain.gain.exponentialRampToValueAtTime(0.0001, t+dur-0.02);
       osc.connect(gain); gain.connect(driverAudioCtx.destination);
       osc.start(t); osc.stop(t+dur);
@@ -1235,11 +1235,17 @@ function checkAppUpdate(){
     }).catch(()=>{});
   }catch(e){}
 }
+// เสียงตอนเปิดแอปอยู่ ใช้ไฟล์เดียวกับเสียงแจ้งเตือนตอนปิดแอป (snd_*.wav วางข้าง driver.html / ใน www ของ APK) — เล่นไม่ได้ค่อยใช้โทนสังเคราะห์
+const KIND_SND = { cancel:'snd_queue_out', active:'snd_queue_arrive', standby:'snd_queue_arrive' }; // อื่นๆ (booking/pm/dlt/doc) = snd_job_new
+function playNotifSound(kind){
+  const name = KIND_SND[kind] || 'snd_job_new';
+  const fb = ()=>{ if(kind === 'cancel') playDriverTone([500,350]); else playDriverTone([523,659,784,1047], {d:0.3, s:0.12}); };
+  try{ const a = new Audio(name+'.wav'); a.volume = 1; const pr = a.play(); if(pr && pr.catch) pr.catch(fb); a.onerror = fb; }catch(e){ fb(); }
+}
 function notifyDriver(title, body, kind){
   showDriverToast(title, body, kind);
   addNotif(title, body, kind);
-  if(kind === 'cancel') playDriverTone([500,350]);
-  else playDriverTone([523,659,784,1047], {d:0.3, s:0.12}); // อาร์เพจโจ C-E-G-C ใช้กับ สแตนด์บาย/ถึงคิว/งานจองใหม่
+  playNotifSound(kind);
   if(typeof Notification !== 'undefined' && Notification.permission === 'granted' && document.hidden){
     try{ new Notification(title, {body}); }catch(e){}
   }
@@ -3268,7 +3274,7 @@ $('queueBackBtn').addEventListener('click', ()=>showScreen(lastMain));
 // เก็บ session ไว้ใน localStorage กันหลุดล็อกอินทุกครั้งที่รีเฟรช — เก็บแค่ username ไม่เก็บรหัสผ่าน/hash ใดๆ ทั้งสิ้น
 // ถ้าบัญชีถูกลบ/ระงับไปหลังล็อกอินไว้ ตอน refresh จะเช็คซ้ำกับ DB เสมอแล้วเด้งกลับไปหน้า login เอง ไม่ใช่ session ที่ปลอมข้อมูลค้างอยู่ตลอดไป
 // เวอร์ชันของตัวแอป (เนื้อหาเว็บ driver.html) — เพิ่มเลขทุกครั้งที่ส่งมอบรุ่นใหม่ ไม่ใช่ versionName ของ APK
-const APP_VERSION = '1.08', APP_BUILD = '23/11/2026';
+const APP_VERSION = '1.10', APP_BUILD = '23/11/2026';
 document.querySelectorAll('.app-ver').forEach(el=>{ el.textContent = 'V.' + APP_VERSION + '_' + APP_BUILD; });
 const DRIVER_SESSION_KEY = 'ssls_driver_session_username';
 const DRIVER_LOGIN_AT_KEY = 'ssls_driver_login_at'; // เวลา (ms) ที่ล็อกอินล่าสุด เก็บค้างในเครื่องจนกว่าจะกดออกจากระบบ
