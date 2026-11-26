@@ -19,6 +19,9 @@ jobs:
           [ -n "$SRC" ] || { echo "::error::ไม่พบ driver.html ใน repo (ไฟล์ .html ที่มี class=hdr-logo) — ต้องอัปโหลด driver.html ใหม่"; exit 1; }
           echo "ใช้ไฟล์: $SRC"
           mkdir -p app/www && cp "$SRC" app/www/index.html
+          echo "ไฟล์ที่เข้าข่าย:"; grep -rl 'class="hdr-logo"' --include='*.html' . | while read f; do echo "  $f $(stat -c%s "$f") bytes $(grep -o "APP_VERSION = '[^']*'" "$f" | head -1)"; done
+          tail -c 300 app/www/index.html | grep -q '</html>' || { echo "::error::ไฟล์ $SRC ถูกตัดท้าย (ไม่มี </html>) — อัปโหลดมาไม่ครบ ให้อัปโหลด driver.html ใหม่ แล้วเทียบขนาดไฟล์กับต้นฉบับ"; exit 1; }
+          node -e "const s=require('fs').readFileSync('app/www/index.html','utf8');let n=0;for(const m of s.matchAll(/<script>([\s\S]*?)<\/script>/g)){n++;new Function(m[1])}if(!n)throw new Error('ไม่พบ script');console.log('syntax ok',n,'script')" || { echo "::error::JavaScript ใน $SRC มี syntax error"; exit 1; }
           cat > app/package.json <<'EOF'
           {"name":"cabby-drivers","version":"1.0.0","private":true,
            "scripts":{"build:android":"cap sync android && cd android && ./gradlew assembleDebug"},
