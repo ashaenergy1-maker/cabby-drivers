@@ -77,6 +77,11 @@ jobs:
           npx cap add android
           [ -f ../google-services.json ] && cp ../google-services.json android/app/google-services.json || true
           cp -r android-res/. android/app/src/main/res/
+          # เสียงแจ้งเตือน: ไฟล์ snd_*.wav ที่อยู่ที่ไหนก็ได้ใน repo → res/raw (ชื่อช่องแจ้งเตือนใน driver.html อ้างชื่อเหล่านี้)
+          mkdir -p android/app/src/main/res/raw
+          N=0; for f in $(find .. -maxdepth 3 -name 'snd_*.wav' -not -path '*/node_modules/*' -not -path '*/android/*' -not -path '*/.git/*'); do cp "$f" android/app/src/main/res/raw/ && N=$((N+1)); done
+          echo "::notice::คัดลอกไฟล์เสียงเข้าแอป $N ไฟล์: $(ls android/app/src/main/res/raw | tr '\n' ' ')"
+          [ "$N" -ge 4 ] || echo "::warning::พบไฟล์เสียง snd_*.wav น้อยกว่า 4 ไฟล์ — ช่องแจ้งเตือนจะใช้เสียงเริ่มต้นของเครื่อง"
           rm -f android/app/src/main/res/drawable-v24/ic_launcher_foreground.xml android/app/src/main/res/drawable/ic_launcher_background.xml
           echo '--- launcher resources after copy ---'; find android/app/src/main/res -name 'ic_launcher*' | sort
           echo '--- manifest icon ---'; grep -n 'android:icon\|roundIcon' android/app/src/main/AndroidManifest.xml
