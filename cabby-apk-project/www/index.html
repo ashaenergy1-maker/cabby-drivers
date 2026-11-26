@@ -3363,4 +3363,20 @@ $('logoutBtn').addEventListener('click', ()=>{
       const snap = await db.ref('driver-users').once('value'), val = snap.val() || {};
       if(val[savedUsername]) u = {username:savedUsername, ...val[savedUsername]};
     }catch(e){ netFail = true; }
-    if(netFail){ try{ u = JSON.parse(localStorage.getItem('ssls_driver_user_cache')||'null');
+    if(netFail){ try{ u = JSON.parse(localStorage.getItem('ssls_driver_user_cache')||'null'); if(u && u.username !== savedUsername) u = null; }catch(e){ u = null; } }
+    if(u && u.active !== false){
+      try{ const {pinHash, ...safe} = u; localStorage.setItem('ssls_driver_user_cache', JSON.stringify(safe)); }catch(e){} // ไม่เก็บ pinHash ลงเครื่อง
+      await loadVehiclesRaw();
+      try{ if(!localStorage.getItem(DRIVER_LOGIN_AT_KEY)) localStorage.setItem(DRIVER_LOGIN_AT_KEY, String(Date.now())); }catch(e){}
+      enterApp(u);
+      return;
+    }
+    try{ localStorage.removeItem(DRIVER_SESSION_KEY); localStorage.removeItem(DRIVER_LOGIN_AT_KEY); }catch(e){} // บัญชีถูกลบ/ระงับไปแล้ว เคลียร์ session เก่าทิ้ง
+  }
+  showLoginScreen(); // ไม่มี session (หรือใช้ไม่ได้แล้ว) → หน้า login
+})();
+
+}
+</script>
+</body>
+</html>
