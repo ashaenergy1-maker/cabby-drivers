@@ -1430,6 +1430,7 @@ const qjStageKey = e => !e.acceptedAt ? 'sent' : (QJ_STAGES.some(x=>x[0]===e.sta
 const qjStageDef = e => QJ_STAGES.find(x=>x[0]===qjStageKey(e));
 // ขั้นที่เสี่ยงต่ำ (ขึ้นรถ/เริ่มเดินทาง/ถึงจุดหมาย) ไม่ถามยืนยัน — กดพลาดแล้วกด "ย้อนกลับ" ได้ภายใน 6 วินาที (เวลาของขั้นเดิมถูกลบ)
 function undoToast(label, undo){
+  return; // ปิดแถบ "บันทึกแล้ว / ย้อนกลับ" ตามที่สั่ง (ถ้าจะเปิดใหม่ ลบบรรทัดนี้)
   const old = document.getElementById('undoToast'); if(old) old.remove();
   const el = document.createElement('div'); el.id = 'undoToast';
   el.style.cssText = 'position:absolute;left:14px;right:14px;bottom:96px;z-index:3000;background:#0b2a5b;color:#fff;border-radius:14px;padding:10px 14px;display:flex;gap:10px;align-items:center;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.3);';
