@@ -79,7 +79,9 @@ jobs:
           cp -r android-res/. android/app/src/main/res/
           # เสียงแจ้งเตือน: ไฟล์ snd_*.wav ที่อยู่ที่ไหนก็ได้ใน repo → res/raw (ชื่อช่องแจ้งเตือนใน driver.html อ้างชื่อเหล่านี้)
           mkdir -p android/app/src/main/res/raw
-          N=0; for f in $(find .. -maxdepth 3 -name 'snd_*.wav' -not -path '*/node_modules/*' -not -path '*/android/*' -not -path '*/.git/*'); do cp "$f" android/app/src/main/res/raw/ && N=$((N+1)); done
+          if [ -d ../cabby-apk-project/sounds ]; then SD=../cabby-apk-project/sounds; elif [ -d ../sounds ]; then SD=../sounds; else SD=..; fi   # ใช้เฉพาะโฟลเดอร์ sounds/ (กันไฟล์เก่าที่อื่นมาทับ)
+          echo "ไฟล์เสียงที่พบ:"; find $SD -maxdepth 3 -name 'snd_*.wav' -not -path '*/node_modules/*' -not -path '*/android/*' -not -path '*/.git/*' -exec sh -c 'echo "  $1 $(stat -c%s "$1") bytes $(sha256sum "$1" | cut -c1-10)"' _ {} \;
+          N=0; for f in $(find $SD -maxdepth 3 -name 'snd_*.wav' -not -path '*/node_modules/*' -not -path '*/android/*' -not -path '*/.git/*'); do cp "$f" android/app/src/main/res/raw/ && cp "$f" www/ && N=$((N+1)); done
           echo "::notice::คัดลอกไฟล์เสียงเข้าแอป $N ไฟล์: $(ls android/app/src/main/res/raw | tr '\n' ' ')"
           [ "$N" -ge 4 ] || echo "::warning::พบไฟล์เสียง snd_*.wav น้อยกว่า 4 ไฟล์ — ช่องแจ้งเตือนจะใช้เสียงเริ่มต้นของเครื่อง"
           rm -f android/app/src/main/res/drawable-v24/ic_launcher_foreground.xml android/app/src/main/res/drawable/ic_launcher_background.xml
