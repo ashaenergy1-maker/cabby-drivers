@@ -118,7 +118,7 @@
   .th-plate span{display:block;font-size:9px;font-weight:700;}
   .card-hero{border-radius:24px;padding:26px 20px;color:#fff;margin-bottom:14px;box-shadow:0 12px 26px rgba(7,26,62,.28);text-align:center;background:linear-gradient(135deg,#0a2556,#071a3e);}
   .card-hero .qcode{color:#fff;}
-  .card-hero .hero-label{color:#c4d4ea;font-size:11px;font-weight:700;letter-spacing:.3px;}
+  .card-hero .hero-label{color:#c4d4ea;font-size:10px;font-weight:700;letter-spacing:.3px;}
   .card-hero .hero-badge{margin-top:10px;font-size:11.5px;font-weight:700;background:rgba(255,255,255,.15);display:inline-block;padding:5px 16px;border-radius:20px;}
   .card-hero.status-standby{background:linear-gradient(135deg,#e0a94a,#b9791b);}
   .card-hero.status-active{background:linear-gradient(135deg,#19c3a0,#0b8f86);}
@@ -223,7 +223,7 @@
   #dashMonth .pill{padding:5px 12px;font-size:11px;}
   #dashMonth>div:last-child{margin-top:14px !important;gap:10px !important;}
   .mini-box{position:relative;overflow:hidden;border-radius:20px;padding:13px 16px 14px;}
-  .mini-box .lbl{font-size:11px;font-weight:700;letter-spacing:.3px;}
+  .mini-box .lbl{font-size:10px;font-weight:700;letter-spacing:.3px;}
   .mini-box .val{font-size:24px;color:var(--navy);}
   .mini-box:not(.t){background:linear-gradient(160deg,#f6f8fb 0%,#eaf0f6 100%);border-color:#dbe4ee;}
   .mini-box:not(.t)::after{content:'฿';position:absolute;right:8px;top:-12px;font-size:64px;font-weight:800;color:rgba(10,37,86,.06);line-height:1;}
@@ -449,8 +449,15 @@
   .ann-new{display:inline-block;margin-left:6px;font-size:9.5px;font-weight:800;background:var(--gold);color:var(--navy);border-radius:8px;padding:1px 6px;vertical-align:middle;}
   .ann-read{margin-top:6px;border:1px solid #b9e3e6;background:#fff;color:var(--teal-dark);font-weight:700;font-size:11.5px;padding:4px 12px;border-radius:999px;cursor:pointer;}
   .home-ann-all{margin-top:8px;width:100%;border:none;background:var(--teal-soft);color:var(--teal-dark);font-weight:800;font-size:13px;padding:10px;border-radius:12px;font-family:inherit;cursor:pointer;}
-  .howto{margin:6px 0 0;padding-left:20px;} .howto li{padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px;line-height:1.55;color:#4a5a75;} .howto li:last-child{border-bottom:none;}
-  .howto li b{display:block;color:var(--navy);font-size:13px;font-weight:800;margin-bottom:1px;}
+  .howto{margin:8px 0 0;display:flex;flex-direction:column;gap:8px;}
+  .ht-card{display:flex;gap:11px;align-items:flex-start;padding:11px 12px;border-radius:14px;background:linear-gradient(135deg,#f6fbfd,#fff);border:1px solid #dcebf2;box-shadow:0 1px 4px rgba(10,30,60,.05);}
+  .ht-ic{position:relative;flex:0 0 38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#d9f5fa,#bfeaf2);display:flex;align-items:center;justify-content:center;font-size:19px;}
+  .ht-ic i{position:absolute;top:-6px;left:-6px;min-width:17px;height:17px;border-radius:9px;background:var(--navy);color:#fff;font-weight:800;font-size:10px;line-height:17px;font-style:normal;text-align:center;box-shadow:0 0 0 2px #fff;}
+  .ht-tx{min-width:0;flex:1;} .ht-tx b{display:block;color:var(--navy);font-size:13px;font-weight:800;margin-bottom:2px;}
+  .ht-card{cursor:pointer;align-items:center;-webkit-tap-highlight-color:transparent;} .ht-card.open{align-items:flex-start;border-color:#9fdbe6;}
+  .ht-chev{flex:0 0 auto;display:flex;color:#7b8ca6;transition:transform .2s;} .ht-card.open .ht-chev{transform:rotate(180deg);margin-top:8px;}
+  .ht-tx span{display:none;margin-top:1px;} .ht-card.open .ht-tx span{display:block;}
+  .ht-tx span{font-size:12px;line-height:1.55;color:#5a6b85;}
   .batt-ov{position:fixed;inset:0;z-index:9999;background:rgba(10,20,40,.6);display:flex;align-items:center;justify-content:center;padding:16px;}
   .batt-box{background:#fff;border-radius:18px;padding:18px;width:100%;max-width:380px;max-height:92vh;overflow:auto;}
   .batt-box h3{margin:0 0 4px;font-size:16px;color:var(--navy);}
@@ -549,7 +556,213 @@
 .bk-route .bk-to small{background:#e0a030;color:#3a2600;}
 </style>
 <style id="ver-style">
+.inc-sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:2px 0 8px}
+.inc-box{position:relative;text-align:center;border:1px solid #e3eaf3;border-radius:12px;padding:6px 8px;background:#f8fafd;font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
+.inc-box b{font-size:17px;line-height:1.15}.inc-box span{font-size:10.5px;font-weight:700;color:#4a5b73}.inc-box i{position:absolute;right:7px;top:5px;font-style:normal;font-size:9px;color:#94a3b8}
+.inc-box.cx b{color:#db2777}.inc-box.ac b{color:#e05353}.inc-box.on{background:#fff;border-color:#00aeb8;box-shadow:0 4px 12px rgba(0,174,184,.15)}.inc-box:disabled{opacity:.55;cursor:default}
+.inc-grp{font-size:13px;font-weight:800;color:#0b1f4a;margin:4px 0 8px}
+.inc-item{border:1px solid #e3eaf3;border-left:4px solid #94a3b8;border-radius:12px;padding:9px 11px;margin-bottom:8px;background:#fff}
+.inc-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 8px;align-items:flex-start;font-size:13px;font-weight:700;color:#0b1f4a}
+.inc-sev{font-size:11px;font-weight:800;white-space:nowrap}
+.inc-meta{font-size:11.5px;color:#6b7c93;margin-top:3px}.inc-det{font-size:12px;color:#334155;margin-top:3px}
+.inc-st{font-size:11.5px;font-weight:700;margin-top:4px;display:flex;align-items:center;justify-content:flex-start;gap:8px}.inc-ln{font-size:12px;color:#334155;margin-top:3px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}.inc-ln span{color:#6b7c93}
+.inc-vd{border-radius:20px;padding:2px 9px;font-size:11px;white-space:nowrap}
+.inc-ok{padding:14px;text-align:center;border-radius:12px;background:#eafaf1;color:#1e9e5a;font-size:12.5px;font-weight:700}
+.kv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.kv-tile{border:1px solid #e3eaf3;border-radius:12px;padding:6px 8px;background:#f8fafd;display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1px 5px;min-width:0}
+.kv-tile .k{font-size:10.5px;color:#6b7c93;white-space:nowrap}.kv-tile .v{display:flex;margin-left:auto;text-align:right}.kv-tile .v>*{max-width:100%}
+.kv-tile .v>span:not(.tile-plain):not(.v-none){font-size:11px!important;padding:3px 10px!important;line-height:1.35}
+.kv-tile .tile-plain{display:inline-block;overflow-wrap:anywhere;font-size:11px;font-weight:700;color:#22344f;padding:3px 0}
+.sub-t.fold{display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none}.sub-t.fold .fold-ch{font-style:normal;font-size:12px;color:#94a3b8;transition:transform .15s}.sub.shut .fold-ch{transform:rotate(90deg)}.sub.shut .sub-b{display:none}.sub.shut .sub-t{margin-bottom:0}
+#profDocs .kv-tile .k,#profVehicle .kv-tile .k{font-size:9.5px!important;font-weight:800!important;color:#334155!important}.kv-grid .kv-tile .v,.kv-grid .kv-tile .v *{font-weight:400!important}#profDocs .kv-tile .tile-plain{font-size:10px!important;font-weight:400;line-height:1.35;white-space:nowrap}#profDocs .kv-tile .v>span:not(.tile-plain){font-size:10px!important}#profVehicle .kv-tile .v>span{white-space:nowrap}
+.veh-hero{position:relative;overflow:hidden;display:flex;align-items:center;gap:14px;padding:14px;border-radius:18px;background:linear-gradient(135deg,#0b1f4a 0%,#14397a 60%,#0e8a98 100%);color:#fff;margin-bottom:10px;box-shadow:0 8px 18px rgba(11,31,74,.22)}
+.veh-hero::after{content:'';position:absolute;right:-30px;top:-40px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.07)}
+.veh-hero .th-plate{flex:none;position:relative;z-index:1}
+.vh-info{position:relative;z-index:1;min-width:0}.vh-lbl{font-size:10px;letter-spacing:.08em;color:#8fd8e0;font-weight:700}
+.vh-model{font-size:17px;font-weight:800;line-height:1.2;margin:1px 0 7px;color:#fff}
+.vh-chips{display:flex;flex-wrap:wrap;gap:5px}.vh-chip{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.15);color:#fff}
+.vh-dot{width:9px;height:9px;border-radius:50%;border:1px solid rgba(255,255,255,.7);display:inline-block}
+.kv-two{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.kv-box{border:1px solid #e3eaf3;border-radius:14px;background:#f8fafd;padding:2px 8px;min-width:0}
+.kv-item{min-height:34px;box-sizing:border-box;display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1px 6px;padding:5px 0;border-bottom:1px dashed #dbe4ef}.kv-item:last-child{border-bottom:0}
+.kv-item .k{font-size:9.5px;font-weight:800;color:#334155}
+.kv-item .k{white-space:nowrap}.kv-item .v{display:flex;margin-left:auto;text-align:right}.kv-item .v,.kv-item .v *{font-size:10.5px!important;font-weight:400!important}.kv-item .tile-plain:not([style*=background]){padding:0!important}.kv-item .tile-plain[style*=background]{padding:1px 9px!important}.kv-item .tile-plain{color:#22344f;white-space:nowrap;overflow-wrap:anywhere}
+.kv-item .v>span:not(.tile-plain):not(.v-none){padding:1px 9px!important}
+.sub{margin-bottom:6px}.sub-t{font-size:12.5px;font-weight:800;color:var(--navy);margin:0 0 8px;padding-top:12px;border-top:1px solid #e8eef5}.sub:first-child .sub-t{border-top:0;padding-top:0}
+#screen-profile .sec-head[data-sec=g1]::before{content:'👤🚗';font-size:10px!important;letter-spacing:-1px;white-space:nowrap;overflow:hidden} #screen-profile .sec-head[data-sec=g2]::before{content:'🔔'} #screen-profile .sec-head[data-sec=g3]::before{content:'📘'}
+.pm-open{width:100%;border:1px solid #cdeff2;background:#eefbfc;color:#0b1f4a;font:inherit;font-size:13px;font-weight:700;border-radius:12px;padding:11px 12px;text-align:left;cursor:pointer;display:flex;justify-content:space-between}
+#g2Badge .pm-badge{margin-left:8px}
 .app-ver{font-size:10.5px;font-weight:700;color:#8fa0b8;letter-spacing:.2px;}
+/* ===== profile group list redesign ===== */
+#screen-profile .sec-card.grp{padding:12px 14px 12px 16px;margin-bottom:10px;border-radius:18px;border:1px solid #e3eaf2;background:#fff;overflow:hidden;box-shadow:0 6px 18px rgba(10,31,68,.07);}
+#screen-profile .sec-card.grp::after{content:'';position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:0 4px 4px 0;background:var(--gc,#12c9d6);}
+#profG1{--gc:#12c9d6;--gb:linear-gradient(135deg,#d6f6fa,#aeeaf1);} #profG2{--gc:#f5a623;--gb:linear-gradient(135deg,#fff0d2,#ffdc9a);} #profG3{--gc:#5b7cfa;--gb:linear-gradient(135deg,#e1e8ff,#c3d1ff);}
+#screen-profile .sec-card.grp.open{border-color:var(--gc);box-shadow:0 8px 22px rgba(10,31,68,.10);}
+#screen-profile .sec-card.grp .sec-head{gap:12px;align-items:center;}
+#screen-profile .sec-card.grp .sec-head::before{width:44px;height:44px;border-radius:14px;font-size:21px!important;letter-spacing:0!important;background:var(--gb);box-shadow:0 2px 6px rgba(10,31,68,.10),inset 0 0 0 1px rgba(255,255,255,.7);}
+#screen-profile .sec-head[data-sec=g1]::before{content:'🪪'!important;}
+#screen-profile .sec-card.grp .sec-head h3{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;font-size:14px;font-weight:800;line-height:1.25;}
+#screen-profile .sec-card.grp .sec-head h3::after{flex-basis:100%;font-size:11px;font-weight:500;color:#7b8ca6;line-height:1.3;}
+#screen-profile .sec-head[data-sec=g1] h3::after{content:'เอกสาร · รถ · ร้องเรียน · อุบัติเหตุ';}
+#screen-profile .sec-head[data-sec=g2] h3::after{content:'ข้อความจากเจ้าหน้าที่ และประกาศใหม่';}
+#screen-profile .sec-head[data-sec=g3] h3::after{content:'คู่มือการใช้งาน และเบอร์ติดต่อ';}
+#screen-profile .sec-card.grp .sec-chev{width:28px;height:28px;background:var(--gb);color:var(--navy);}
+#logoutBtn{display:flex;align-items:center;justify-content:center;gap:6px;width:auto;min-width:150px;margin:6px auto 0;padding:8px 22px;border-radius:999px;border:1.5px solid #f6caca!important;background:linear-gradient(180deg,#fff,#fff4f4);font-weight:800;font-size:12px;box-shadow:0 2px 6px rgba(220,60,60,.08);}
+#logoutBtn::before{content:'⏻';font-size:13px;line-height:1;}
+#screen-profile .app-ver{display:table;margin:10px auto 4px!important;padding:2px 10px;border-radius:999px;background:#eaf0f7;color:#6b7c95;font-size:10px;font-weight:700;letter-spacing:.3px;}
+/* ===== bottom nav redesign ===== */
+nav#bottomNav{margin:0 10px calc(8px + env(safe-area-inset-bottom));border-radius:26px;padding:8px 8px;background:rgba(255,255,255,.96);border:1px solid #e3ecf4;box-shadow:0 10px 28px rgba(10,31,68,.16),0 2px 6px rgba(10,31,68,.06);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+nav#bottomNav button.nav-item{position:relative;height:50px;gap:2px;justify-content:center;border-radius:18px;transition:background .18s,color .18s,transform .12s;-webkit-tap-highlight-color:transparent;}
+nav#bottomNav button.nav-item:active{transform:scale(.94);}
+.nav-item .np{width:auto;height:24px;background:none!important;border-radius:0;}
+.nav-item .np svg{width:23px;height:23px;}
+.nav-lb{font-size:10px;font-weight:700;letter-spacing:.1px;}
+nav#bottomNav button.nav-item.active{background:linear-gradient(180deg,#e2f9fb,#cdf3f7);color:var(--teal-dark);box-shadow:inset 0 0 0 1px rgba(18,201,214,.25);}
+nav#bottomNav button.nav-item.active::after{content:'';position:absolute;top:3px;left:50%;width:16px;height:3px;margin-left:-8px;border-radius:3px;background:var(--teal);}
+.nav-spacer{height:50px;}
+#fabBtn{top:-34px;width:62px;height:62px;border:4px solid #fff;background:linear-gradient(135deg,#22e0ea,#0aaebd);box-shadow:0 0 0 1.5px #d3eef2,0 10px 22px rgba(18,201,214,.45);}
+#fabBtn:active{transform:translateX(-50%) scale(.94);}
+/* ===== home notice tiles redesign ===== */
+.hb{position:relative;overflow:hidden;padding:9px 10px 9px 14px;gap:9px;border-radius:16px;border:1px solid #cfeaf0;background:linear-gradient(135deg,#f3fcfd,#fff 60%);box-shadow:0 5px 14px rgba(10,31,68,.08);}
+.hb::before{content:'';position:absolute;left:0;top:10px;bottom:10px;width:4px;border-radius:0 4px 4px 0;background:#12c9d6;}
+.hb.pm{border-color:#f3dcaf;background:linear-gradient(135deg,#fff8e8,#fff 60%);} .hb.pm::before{background:#e0a030;}
+.hb.dlt{border-color:#d3d9fb;background:linear-gradient(135deg,#f0f2ff,#fff 60%);} .hb.dlt::before{background:#5b7cfa;}
+.hb .hb-ic{width:34px;height:34px;border-radius:11px;font-size:17px;box-shadow:0 2px 6px rgba(10,31,68,.10),inset 0 0 0 1px rgba(255,255,255,.7);}
+.hb.dlt .hb-ic{background:linear-gradient(135deg,#e1e8ff,#c3d1ff);}
+.hb .h{font-size:12px;} .hb .s{font-size:10.5px;font-weight:600;}
+.hb.dlt .s{color:#4a5bb0;} .hb.dlt .hb-n{background:#5b7cfa;box-shadow:0 3px 8px rgba(91,124,250,.4);}
+.hb .hb-n{min-width:22px;height:22px;font-size:11px;}
+.hb .hb-chev{width:22px;height:22px;border-radius:50%;background:#eef2f8;display:grid;place-items:center;font-size:16px;}
+/* ===== bookings list redesign ===== */
+#screen-job .sec-title,#bookingHead,.sec-title.pool-t{font-size:15px;font-weight:800;color:var(--navy);margin:14px 0 10px;gap:8px;}
+#bookingHead>span:first-child,.sec-title.pool-t>span:first-child{display:flex;align-items:center;gap:8px;}
+#bookingHead>span:first-child::before,.sec-title.pool-t>span:first-child::before{content:'';width:5px;height:18px;border-radius:3px;background:linear-gradient(180deg,#19d8e2,#0aa5c0);}
+.sec-title.pool-t>span:first-child::before{background:linear-gradient(180deg,#f5b84a,#e0a030);}
+#bookingHead .muted,.sec-title.pool-t .muted{font-size:11.5px;font-weight:800;color:#0a6e78;background:#d9f7f9;border-radius:99px;padding:3px 11px;}
+.sec-title.pool-t .muted{color:#8a5200;background:#fff3d6;}
+#screen-job .empty-state{border:1.5px dashed #c9d8ea;background:linear-gradient(180deg,#f8fbff,#fff);box-shadow:none;border-radius:18px;padding:22px 10px;color:#7b8ca6;font-weight:600;}
+#screen-job .empty-state::before{content:'📭';display:block;font-size:26px;margin-bottom:4px;opacity:.85;}
+#screen-job .pv-card{position:relative;overflow:hidden;border:1px solid #e3eaf2;border-radius:18px;padding:12px 13px 12px 17px;margin-bottom:10px;background:#fff;box-shadow:0 5px 14px rgba(10,31,68,.07);}
+#screen-job .pv-card::before{content:'';position:absolute;left:0;top:12px;bottom:12px;width:4px;border-radius:0 4px 4px 0;background:#e0a030;}
+#screen-job .pv-card.can{border:1px solid #19d8e2;background:linear-gradient(135deg,#f0fdfe,#fff 60%);} .pv-card.can::before{background:#19d8e2;}
+#screen-job .pv-card .pl-top{align-items:center;margin-bottom:8px;}
+#screen-job .pv-card .pl-top b{font-size:15px;font-weight:800;color:#fff;background:linear-gradient(135deg,#12305f,#0a1f44);border-radius:11px;padding:3px 11px;letter-spacing:.3px;}
+#screen-job .pv-card .pl-top span{font-size:11px;font-weight:700;color:#5b6b85;background:#eef3f9;border-radius:99px;padding:3px 10px;}
+#screen-job .pv-card .pl-route{background:#f6f9fd;border-radius:13px;padding:6px 10px;}
+#screen-job .pv-card .pl-rt{margin:6px 0;font-size:12.5px;}
+#screen-job .pv-card .pv-tag{display:block;margin-top:9px;text-align:center;font-size:11.5px;border-radius:11px;padding:6px 10px;}
+/* ===== booking pull button redesign ===== */
+.bk-pull{display:block;margin:0 0 10px;}
+#screen-job #bkPullBtn{display:grid;grid-template-columns:40px 1fr 30px;grid-template-rows:auto auto;column-gap:11px;row-gap:0;align-items:center;width:100%;text-align:left;padding:9px 12px;border-radius:18px;border:1px solid #bfeef2;background:linear-gradient(135deg,#e3fafc,#fff 65%);color:var(--navy);box-shadow:0 5px 14px rgba(18,201,214,.15);position:relative;overflow:hidden;}
+#screen-job #bkPullBtn::before{content:'';position:absolute;left:0;top:11px;bottom:11px;width:4px;border-radius:0 4px 4px 0;background:#19d8e2;}
+#screen-job #bkPullBtn svg{grid-row:1/3;width:40px;height:40px;padding:9px;box-sizing:border-box;border-radius:13px;color:#fff;background:linear-gradient(135deg,#22e0ea,#0aaebd);box-shadow:0 3px 8px rgba(18,201,214,.4);}
+#screen-job #bkPullBtn span{font-size:13px;font-weight:800;color:var(--navy);align-self:end;line-height:1.25;}
+#screen-job #bkPullBtn small{font-size:10.5px;font-weight:600;color:#6b7c95;align-self:start;line-height:1.3;}
+#screen-job #bkPullBtn::after{content:'↻';grid-row:1/3;grid-column:3;width:30px;height:30px;border-radius:50%;background:#d9f7f9;color:#007985;display:grid;place-items:center;font-size:17px;font-weight:800;}
+#screen-job #bkPullBtn.spin::after{animation:bkSpin .9s linear infinite;} #screen-job #bkPullBtn.spin svg{animation:none;}
+/* ===== inline pool ===== */
+.pl-inline{margin:0 0 6px;}
+.pl-inline .pl-item{position:relative;overflow:hidden;padding:12px 13px 12px 17px;border:1px solid #bfeef2;background:linear-gradient(135deg,#f0fdfe,#fff 60%);border-radius:18px;box-shadow:0 5px 14px rgba(18,201,214,.12);}
+.pl-inline .pl-item::before{content:'';position:absolute;left:0;top:12px;bottom:12px;width:4px;border-radius:0 4px 4px 0;background:#19d8e2;}
+.pl-inline .pl-top b{font-size:15px;font-weight:800;color:#fff;background:linear-gradient(135deg,#12305f,#0a1f44);border-radius:11px;padding:3px 11px;}
+.pl-inline .pl-top{align-items:center;} .pl-inline .pl-top span{font-size:11px;font-weight:700;color:#5b6b85;background:#eef3f9;border-radius:99px;padding:3px 10px;}
+.pl-inline .pl-ban{margin-bottom:10px;}
+/* ===== history redesign ===== */
+#historyStats{gap:10px;margin-bottom:6px;}
+#historyStats .st-dark,#historyStats .st-light{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:20px;}
+#historyStats .st-ic{flex:none;width:38px;height:38px;border-radius:13px;display:grid;place-items:center;font-size:19px;font-weight:800;position:relative;z-index:1;}
+#historyStats .st-dark .st-ic{background:linear-gradient(135deg,#ffd76a,#f0a91f);color:#4a2f00;box-shadow:0 3px 8px rgba(240,169,31,.4);}
+#historyStats .st-light .st-ic{background:linear-gradient(135deg,#22e0ea,#0aaebd);color:#fff;box-shadow:0 3px 8px rgba(18,201,214,.4);}
+#historyStats .st-tx{min-width:0;position:relative;z-index:1;text-align:left;}
+#historyStats .lbl{font-size:10.5px;white-space:nowrap;text-align:left;} #historyStats .val{margin-top:2px;font-size:21px;white-space:nowrap;text-align:left;} #historyStats .val small{font-size:11px;margin-left:4px;}
+#historyStats .st-dark::before,#historyStats .st-light::before,#historyStats .st-light::after{display:none;}
+#historyStats{max-width:none;margin-left:0;margin-right:0;} #historyStats .st-dark,#historyStats .st-light{max-width:none;padding:11px 12px;}
+#historyStats .st-dark{flex:1.45 1 0;} #historyStats .st-light{flex:1 1 0;} #historyStats .st-dark .val small{margin-left:3px;}
+#historyDateLabel{font-size:15px;font-weight:800;color:var(--navy);margin:14px 0 10px;gap:8px;}
+#historyDateLabel>span:first-child{display:flex;align-items:center;gap:8px;}
+#historyDateLabel>span:first-child::before{content:'';width:5px;height:18px;border-radius:3px;background:linear-gradient(180deg,#19d8e2,#0aa5c0);}
+#historyDateLabel .muted{font-size:11.5px;font-weight:800;color:#0a6e78;background:#d9f7f9;border-radius:99px;padding:3px 11px;}
+#screen-history .hist-card{padding:11px 12px 11px 17px;border-radius:18px;margin-bottom:10px;border:1px solid #e3eaf2;background:#fff;box-shadow:0 5px 14px rgba(10,31,68,.07);cursor:pointer;}
+#screen-history .hist-card::before{left:0;top:12px;bottom:12px;width:4px;border-radius:0 4px 4px 0;}
+#screen-history .hist-card.bk::before{background:#e0a030;}
+#screen-history .hist-card.bk .hist-ic{background:linear-gradient(135deg,#fff1d2,#ffe0a1);box-shadow:inset 0 0 0 1.5px rgba(224,160,48,.45);}
+#screen-history .hist-card.bk .hist-code span{color:#8a5200;background:#fff3d6;}
+#screen-history .hist-price{font-size:13.5px;color:#fff;background:linear-gradient(135deg,#12305f,#0a1f44);border-radius:11px;padding:4px 10px;}
+#screen-history .hist-time{margin-top:5px;}
+/* ===== history groups ===== */
+.hist-grp{display:flex;align-items:center;gap:8px;margin:14px 2px 8px;padding:7px 10px;border-radius:14px;background:linear-gradient(135deg,#e9fbfc,#f6fdfe);border:1px solid #bfeef2;}
+.hist-grp.g-stand{background:linear-gradient(135deg,#eef1ff,#f8f9ff);border-color:#d3d9fb;} .hist-grp.g-booking{background:linear-gradient(135deg,#fff5e0,#fffaf0);border-color:#f3dcaf;}
+.hist-grp .hg-ic{flex:none;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-size:15px;background:#fff;box-shadow:0 2px 5px rgba(10,31,68,.1);}
+.hist-grp b{flex:1;min-width:0;font-size:12.5px;font-weight:800;color:var(--navy);line-height:1.25;}
+.hist-grp .hg-n{flex:none;font-size:10.5px;font-weight:800;color:#0a6e78;background:#d9f7f9;border-radius:99px;padding:2px 9px;}
+.g-stand .hg-n{color:#3f4fb0;background:#e1e6ff;} .g-booking .hg-n{color:#8a5200;background:#ffeac2;}
+.hist-grp .hg-s{flex:none;font-size:12px;font-weight:800;color:var(--navy);}
+#screen-history .hist-card.st::before{background:#5b7cfa;}
+/* ===== history fold ===== */
+.hist-grp .hg-s small{display:none;} .hist-grp{gap:6px;padding:7px 8px;} .hist-grp b{font-size:12px;}
+button.hist-grp{width:100%;font:inherit;text-align:left;cursor:pointer;margin:12px 0 8px;-webkit-tap-highlight-color:transparent;}
+.hist-grp .hg-chev{flex:none;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.85);display:grid;place-items:center;color:var(--navy);transition:transform .2s;transform:rotate(90deg);}
+.hist-grp-box.shut .hg-chev{transform:rotate(0deg);} .hist-grp-box.shut .hist-grp-body{display:none;}
+/* ===== history rows redesign ===== */
+#screen-history .hist-grp-body{background:#fff;border:1px solid #e3eaf2;border-radius:18px;box-shadow:0 5px 14px rgba(10,31,68,.06);padding:2px 0;overflow:hidden;margin-bottom:4px;}
+#screen-history .hist-grp-body .hist-card{margin:0;border:none;border-radius:0;box-shadow:none;background:transparent;padding:10px 12px;gap:11px;border-bottom:1px solid #eef2f7;}
+#screen-history .hist-grp-body .hist-card:last-child{border-bottom:none;}
+#screen-history .hist-grp-body .hist-card::before{display:none;}
+#screen-history .hist-grp-body .hist-card:active{background:#f6fafd;}
+#screen-history .hist-grp-body .hist-ic{width:40px;height:40px;border-radius:13px;font-size:18px;}
+#screen-history .hist-grp-body .hist-nm{font-size:12.5px;}
+#screen-history .hist-grp-body .hist-code{margin-top:4px;font-size:10.5px;color:#7b8ca6;letter-spacing:.2px;}
+#screen-history .hist-grp-body .hist-card:not(.bk) .hist-code span{display:none;}
+#screen-history .hist-grp-body .hist-rt{display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+#screen-history .hist-grp-body .hist-price{font-size:14px;font-weight:800;color:#0a6e78;background:linear-gradient(135deg,#e3fafc,#cdf3f7);border-radius:10px;padding:3px 10px;box-shadow:inset 0 0 0 1px rgba(18,201,214,.25);}
+#screen-history .hist-grp-body .hist-card.bk .hist-price{color:#8a5200;background:linear-gradient(135deg,#fff5e0,#ffe9bd);box-shadow:inset 0 0 0 1px rgba(224,160,48,.35);}
+#screen-history .hist-grp-body .hist-time{margin:0;font-size:10.5px;color:#7b8ca6;}
+/* ===== history route ===== */
+.hist-route{margin-top:6px;display:flex;flex-direction:column;gap:3px;}
+.hist-route>div{display:flex;gap:6px;align-items:flex-start;font-size:10.5px;font-weight:600;color:#33445f;line-height:1.35;}
+.hist-route>div>span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word;min-width:0;}
+.hist-route i{flex:none;font-style:normal;font-size:9px;font-weight:800;line-height:1;padding:3px 7px;border-radius:99px;margin-top:1px;}
+.hist-route i.a{background:#12c9d6;color:#06303a;} .hist-route i.b{background:#e0a030;color:#3a2600;}
+/* ===== join queue redesign ===== */
+.jq-hint{position:relative;overflow:hidden;gap:11px;padding:11px 14px 11px 18px;border-radius:18px;background:linear-gradient(135deg,#fff6df,#fffbf0);border:1px solid #f3dcaf;box-shadow:0 5px 14px rgba(224,160,48,.12);margin-bottom:12px;}
+.jq-hint::before{content:'';position:absolute;left:0;top:10px;bottom:10px;width:4px;border-radius:0 4px 4px 0;background:#e0a030;}
+.jq-hint>span{flex:none;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:19px!important;background:linear-gradient(135deg,#ffe9b8,#ffd37a);box-shadow:0 2px 6px rgba(224,160,48,.3);}
+.jq-hint b{display:block;font-size:12.5px;font-weight:800;color:#6b4300;margin-bottom:1px;} .jq-hint div{font-size:11.5px;line-height:1.5;}
+.jq-card{overflow:hidden;border:1px solid #e3eaf2;border-top:1px solid #e3eaf2;border-radius:22px;padding:14px 14px 14px 18px;margin-bottom:12px;box-shadow:0 8px 20px rgba(10,31,68,.08);}
+.jq-card::before{content:'';position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:0 4px 4px 0;background:linear-gradient(180deg,#19d8e2,#0aa5c0);}
+.jq-card.mine{border-color:#19d8e2;}
+.jq-ic{width:44px;height:44px;border-radius:14px;font-size:21px;box-shadow:0 3px 8px rgba(18,201,214,.25),inset 0 0 0 1px rgba(255,255,255,.7);}
+.jq-nm b{font-size:15.5px;} .jq-dist{margin-top:3px;font-size:10.5px;color:#7b8ca6;}
+.jq-stats{gap:8px;margin:12px 0 12px;}
+.jq-st{display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:6px;text-align:left;padding:9px 12px 10px;border-radius:15px;background:#f6f9fd;border:1px solid #e6edf5;}
+.jq-st .jq-lb{grid-column:1/3;font-size:10.5px;} .jq-st b{font-size:24px;margin-top:0;grid-column:1;display:flex;align-items:baseline;gap:2px;} .jq-st b small{font-size:11px;}
+.jq-st .jq-bar{grid-column:1/3;margin-top:6px;height:6px;}
+.jq-bar i{background:linear-gradient(90deg,#19d8e2,#0aa5c0);} .jq-bar.w i{background:linear-gradient(90deg,#f5b84a,#e0a030);}
+.jq-card .btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:15px;font-size:14px;font-weight:800;}
+.jq-card .join-queue-btn::after{content:'›';font-size:20px;line-height:1;}
+/* ===== estimate ===== */
+.pl-est{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;padding:6px 11px;border-radius:12px;background:linear-gradient(135deg,#e3fafc,#d3f4f7);border:1px solid #bfeef2;}
+.pl-est span{font-size:11px;font-weight:700;color:#0a6e78;} .pl-est b{font-size:15px;font-weight:800;color:#0a1f44;}
+.pl-est.none{background:#f3f6fa;border-color:#e3eaf2;} .pl-est.none span,.pl-est.none b{color:#8a99b0;font-size:11px;font-weight:700;}
+/* ===== estimate v2 ===== */
+.pl-est{position:relative;display:flex;align-items:center;gap:10px;margin-top:9px;padding:8px 14px 8px 10px;border-radius:15px;background:linear-gradient(135deg,#fffaf0 0%,#fff3d6 100%);border:1px dashed #e9c677;box-shadow:0 3px 8px rgba(224,160,48,.10);}
+.pl-est::before{content:'฿';flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:16px;font-weight:800;color:#5a3a00;background:linear-gradient(135deg,#ffe08a,#f0a91f);box-shadow:0 2px 6px rgba(240,169,31,.45),inset 0 0 0 2px rgba(255,255,255,.55);}
+.pl-est span{flex:1;font-size:11px;font-weight:700;color:#8a5a0b;line-height:1.2;}
+.pl-est b{font-size:19px;font-weight:800;color:#0a1f44;letter-spacing:.2px;line-height:1;}
+.pl-est b::after{content:' บาท';font-size:10.5px;font-weight:700;color:#8a5a0b;}
+.pl-est.none{background:#f6f8fb;border:1px dashed #d3dce8;box-shadow:none;}
+.pl-est.none::before{background:#e3eaf2;color:#8a99b0;box-shadow:none;}
+.pl-est.none span{color:#8a99b0;} .pl-est.none b{font-size:11px;font-weight:700;color:#8a99b0;} .pl-est.none b::after{content:'';}
+/* ===== dialogs redesign ===== */
+#alertBox,#confirmBox{backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);}
+#alertBox .box,#confirmBox .box{position:relative;overflow:hidden;max-width:310px;border-radius:26px;padding:26px 20px 20px;box-shadow:0 24px 50px rgba(7,26,62,.35);animation:dlgIn .18s ease-out;}
+#alertBox .box::before,#confirmBox .box::before{content:'';position:absolute;left:0;right:0;top:0;height:6px;background:linear-gradient(90deg,#19d8e2,#0aa5c0);}
+.dlg-ic{width:54px;height:54px;margin:0 auto 10px;border-radius:18px;display:grid;place-items:center;font-size:26px;background:linear-gradient(135deg,#d6f6fa,#aeeaf1);box-shadow:0 5px 12px rgba(18,201,214,.3),inset 0 0 0 1px rgba(255,255,255,.7);}
+.dlg-ttl{font-size:16px;font-weight:800;color:var(--navy);margin-bottom:6px;}
+.dlg-msg{margin-bottom:18px;font-size:13px;line-height:1.65;color:#4a5a75;white-space:pre-line;}
+#confirmBox .btn-row{gap:10px;} #confirmBox .btn-row .btn{flex:1;padding:12px 8px;border-radius:15px;font-size:14px;font-weight:800;}
+#alertBox .btn{width:100%;padding:12px;border-radius:15px;font-size:14px;font-weight:800;}
+@keyframes dlgIn{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}
 </style>
 <style id="qjob-style">
 #dashQueue:empty{display:none;}
@@ -755,6 +968,21 @@
 @keyframes bootSp{to{transform:rotate(360deg);}}
 .has-sess #bootSplash{display:flex;}
 .has-sess #loginScreen{display:none;}
+/* ===== job stepper redesign ===== */
+.qjob .qj-prog{gap:0;margin:14px 0 8px;align-items:center;}
+.qjob .qj-prog span{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid #38557f;background:#122a52;color:#7f95b6;font-size:11px;font-weight:800;display:grid;place-items:center;line-height:1;box-shadow:none;transition:transform .2s;}
+.qjob .qj-prog span.done{background:linear-gradient(135deg,#22e0ea,#0fbac7);border-color:#22e0ea;color:#04323a;font-size:13px;box-shadow:0 2px 6px rgba(18,201,214,.35);}
+.qjob .qj-prog span.now{width:34px;height:34px;margin:0 -2px;font-size:17px;background:linear-gradient(135deg,#fff,#d9fbfd);border:2px solid #22e0ea;color:#04323a;box-shadow:0 0 0 4px rgba(18,201,214,.25),0 4px 12px rgba(18,201,214,.5);animation:qjPulse 1.8s ease-in-out infinite;}
+.qjob .qj-prog i{flex:1;height:3px;border-radius:3px;background:#27406a;min-width:4px;}
+.qjob .qj-prog i.on{background:linear-gradient(90deg,#22e0ea,#0fbac7);}
+@keyframes qjPulse{0%,100%{box-shadow:0 0 0 4px rgba(18,201,214,.25),0 4px 12px rgba(18,201,214,.5)}50%{box-shadow:0 0 0 7px rgba(18,201,214,.12),0 4px 14px rgba(18,201,214,.55)}}
+.qjob .qj-cur{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0 8px;padding:7px 11px;border-radius:13px;background:rgba(18,201,214,.12);border:1px solid rgba(18,201,214,.25);font-size:12px;}
+.qjob .qj-cur .qc-n{font-size:10px;font-weight:800;color:#0a3a45;background:var(--teal);border-radius:99px;padding:2px 9px;}
+.qjob .qj-cur b{font-size:14px;font-weight:800;color:#fff;} .qjob .qj-cur .qc-nx{margin-left:auto;font-size:10.5px;font-weight:700;color:#9fb2cf;}
+/* ===== fixed package fare ===== */
+.fr-fare .r.fr-fix input#frMeter{background:#e9fbfc;border:1.5px solid #19d8e2;color:#06606b;font-weight:800;cursor:not-allowed;pointer-events:none;}
+.fr-fare .r.fr-fix>span small{display:inline-block;margin-left:6px;font-size:10px;font-weight:800;color:#06606b;background:#d9f7f9;border-radius:99px;padding:1px 8px;}
+.fr-fare .r.fr-fix>span::after{content:' 🔒';}
 </style>
 </head>
 <body>
@@ -869,7 +1097,7 @@
   </div>
 
   <div id="screen-job" class="screen" style="display:none;">
-    <div class="bk-pull"><button type="button" id="bkPullBtn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M8 2.8v3.4M16 2.8v3.4M3 10h18"/><path d="m9 15 2 2 4-4"/></svg><span>งานจอง</span></button></div>
+    <div class="bk-pull"><button type="button" id="bkPullBtn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M8 2.8v3.4M16 2.8v3.4M3 10h18"/><path d="m9 15 2 2 4-4"/></svg><span>ดึงงานจองล่าสุด</span><small>แตะเพื่ออัปเดตงานจากระบบ CABB</small></button></div>
     <div id="bookingPool"></div>
     <div class="day-strip" id="bookingStrip"></div>
     <div class="sec-title" id="bookingHead"></div>
@@ -893,12 +1121,12 @@
       <div class="prof-chips"><span id="profType" class="prof-chip type" style="display:none;"></span></div>
     </div>
     <div id="profAlerts"></div>
-    <div class="sec-card" id="profVehicle"></div>
-    <div class="sec-card" id="profDocs"></div>
-    <div class="sec-card" id="profPm"></div>
-    <div class="sec-card" id="profAnn"></div>
-    <div class="sec-card" id="profHowto"></div>
-    <div class="sec-card" id="profHelp"></div>
+    <div class="sec-card grp" id="profG1"><button type="button" class="sec-head" data-sec="g1" aria-expanded="false"><h3>ข้อมูลผู้เช่าขับ &amp; ข้อมูลรถ</h3><span class="sec-chev"></span></button><div class="sec-body">
+      <div class="sub" id="profVehicle"></div><div class="sub" id="profDocs"></div><div class="sub" id="profIncident"></div></div></div>
+    <div class="sec-card grp" id="profG2"><button type="button" class="sec-head" data-sec="g2" aria-expanded="false"><h3>แจ้งเตือนและประกาศ<span id="g2Badge"></span></h3><span class="sec-chev"></span></button><div class="sec-body">
+      <div class="sub" id="profPm"></div><div class="sub" id="profAnn"></div></div></div>
+    <div class="sec-card grp" id="profG3"><button type="button" class="sec-head" data-sec="g3" aria-expanded="false"><h3>วิธีใช้และติดต่อ</h3><span class="sec-chev"></span></button><div class="sec-body">
+      <div class="sub" id="profHowto"></div><div class="sub" id="profHelp"></div></div></div>
     <button class="btn btn-outline" id="logoutBtn" style="color:var(--red);border-color:#f3c9c9;">ออกจากระบบ</button>
     <div class="app-ver" style="text-align:center;margin:12px 0 4px;">เวอร์ชัน -</div>
   </div>
@@ -913,8 +1141,8 @@
   </nav>
 </div>
 
-<div id="alertBox"><div class="box"><div id="alertMsg" style="margin-bottom:16px;font-size:13.5px;line-height:1.6;"></div><button class="btn btn-blue" id="alertOkBtn">ตกลง</button></div></div>
-<div id="confirmBox"><div class="box"><div id="confirmMsg" style="margin-bottom:16px;font-size:13.5px;line-height:1.6;"></div>
+<div id="alertBox"><div class="box"><div class="dlg-ic">ℹ️</div><div class="dlg-ttl">แจ้งเตือน</div><div id="alertMsg" class="dlg-msg"></div><button class="btn btn-blue" id="alertOkBtn">ตกลง</button></div></div>
+<div id="confirmBox"><div class="box"><div class="dlg-ic" id="confirmIc">❓</div><div class="dlg-ttl" id="confirmTtl">ยืนยันการทำรายการ</div><div id="confirmMsg" class="dlg-msg"></div>
   <div class="btn-row" style="margin-bottom:0;"><button class="btn btn-no" id="confirmNoBtn">ยกเลิก</button><button class="btn btn-ok" id="confirmYesBtn">ยืนยัน</button></div>
 </div></div>
 
@@ -984,6 +1212,8 @@ const TH_W = ['อาทิตย์','จันทร์','อังคาร',
 const fmtDate = d => `${d.getDate()} ${TH_M[d.getMonth()]} ${d.getFullYear()}`;
 const ymd = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const parseYmd = s => new Date(s + 'T00:00:00');
+const estOf = o => { const v = Number(o && (o.estimatedFare != null ? o.estimatedFare : o.fare)); return v > 0 ? v : null; }; // ราคาประมาณการจาก CABB (estimatedFare; ถ้าไม่มีใช้ fare) — ชื่อฟิลด์ต้นทางอ้างอิงจากโค้ดเดิมของแอป ยังไม่ได้ยืนยันกับข้อมูลจริง
+const estHtml = v => v != null ? `<div class="pl-est"><span>ราคาประมาณการ</span><b>${Number(v).toLocaleString('en-US')}</b></div>` : `<div class="pl-est none"><span>ราคาประมาณการ</span><b>ยังไม่ระบุ</b></div>`;
 const baht = n => '฿' + Number(n||0).toLocaleString('en-US');
 const bahtU = n => Number(n||0).toLocaleString('en-US') + '<small>บาท</small>'; // ช่องสรุปยอด: ตัวเลข + หน่วย "บาท"
 function dayRange(offsetStart, n){ const t = new Date(); return Array.from({length:n}, (_,i)=> new Date(t.getFullYear(), t.getMonth(), t.getDate()+offsetStart+i)); }
@@ -996,7 +1226,10 @@ function appAlert(msg){ $('alertMsg').textContent = msg; $('alertBox').style.dis
 $('alertOkBtn').addEventListener('click', ()=>{ $('alertBox').style.display='none'; });
 
 let confirmResolve = null;
-function appConfirm(msg){
+function appConfirm(msg, o){
+  o = o || {};
+  $('confirmIc').textContent = o.ic || '❓'; $('confirmTtl').textContent = o.title || 'ยืนยันการทำรายการ';
+  $('confirmYesBtn').textContent = o.yes || 'ยืนยัน'; $('confirmNoBtn').textContent = o.no || 'ยกเลิก';
   $('confirmMsg').textContent = msg;
   $('confirmBox').style.display = 'flex';
   return new Promise(res=>{ confirmResolve = res; });
@@ -1034,7 +1267,7 @@ async function hashPin(pin){
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
-let LOCS = {};
+let LOCS = {}; const histOpen = new Set(); const histJobs = {}; // กลุ่มประวัติที่เปิดอยู่ (ค่าเริ่มต้นพับทั้งหมด)
 let vehicles = [];
 let queueData = {}; // {locKey: [entry,...]}
 
@@ -1125,6 +1358,8 @@ const SWAP_TTL_MS = 5*60*1000;
 let swapPrompted = new Set(), swapPrompting = false;
 function swapSvNow(){ return Date.now() + (typeof poolOffset==='number' ? poolOffset : 0); }
 function swapFresh(r){ return !!(r && r.at && swapSvNow() - Number(r.at) < SWAP_TTL_MS); }
+// บันทึกผลคำขอลงประวัติ swapLog (ถ้าเขียนไม่ได้ก็ข้าม ไม่กระทบการสลับคิว)
+function swapLogSet(locKey, logId, status){ if(!logId) return; try{ db.ref('swapLog/'+locKey+'/'+logId).update({ status, respondedAt: firebase.database.ServerValue.TIMESTAMP }).catch(()=>{}); }catch(e){} }
 async function checkSwapRequest(locKey, arr){
   if(!driverCurrentUser || swapPrompting) return;
   const me = arr.find(e=>e.status==='standby' && isMyEntry(e) && e.swapReq && e.swapReq.status==='pending' && swapFresh(e.swapReq));
@@ -1133,7 +1368,7 @@ async function checkSwapRequest(locKey, arr){
   if($('confirmBox').style.display==='flex'){ setTimeout(()=>checkSwapRequest(locKey, queueData[locKey]||arr), 3000); return; }
   swapPrompted.add(pk); swapPrompting = true;
   notifyDriver('มีคำขอสลับคิว', `${me.swapReq.fromPlate||'คิวถัดไป'} ขอสลับคิวกับคุณ`, 'standby');
-  const ok = await appConfirm(`คิวที่ ${me.slot+1} (${me.swapReq.fromPlate||'-'}) ขอสลับคิวกับคุณ ถ้ายินยอม คุณจะเลื่อนไปคิวที่ ${me.slot+1} และเขาจะได้คิวที่ ${me.slot} ยินยอมสลับคิวหรือไม่?`);
+  const ok = await appConfirm(`คิวที่ ${me.slot+1} (${me.swapReq.fromPlate||'-'}) ขอสลับคิวกับคุณ ถ้ายินยอม คุณจะเลื่อนไปคิวที่ ${me.slot+1} และเขาจะได้คิวที่ ${me.slot} ยินยอมสลับคิวหรือไม่?${me.swapReq.reason ? '\nเหตุผล: ' + me.swapReq.reason : ''}`, {ic:'🔄', title:'คำขอสลับคิว', yes:'ยินยอม', no:'ไม่ยินยอม'});
   swapPrompting = false;
   const path = 'queue/'+locKey;
   try{
@@ -1148,10 +1383,12 @@ async function checkSwapRequest(locKey, arr){
         const t = a.slot; a.slot = b.slot; b.slot = t; delete a.swapReq; a.swappedAt = b.swappedAt = new Date().toISOString();
         return val;
       });
+      swapLogSet(locKey, me.swapReq.logId, res.committed ? 'accepted' : (why==='expired' ? 'expired' : 'failed'));
       if(res.committed) notifyDriver('สลับคิวแล้ว', 'คุณเลื่อนไปคิวหลังตามที่ยินยอม', 'standby');
       else appAlert(why==='expired' ? 'คำขอสลับหมดเวลาแล้ว' : 'คิวมีการเปลี่ยนแปลง จึงสลับไม่สำเร็จ');
     } else {
       await db.ref(path+'/'+me.id+'/swapReq/status').set('declined');
+      swapLogSet(locKey, me.swapReq.logId, 'declined');
     }
   }catch(e){ appAlert('ดำเนินการไม่สำเร็จ: '+e.message); }
 }
@@ -1381,7 +1618,7 @@ function renderJoin(){
       <div class="jq-near-note">ต้องเข้าใกล้ลานจอดรอภายใน ${(geofenceKm(nearest.l)*1000).toFixed(0)} เมตรเพื่อเปิดการลงคิว${acc}</div>
     </div>`;
   } else {
-    $('nearCard').innerHTML = `<div class="jq-hint"><span>📡</span><div>ยังไม่ทราบตำแหน่งของคุณ กดปุ่มรีเฟรชมุมขวาบนเพื่อค้นหาลานจอดรอที่ใกล้ที่สุด</div></div>`;
+    $('nearCard').innerHTML = `<div class="jq-hint"><span>📡</span><div><b>ยังไม่ทราบตำแหน่งของคุณ</b>กดปุ่มรีเฟรชมุมขวาบนเพื่อค้นหาลานจอดรอที่ใกล้ที่สุด</div></div>`;
   }
   wrap.querySelectorAll('.join-queue-btn').forEach(b=>b.addEventListener('click', ()=>openScanScreen(b.dataset.loc)));
   wrap.querySelectorAll('.view-queue-btn').forEach(b=>b.addEventListener('click', ()=>{ currentQueueLoc=b.dataset.loc; showScreen('queue'); }));
@@ -1513,9 +1750,16 @@ async function fillJobInfo(e){
       <div class="qj-pt b"><small>จุดส่ง</small><b>${esc(j.dropoff||'-')}</b>${mapsLink(j.dropoff)}</div>
     </div>` + (chips.length ? `<div class="qj-chips">${chips.map(c=>`<div><small>${esc(c[0])}</small><b>${esc(c[1])}</b></div>`).join('')}</div>` : '');
 }
+// ราคาแพ็กเกจจริง: ใช้ charterPackagePrice ในใบงาน (ฝั่งเจ้าหน้าที่บันทึกไว้) ถ้าไม่มี (ใบงานเก่า) ค้นจากชื่อแพ็กเกจ — ตารางนี้ต้องตรงกับ CHARTER_PACKAGES ใน SSLS.html (ไม่ใช้ job.price เพราะนั่นคือค่าที่บันทึกในระบบ ฿100)
+const CHARTER_PRICES = {'CABBY CONNECT กรุงเทพมหานคร–ชลบุรี':3200,'CABBY CONNECT กรุงเทพมหานคร–ระยอง':4500,'CABBY CONNECT กรุงเทพมหานคร–เพชรบุรี':4500,'CABBY CONNECT กรุงเทพมหานคร–หัวหิน':4500,'CABBY CONNECT กรุงเทพมหานคร–กาญจนบุรี':4500,'CABBY CHARTER 3 ชั่วโมง':2000,'CABBY CHARTER 6 ชั่วโมง':3700,'CABBY CHARTER 10 ชั่วโมง':5000};
+function charterPrice(job){
+  const v = Number(job.charterPackagePrice); if(v > 0) return v;
+  const nm = String(job.charterPackage||'').replace(/^[^A-Za-zก-๙0-9]+\s*/u, '').replace(/[-—]/g,'–').trim();
+  return CHARTER_PRICES[nm] || 0;
+}
 async function finishQueueJob(e){
   const job = await fetchJobDetail(e.jobId) || {};
-  const b = { id:e.id, code:e.jobCode||job.code, pName:job.pName, pPhone:job.pPhone, pCount:job.pCount, date:job.date, time:job.time, pickup:job.pickup, dropoff:job.dropoff, source:(LOCS[e.locKey]?LOCS[e.locKey].name:e.locKey), ...queueInvoiceInfo(job, LOCS[e.locKey]) };
+  const b = { id:e.id, code:e.jobCode||job.code, pName:job.pName, pPhone:job.pPhone, pCount:job.pCount, date:job.date, time:job.time, pickup:job.pickup, dropoff:job.dropoff, source:(LOCS[e.locKey]?LOCS[e.locKey].name:e.locKey), jobType:job.jobType, fixedFare: job.jobType==='charter' ? (charterPrice(job) || null) : null, pkgName:job.charterPackage||'', ...queueInvoiceInfo(job, LOCS[e.locKey]) };
   openFare(b, false, { fee:0, save:(m, total, x)=> db.ref('queue/'+e.locKey+'/'+e.id).update({jobStatus:'closed', stage:'done', meterFare:m, tollFare:(x&&x.tollFare)||0, airportFee:(x&&x.airportFee)||0, totalFare:total, finishedAt:new Date().toISOString()}) });
 }
 
@@ -1583,11 +1827,12 @@ function renderDash(){
   renderHomeBoxes(); // 2 กล่องใต้ "สรุปประจำเดือน": ประกาศ / แจ้งเตือน PM&CM
   if(oj.length){
     const e0 = oj[0], def = qjStageDef(e0), sIdx = QJ_STAGES.findIndex(x=>x[0]===def[0]) ; // 0..4 → จุดที่ 0..4 ของ 7 ขั้น
-    const dots = QJ_STEP_LABELS.map((_,i)=>`<span class="${i<sIdx?'done':i===sIdx?'now':''}"></span>`).join('<i></i>');
+    const QJ_IC = ['📨','🤝','🧍','🚕','📍','💰','🏁'];
+    const dots = QJ_STEP_LABELS.map((_,i)=>(i ? `<i class="${i<=sIdx?'on':''}"></i>` : '') + `<span class="${i<sIdx?'done':i===sIdx?'now':''}">${i<sIdx?'✓':i===sIdx?QJ_IC[i]:i+1}</span>`).join('');
     html += `<div class="run-card bkrun qjob">
         <div class="top"><h2>${sIdx>=1 ? 'งานที่กำลังรับอยู่' : 'งานใหม่จากจุดบริการ'}</h2><span class="pill">${esc(def[1])}</span></div>
         <div class="qj-prog">${dots}</div>
-        <div class="qj-cur">ขั้นที่ ${sIdx+1}/${QJ_STEP_LABELS.length} · ${esc(QJ_STEP_LABELS[sIdx])}</div>
+        <div class="qj-cur"><span class="qc-n">ขั้นที่ ${sIdx+1}/${QJ_STEP_LABELS.length}</span><b>${esc(QJ_STEP_LABELS[sIdx])}</b>${sIdx<QJ_STEP_LABELS.length-1 ? `<span class="qc-nx">ถัดไป › ${esc(QJ_STEP_LABELS[sIdx+1])}</span>` : ''}</div>
         <div class="bkr-head"><div class="bkr-code"><small>เลขงาน · คิวสนามบิน</small><b>${esc(e0.jobCode||'-')}</b></div><div class="bkr-time"><small>เวลารับ</small><b id="qjTime">--:--</b></div></div>
         <div id="dashJobInfo"></div>
         <div class="qj-hint">${esc(QJ_HINTS[def[0]]||'')}${oj.length>1 ? ` (ค้างอยู่ ${oj.length} งาน)` : ''}</div>
@@ -1974,32 +2219,59 @@ function renderHistory(){
     .sort((a,b)=> String(b.doneAt).localeCompare(String(a.doneAt))); // ล่าสุดอยู่บนสุด
   loadPrices(list);
   $('historyStats').innerHTML = `
-    <div class="st-dark"><div class="lbl">รายได้วันที่เลือก</div><div class="val">${bahtU(sumPrice(list))}</div></div>
-    <div class="st-light"><div class="lbl">จำนวนทริป</div><div class="val">${list.length}<small>ทริป</small></div></div>`;
-  $('historyDateLabel').textContent = fmtDate(parseYmd(historyDate));
+    <div class="st-dark"><span class="st-ic">฿</span><div class="st-tx"><div class="lbl">รายได้วันที่เลือก</div><div class="val">${bahtU(sumPrice(list))}</div></div></div>
+    <div class="st-light"><span class="st-ic">🚕</span><div class="st-tx"><div class="lbl">จำนวนทริป</div><div class="val">${list.length}<small>ทริป</small></div></div></div>`;
+  $('historyDateLabel').innerHTML = `<span>${esc(fmtDate(parseYmd(historyDate)))}</span><span class="muted">${list.length} ทริป</span>`;
   const wrap = $('historyList');
   if(!list.length){
     wrap.innerHTML = `<div class="card" style="text-align:center;padding:34px 18px;"><div style="font-weight:800;font-size:19px;">ไม่มีประวัติงานในวันที่เลือก</div><div class="muted" style="margin-top:10px;font-size:15px;">เลื่อนแถบวันเพื่อดูย้อนหลังได้ 30 วัน</div></div>`;
     return;
   }
   wrap.innerHTML = '';
-  list.forEach(e=>{
+  const GRP = [
+    {k:'airport', ico:'✈️', t:'งานจุดให้บริการสนามบิน'},
+    {k:'stand', ico:'🏙️', t:'งานจุดให้บริการ Stand ในเมือง'},
+    {k:'booking', ico:'📞', t:'งานจอง Call Center'}
+  ];
+  const grpOf = e => e.isBooking ? 'booking' : ((LOCS[e.locKey]||{}).cat === 'stand' ? 'stand' : 'airport');
+  const mkCard = e=>{
     const loc = e.isBooking ? null : LOCS[e.locKey];
     const timeOnly = new Date(e.doneAt).toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
     const p = Number(e.totalFare) > 0 ? Number(e.totalFare) : (e.meterFare != null ? e.meterFare : jobPrice[e.jobId]);
     const div = document.createElement('div');
-    div.className = 'row-card hist-card';
+    div.className = 'row-card hist-card' + (e.isBooking ? ' bk' : '');
     div.innerHTML = `<div class="hist-ic">${e.isBooking ? '📅' : esc(loc ? loc.icon : '📍')}</div>
         <div class="hist-mid">
           <div class="hist-nm">${e.isBooking ? 'งานจอง · ' + esc(e.bk.dropoff||'-') : esc(loc ? loc.name : e.locKey)}</div>
-          <div class="hist-code"><span>เลขงาน</span>${esc(e.jobCode||'-')}</div>
+          <div class="hist-code"><span>${e.isBooking ? 'งานจอง' : 'คิว'}</span>${esc(e.jobCode||'-')}</div>
+          <div class="hist-route"></div>
         </div>
         <div class="hist-rt">
           <div class="hist-price">${p != null ? baht(p) : '-'}</div>
           <div class="hist-time">🕒 ${timeOnly}</div>
         </div>`;
     div.addEventListener('click', ()=>{ if(e.isBooking){ openBookingId = e.id; showScreen('bookingDetail'); } else openQueueReceipt(e); });
-    wrap.appendChild(div);
+    const rt = div.querySelector('.hist-route');
+    const fillRt = (pk, dp)=>{ rt.innerHTML = (pk ? `<div><i class="a">รับ</i><span>${esc(pk)}</span></div>` : '') + (dp ? `<div><i class="b">ส่ง</i><span>${esc(dp)}</span></div>` : ''); };
+    if(e.isBooking) fillRt(e.bk.pickup, e.bk.dropoff);
+    else {
+      const dflt = loc ? loc.name : '';
+      const j = histJobs[e.jobId];
+      if(j !== undefined) fillRt((j && j.pickup) || dflt, j && j.dropoff);
+      else { fillRt(dflt, ''); if(e.jobId) fetchJobDetail(e.jobId).then(j=>{ histJobs[e.jobId] = j || null; fillRt((j && j.pickup) || dflt, j && j.dropoff); }); }
+    }
+    return div;
+  };
+  GRP.forEach(g=>{
+    const items = list.filter(e=>grpOf(e)===g.k); if(!items.length) return;
+    const shut = !histOpen.has(g.k);
+    const box = document.createElement('div'); box.className = 'hist-grp-box' + (shut ? ' shut' : '');
+    const h = document.createElement('button'); h.type = 'button'; h.className = 'hist-grp g-' + g.k; h.setAttribute('aria-expanded', !shut);
+    h.innerHTML = `<span class="hg-ic">${g.ico}</span><b>${g.t}</b><span class="hg-n">${items.length} ทริป</span><span class="hg-s">${bahtU(sumPrice(items))}</span><span class="hg-chev">${ico('chev',18)}</span>`;
+    h.addEventListener('click', ()=>{ const c = box.classList.toggle('shut'); h.setAttribute('aria-expanded', !c); if(c) histOpen.delete(g.k); else histOpen.add(g.k); });
+    const body = document.createElement('div'); body.className = 'hist-grp-body';
+    items.forEach(e=>body.appendChild(mkCard(e)));
+    box.appendChild(h); box.appendChild(body); wrap.appendChild(box);
   });
 }
 function hsUpdateArrows(){ const hs=$('historyStrip'); if(!hs) return; $('hsPrev').disabled = hs.scrollLeft <= 2; $('hsNext').disabled = hs.scrollLeft >= hs.scrollWidth - hs.clientWidth - 2; }
@@ -2097,7 +2369,7 @@ function stopPm(){ if(pmRef){ try{ pmRef.off(); }catch(e){} pmRef = null; } pmFl
 const PM_DIRECT = true, FLEET_DB_URL = 'https://taxi-fleet-management-123c1-default-rtdb.asia-southeast1.firebasedatabase.app', FLEET_ROOT = 'taxi-fleet-management-123c1';
 let dltData = [], dltVals, dltOk = false;
 let pmDirect = [], pmHist = [], pmDirectOk = false, pmFleetRefs = [], pmFleetVals = {};
-function pmFleetOff(){ pmFleetRefs.forEach(r=>{ try{ r.off(); }catch(e){} }); pmFleetRefs = []; pmFleetVals = {}; dltData = []; dltVals = undefined; dltOk = false; }
+function pmFleetOff(){ incData = null; pmFleetRefs.forEach(r=>{ try{ r.off(); }catch(e){} }); pmFleetRefs = []; pmFleetVals = {}; dltData = []; dltVals = undefined; dltOk = false; }
 function pmIso(d){
   const t = String(d||'').trim(); if(/^\d{4}-\d{2}-\d{2}/.test(t)) return t.slice(0,10);
   const m = t.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/); if(!m) return '';
@@ -2189,6 +2461,56 @@ function openDltModal(){
   dltModalEl().classList.add('on');
   $('dltModalBody').innerHTML = list.length ? dltItemsHtml(list) : '<div class="muted" style="text-align:center;padding:18px 6px;">ไม่มีนัดตรวจกับกรมขนส่งฯ ใน 30 วันข้างหน้า</div>';
 }
+// ประวัติร้องเรียน & อุบัติเหตุ (อ่านจาก Fleet: driverComplaints ตาม driverCode = username · accidentCases ตามทะเบียน เฉพาะเหตุการณ์ตั้งแต่วันเริ่มงานของคนขับคนนี้)
+// ข้อแลกเปลี่ยน: โหลดทั้ง collection ของทุกคนมากรองในเครื่อง (ข้อมูลร้องเรียนของคนอื่นผ่านเครือข่ายเข้าเครื่องด้วย แม้ไม่แสดง)
+let incData = null, incBusy = false, incVeh = {}, incOpen = null; // incOpen: 'cx'|'ac'|null = กล่องที่กางดูรายการอยู่
+const INC_CX_SEV = {heavy:['ระดับหนัก','#ea580c'], severe:['ระดับรุนแรง','#e05353'], medium:['ระดับปานกลาง','#f5a623'], light:['ระดับเบา','#0077cc']};
+const INC_CX_ST = {open:['เปิดเรื่อง','#e05353'], investigating:['กำลังตรวจสอบ','#f5a623'], resolved:['ปิดเรื่องแล้ว','#00a550']};
+const INC_AC_SEV = {severe:['รุนแรง','#e05353'], moderate:['ปานกลาง','#f5a623'], minor:['เล็กน้อย','#00a550']};
+const INC_AC_VD = {not_guilty:['✅ ฝ่ายถูก','#00a550','rgba(0,165,80,.12)'], guilty:['❌ ฝ่ายผิด','#dc3232','rgba(220,50,50,.12)'], shared:['⚠️ ประมาทร่วม','#b7791f','rgba(245,166,35,.15)'], pending:['⏳ รอผลคดี','#6b7c93','rgba(148,163,184,.18)']};
+const INC_AC_ST = {claim:['รอเคลม','#f5a623'], inprogress:['กำลังดำเนินการ','#f5a623'], closed:['ปิดเคลมแล้ว','#00a550']};
+async function loadIncidents(){
+  const u = driverCurrentUser; if(!u || incBusy || incData) return; incBusy = true;
+  try{
+    let app; try{ app = firebase.app('fleet'); }catch(e){ app = firebase.initializeApp({databaseURL: FLEET_DB_URL}, 'fleet'); }
+    const fdb = app.database(), code = String(u.username||''), nz = x=>String(x||'').replace(/[\s.#$\[\]\/]/g,'').toLowerCase();
+    const plates = new Set([incVeh.plate, u.plate].filter(Boolean).map(nz));
+    // Fleet เก็บทั้ง collection เป็นก้อนเดียว (JSON string) จึง query ฝั่งเซิร์ฟเวอร์ไม่ได้ — อ่านทั้งก้อนแล้วกรองเฉพาะของคนขับนี้ในเครื่อง
+    const [cs, as] = await Promise.all([fdb.ref(FLEET_ROOT+'/driverComplaints').once('value'), fdb.ref(FLEET_ROOT+'/accidentCases').once('value')]);
+    const start = String(incVeh.startDate||'').slice(0,10), seen = new Set();
+    const ac = pmToArr(as.val()).filter(a=>a && plates.has(nz(a.plate)) && !seen.has(a.id||a.accNo) && seen.add(a.id||a.accNo)
+      && (!a.driverCode || a.driverCode === code) && (!start || !a.date || String(a.date).slice(0,10) >= start))
+      .sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+    const cx = pmToArr(cs.val()).filter(x=>x && String(x.driverCode||'').trim().toLowerCase() === code.toLowerCase())
+      .sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+    incData = {cx, ac};
+  }catch(e){ incData = {err:true, cx:[], ac:[]}; }
+  incBusy = false; renderIncidents();
+}
+function renderIncidents(veh){
+  const el = $('profIncident'); if(!el) return; if(veh) incVeh = veh;
+  const D = incData, d8 = x=>{ try{ return x ? fmtBE(String(x).slice(0,10)) : '-'; }catch(e){ return esc(x||'-'); } };
+  const lab = (M,k)=>{ const m = M[k]; return m ? `<span style="color:${m[1]}">${m[0]}</span>` : esc(k||''); };
+  let body;
+  if(!D){ body = '<div class="muted" style="text-align:center;padding:14px">กำลังโหลด…</div>'; loadIncidents(); }
+  else if(D.err){ body = '<div class="muted" style="text-align:center;padding:14px">โหลดข้อมูลไม่ได้ ลองปิดแล้วเปิดหัวข้อนี้ใหม่</div>'; }
+  else {
+    const cx = D.cx.map(x=>{ const sv = INC_CX_SEV[x.severity]||[x.severity||'-','#94a3b8'];
+      return `<div class="inc-item" style="border-left-color:${sv[1]}"><div class="inc-sev" style="color:${sv[1]};margin-bottom:3px;text-align:right">ระดับความรุนแรง : ${esc(String(sv[0]).replace(/^ระดับ/,''))}</div><div class="inc-top"><span><span style="font-weight:500;color:#6b7c93">เรื่อง :</span> ${esc(x.subject||x.category||'ร้องเรียน')}</span></div>
+      <div class="inc-ln"><span>วันที่ร้องเรียน :</span> ${d8(x.date)}</div><div class="inc-ln"><span>ทะเบียนรถ :</span> ${esc(x.plate||'-')}</div>${x.detail?`<div class="inc-ln"><span>รายละเอียด :</span> ${esc(x.detail)}</div>`:''}
+      <div class="inc-st">${(()=>{ const t = INC_CX_ST[x.status]; return t ? `<span class="inc-vd" style="color:${t[1]};background:${t[1]}22">ร้องเรียน : ${t[0]}</span>` : ''; })()}</div></div>`; }).join('');
+    const ac = D.ac.map(a=>{ const sv = INC_AC_SEV[a.severity]||[a.severity||'-','#94a3b8'];
+      return `<div class="inc-item" style="border-left-color:${sv[1]}"><div class="inc-top"><span>${esc(a.accNo||'อุบัติเหตุ')}</span><span class="inc-sev" style="color:${sv[1]}">ระดับความรุนแรง : ${esc(String(sv[0]).replace(/^ระดับ/,''))}</span></div>
+      <div class="inc-ln"><span>วันที่เกิดอุบัติเหตุ :</span> ${d8(a.date)}</div><div class="inc-ln"><span>ทะเบียนรถ :</span> ${esc(a.plate||'-')}</div><div class="inc-ln"><span>สถานที่เกิดอุบัติเหตุ :</span> ${esc(a.location||'-')}</div>
+      <div class="inc-st">${(()=>{ const v = INC_AC_VD[a.verdict||'pending']; return v ? `<span class="inc-vd" style="color:${v[1]};background:${v[2]}">อุบัติเหตุ : ${v[0]}</span>` : ''; })()}</div></div>`; }).join('');
+    const tile = (k,n,t)=>`<button type="button" class="inc-box ${k}${incOpen===k?' on':''}" data-inc="${k}"${n?'':' disabled'}><b>${n}</b><span>${t}</span><i>${n?(incOpen===k?'▴':'▾'):''}</i></button>`;
+    body = `<div class="inc-sum">${tile('cx',D.cx.length,'ประวัติการร้องเรียน')}${tile('ac',D.ac.length,'ประวัติอุบัติเหตุ')}</div>`
+      + (!D.cx.length && !D.ac.length ? '<div class="inc-ok">✅ ไม่พบประวัติร้องเรียนหรืออุบัติเหตุ</div>'
+        : (incOpen==='cx' ? cx : incOpen==='ac' ? ac : '<div class="muted" style="text-align:center;font-size:11.5px;padding:4px 0">แตะกล่องเพื่อดูรายละเอียด</div>'));
+  }
+  el.innerHTML = '<h3>ประวัติร้องเรียน & อุบัติเหตุ</h3>' + body;
+  makeCollapsible(el, 'inc');
+}
 function startPmFleet(){
   if(!PM_DIRECT) return;
   try{
@@ -2249,8 +2571,8 @@ function pmItemsHtml(list){
 }
 function renderPmCard(){
   const el = $('profPm'); if(!el) return; const list = pmView();
-  el.innerHTML = `<h3>แจ้งเตือนนำรถเข้า PM&amp;CM${list.length?`<span class="pm-badge">${list.length}</span>`:''}</h3>`;
-  makeCollapsible(el,'pm'); renderPmModalBody();
+  el.innerHTML = `<h3>แจ้งเตือนนำรถเข้า PM&amp;CM</h3><button type="button" class="pm-open"><span>${list.length ? `มีนัด ${list.length} รายการ` : 'ไม่มีนัดตอนนี้ · ดูประวัติ'}</span><span>›</span></button>`;
+  makeCollapsible(el,'pm'); renderPmModalBody(); updGroupBadges();
 }
 function pmModalEl(){
   let m = $('pmModal');
@@ -2265,6 +2587,9 @@ function pmModalEl(){
   return m;
 }
 document.addEventListener('click', e=>{
+  const ft = e.target.closest('#screen-profile .sub-t.fold'); if(ft){ const k = ft.dataset.k, sub = ft.parentElement; if(subShut.has(k)) subShut.delete(k); else subShut.add(k); sub.classList.toggle('shut', subShut.has(k)); return; }
+  const ib = e.target.closest('#profIncident .inc-box'); if(ib && !ib.disabled){ incOpen = incOpen === ib.dataset.inc ? null : ib.dataset.inc; renderIncidents(); return; }
+  if(e.target.closest('#profPm .pm-open')){ openPmModal('profile'); return; }
   const tb = e.target.closest('#pmModalBody .pm-tab'); if(tb){ pmTab = tb.dataset.pmtab; renderPmModalBody(); return; }
   if(e.target.closest('#pmBack')){ pmDetailId = null; renderPmModalBody(); return; }
   const hi = e.target.closest('#pmModalBody .pm-h[data-hid]'); if(hi){ pmDetailId = 'h:'+hi.dataset.hid; renderPmModalBody(); return; }
@@ -2435,6 +2760,7 @@ async function pullCabbBookings(){
     const f = { code:id, date:cabbDate(t.date), time:cut(t.time,10), pickup:cut(t.from,300), dropoff:cut(t.to,300), pName:cut(c.name,100), pPhone:cut(c.phone,30),
       pCount: t.passengers != null ? t.passengers : '', special:cut(b.specialNeeds,300), note:cut(b.note,500),
       source: b.bookingType === 'advance' ? 'งานจองล่วงหน้า' : cut(b.bookingType,40), driverUsername:me, src:'cabb-ev-booking', syncedAt:now };
+    if(estOf(b) != null) f.estimatedFare = estOf(b);
     Object.entries(f).forEach(([k,v])=>{ up[`${id}/${k}`] = v; });
     if(!old){ up[`${id}/status`] = 'pending'; fresh++; }
   });
@@ -2505,8 +2831,12 @@ async function ingestPool(force){
   const keep = new Set(list.map(b=>b.bookingId)); let added = 0, removed = 0;
   for(const b of list){
     const t = b.trip||{};
-    const r = await db.ref('bookingPool/'+b.bookingId).transaction(cur=> cur ? undefined : { code:b.bookingId, date:cabbDate(t.date), time:cut(t.time,10), pickup:cut(t.from,300), dropoff:cut(t.to,300), pCount:t.passengers!=null?t.passengers:'', source:b.bookingType==='advance'?'งานจองล่วงหน้า':cut(b.bookingType,40), src:'cabb-ev-booking-pool', openedAt:new Date().toISOString() });
-    if(r.committed) added++;
+    const est = estOf(b); let isNew = false;
+    await db.ref('bookingPool/'+b.bookingId).transaction(cur=>{
+      if(cur) return (!cur.claimedBy && est != null && cur.estimatedFare !== est) ? {...cur, estimatedFare:est} : undefined;
+      isNew = true; return { ...(est != null ? {estimatedFare:est} : {}), code:b.bookingId, date:cabbDate(t.date), time:cut(t.time,10), pickup:cut(t.from,300), dropoff:cut(t.to,300), pCount:t.passengers!=null?t.passengers:'', source:b.bookingType==='advance'?'งานจองล่วงหน้า':cut(b.bookingType,40), src:'cabb-ev-booking-pool', openedAt:new Date().toISOString() };
+    });
+    if(isNew) added++;
   }
   for(const p of poolData){
     if(p.src==='cabb-ev-booking-pool' && !p.claimedBy && !keep.has(p.id)){
@@ -2571,7 +2901,7 @@ async function claimPoolJob(p){
     const t = d.trip||{}, cu = d.customer||{}, cut = (v,n)=> String(v==null?'':v).slice(0,n);
     try{
       await db.ref('bookings/'+p.id).update({ code:p.id, date:cabbDate(t.date)||p.date, time:cut(t.time,10), pickup:cut(t.from,300), dropoff:cut(t.to,300), pName:cut(cu.name,100), pPhone:cut(cu.phone,30),
-        pCount:t.passengers!=null?t.passengers:'', special:cut(d.specialNeeds,300), note:cut(d.note,500), source:p.source||'งานจองล่วงหน้า', driverUsername:me, src:'cabb-ev-booking-pool',
+        pCount:t.passengers!=null?t.passengers:'', special:cut(d.specialNeeds,300), note:cut(d.note,500), source:p.source||'งานจองล่วงหน้า', ...((estOf(d) ?? p.estimatedFare) != null ? {estimatedFare: estOf(d) ?? p.estimatedFare} : {}), driverUsername:me, src:'cabb-ev-booking-pool',
         status:'accepted', stage:null, stageTimes:null, cabbDone:null, claimedAt:new Date().toISOString(), updatedAt:new Date().toISOString() });
     }catch(e){ // เขียนสำเนาไม่สำเร็จ → คืนงานเข้ากลางและคืนโควตา
       await db.ref('bookingPool/'+p.id).transaction(cur=> (cur && cur.claimedBy===me) ? Object.assign({}, cur, {claimedBy:null, claimedAt:null}) : undefined);
@@ -2662,12 +2992,17 @@ function openPoolModal(){ poolModalEl().classList.add('on'); renderPoolModalBody
 function renderPoolModalBody(){
   const m = $('poolModal'); if(!m || !m.classList.contains('on')) return;
   const v = poolView(), body = $('poolModalBody');
-  body.innerHTML = poolBannerHtml(v) + (v.show.length ? v.show.map(p=>{
+  body.innerHTML = poolListHtml(v); bindPoolItems(body);
+}
+function poolListHtml(v){
+  return poolBannerHtml(v) + (v.show.length ? v.show.map(p=>{
     const dis = p.date === v.now.tomorrow && v.r1Full;
     return `<div class="pl-item" data-pid="${esc(p.id)}"><div class="pl-top"><b>${esc(p.time||'-')}</b><span>${esc(fmtDate(parseYmd(p.date)))}${p.pCount!==''&&p.pCount!=null?' · '+esc(p.pCount)+' คน':''}</span></div>
-      <div class="pl-rt"><span class="bkr-tag a">รับ</span><span>${esc(p.pickup||'-')}</span></div><div class="pl-rt"><span class="bkr-tag b">ส่ง</span><span>${esc(p.dropoff||'-')}</span></div>
+      <div class="pl-rt"><span class="bkr-tag a">รับ</span><span>${esc(p.pickup||'-')}</span></div><div class="pl-rt"><span class="bkr-tag b">ส่ง</span><span>${esc(p.dropoff||'-')}</span></div>${estHtml(estOf(p))}
       <div class="pl-more">แตะดูรายละเอียด ›</div><button type="button" class="btn btn-green pl-go" data-pid="${esc(p.id)}" ${dis?'disabled':''}>${dis?'รับครบโควตารอบแรกแล้ว':'รับงานนี้'}</button></div>`; }).join('')
     : '<div class="pl-empty">ยังไม่มีงานให้กดรับตอนนี้</div>');
+}
+function bindPoolItems(body){
   body.querySelectorAll('.pl-go').forEach(b=>b.addEventListener('click', e=>{ e.stopPropagation(); const p = poolData.find(x=>x.id===b.dataset.pid); if(p) claimPoolJob(p); }));
   body.querySelectorAll('.pl-item').forEach(el=>el.addEventListener('click', ()=>{ const p = poolData.find(x=>x.id===el.dataset.pid); if(p) openPoolDetail(p); }));
 }
@@ -2686,6 +3021,10 @@ function renderPool(){
   if(!v.show.length){ box.innerHTML = ''; return; }
   const sub = v.now.phase === 'wait' ? 'เปิดให้กดรับเวลา 16:00 น.' : v.now.phase === 'r1' ? `รอบที่ 1 · กดรับได้ ${POOL_R1_LIMIT} งาน (รับแล้ว ${Math.min(v.used,POOL_R1_LIMIT)}/${POOL_R1_LIMIT})` : 'รอบที่ 2 · ถึง 17:00 น. · ไม่จำกัดจำนวน';
   const cnt = v.now.phase === 'wait' ? v.lockedCnt : v.show.length;
+  if(v.now.phase === 'r1' || v.now.phase === 'r2'){ // ถึงเวลากดรับ: แสดงรายการงานตรงนี้เลย ไม่ต้องกดเปิดหน้าต่าง
+    box.innerHTML = `<div class="pl-inline"><div class="sec-title pool-t"><span>งานจองรอกดรับ</span><span class="muted">${cnt} งาน</span></div>${poolListHtml(v)}</div>`;
+    bindPoolItems(box); return;
+  }
   box.innerHTML = `<button type="button" class="pl-open ${v.now.phase}" id="plOpen"><span class="pl-ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M8 2.8v3.4M16 2.8v3.4M3 10h18"/></svg></span><span class="pl-tx"><b>งานจองรอกดรับ</b><small>${esc(sub)}</small></span><span class="pl-n">${cnt}</span></button>`;
   $('plOpen').addEventListener('click', openPoolModal);
 }
@@ -2697,7 +3036,7 @@ $('bkPullBtn').addEventListener('click', async ()=>{
     let extra = ''; try{ const q = await ingestPool(true); if(q.added) extra = ` · งานรอกดรับใหม่ ${q.added} งาน`; }catch(e){ extra = `\n(ดึงงานรอกดรับไม่สำเร็จ: ${e.message})`; }
     appAlert((r.total ? `ดึงงานจองจาก CABB แล้ว ${r.total} งาน (ใหม่ ${r.fresh} งาน)` : 'ไม่มีงานจองที่ส่งถึงคุณใน CABB ตอนนี้') + extra);
   }catch(e){ appAlert('ดึงงานจองไม่สำเร็จ: ' + (e.name==='AbortError' ? 'หมดเวลา ลองใหม่อีกครั้ง' : e.message)); }
-  finally{ b.disabled = false; b.classList.remove('spin'); lab.textContent = 'งานจอง'; }
+  finally{ b.disabled = false; b.classList.remove('spin'); lab.textContent = 'ดึงงานจองล่าสุด'; }
 });
 // ===== ประกาศจากบริษัท: announcements/{id} = { title, body, ts (ISO), pinned? } — อ่านอย่างเดียว เจ้าหน้าที่เขียนที่ฝั่ง admin/คอนโซล =====
 let announcements = [], annRef = null;
@@ -2781,20 +3120,25 @@ function renderBanners(){
 function stopAnnouncements(){ if(annRef){ try{ annRef.off(); }catch(e){} annRef = null; } announcements = []; }
 function annReadSet(){ try{ return new Set(JSON.parse(localStorage.getItem(annSeenKey()+':read')||'[]')); }catch(e){ return new Set(); } }
 function annRk(x){ return x.id+'|'+(x.ts||''); }
+let annUnreadN = 0;
+function updGroupBadges(){ // ป้ายแดงบนหัวข้อ "แจ้งเตือนและประกาศ" = นัด PM + ประกาศที่ยังไม่อ่าน (ซ่อนตอนเปิดกลุ่มอยู่)
+  const b = $('g2Badge'); if(!b) return; let n = annUnreadN; try{ n += pmView().length; }catch(e){}
+  b.innerHTML = n && !openSecs.has('g2') ? `<span class="pm-badge">${n}</span>` : '';
+}
 function renderAnn(){
   if(!driverCurrentUser) return;
   let seen = ''; try{ seen = localStorage.getItem(annSeenKey()) || ''; }catch(e){}
   const newest = announcements.reduce((m,x)=> String(x.ts||'') > m ? String(x.ts) : m, '');
   const unread = announcements.filter(x=> String(x.ts||'') > seen).length;
   const fmt = ts => { const d = new Date(ts); return isNaN(d) ? '' : `${d.getDate()} ${TH_M[d.getMonth()]} ${d.getFullYear()+543}`; };
-  $('profAnn').innerHTML = `<h3>ประกาศ${unread && !openSecs.has('ann') ? `<span class="ann-n">${unread}</span>` : ''}</h3>` + (announcements.length
+  $('profAnn').innerHTML = `<h3>ประกาศ</h3>` + (announcements.length
     ? announcements.map(x=>`<div class="ann-item"><div class="t">${x.pinned ? '<i>ปักหมุด</i>' : ''}${esc(x.title)}</div><div class="d">${esc(fmt(x.ts))}</div>${x.body ? `<div class="b">${esc(x.body)}</div>` : ''}${annImgHtml(x)}</div>`).join('')
     : '<div class="ann-item"><div class="b">ยังไม่มีประกาศ</div></div>');
   const rd = annReadSet(), unreadList = announcements.filter(x=>!rd.has(annRk(x))), top = unreadList.slice(0,2);
   $('homeAnn').innerHTML = ''; renderHomeBoxes(); // ประกาศบนหน้าแรกย้ายไปเป็นกล่องใต้สรุปประจำเดือน
   document.querySelectorAll('#homeAnn .ann-read').forEach(b=>b.onclick=()=>{ const r=annReadSet(); r.add(b.dataset.k); try{ localStorage.setItem(annSeenKey()+':read', JSON.stringify([...r].slice(-200))); }catch(e){} renderAnn(); });
-  makeCollapsible($('profAnn'),'ann');
-  if(openSecs.has('ann') && newest && newest > seen){ try{ localStorage.setItem(annSeenKey(), newest); }catch(e){} }
+  annUnreadN = unread; makeCollapsible($('profAnn'),'ann'); updGroupBadges();
+  if(openSecs.has('g2') && newest && newest > seen){ try{ localStorage.setItem(annSeenKey(), newest); }catch(e){} }
 }
 function stopBookings(){ stopPool(); stopPm(); if(bookingsRef){ try{ bookingsRef.off(); }catch(e){} bookingsRef = null; } bookings = []; bookingsSeen = null; }
 // สถานะงานจองที่รับแล้ว: เก็บเป็นฟิลด์ stage ที่ bookings/{id} (คนขับกดทีละขั้น ข้ามขั้นไม่ได้) — งานเก่าที่ไม่มี stage = 'accepted'
@@ -2843,14 +3187,15 @@ function bkCard(b, withDate){
 // งานกลางที่ยังไม่มีคนขับ แสดงในแถบ 5 วันให้ดูล่วงหน้า — กดรับไม่ได้ (รับได้เฉพาะวันพรุ่งนี้ ตั้งแต่ 16:00 ผ่านกล่อง "งานจองรอกดรับ" ตามกติกาเดิม)
 function renderPoolPreview(){
   const box = $('bookingPoolPrev'); if(!box) return;
+  if(document.querySelector('#bookingPool .pl-inline')){ box.innerHTML=''; return; }
   const now = bkkNow(), list = poolData.filter(p=>!p.claimedBy && p.date===bookingDate).sort((a,b)=>String(a.time||'').localeCompare(String(b.time||'')));
   if(!list.length){ box.innerHTML = ''; return; }
   const prev = parseYmd(bookingDate); prev.setDate(prev.getDate()-1);
-  box.innerHTML = `<div class="sec-title" style="margin-top:14px;"><span>งานรอกดรับ</span><span class="muted">${list.length} งาน</span></div>` + list.map(p=>{
+  box.innerHTML = `<div class="sec-title pool-t"><span>งานรอกดรับ</span><span class="muted">${list.length} งาน</span></div>` + list.map(p=>{
     const can = p.date===now.tomorrow && (now.phase==='r1' || now.phase==='r2');
     const tag = can ? '✓ กดรับได้ตอนนี้ — แตะเพื่อไปรับ' : p.date<=now.today ? '🔒 ยังไม่มีคนขับ · รอเจ้าหน้าที่จัดให้' : `🔒 ยังกดรับไม่ได้ · เปิดรับ ${prev.getDate()} ${TH_M[prev.getMonth()]} เวลา 16:00 น.`;
     return `<div class="pv-card${can?' can':''}" ${can?'data-pv="1"':''}><div class="pl-top"><b>${esc(p.time||'-')}</b><span>${esc(p.source||'งานจอง')}${p.pCount!==''&&p.pCount!=null?' · '+esc(p.pCount)+' คน':''}</span></div>
-      <div class="pl-rt"><span class="bkr-tag a">รับ</span><span>${esc(p.pickup||'-')}</span></div><div class="pl-rt"><span class="bkr-tag b">ส่ง</span><span>${esc(p.dropoff||'-')}</span></div><span class="pv-tag">${tag}</span></div>`;
+      <div class="pl-route"><div class="pl-rt"><span class="bkr-tag a">รับ</span><span>${esc(p.pickup||'-')}</span></div><div class="pl-rt"><span class="bkr-tag b">ส่ง</span><span>${esc(p.dropoff||'-')}</span></div></div>${estHtml(estOf(p))}<span class="pv-tag">${tag}</span></div>`;
   }).join('');
 }
 $('bookingPoolPrev').addEventListener('click', e=>{ if(e.target.closest('[data-pv]')) openPoolModal(); });
@@ -2961,6 +3306,7 @@ function openFare(b, readOnly, opts){
   $('frNo').innerHTML = 'เลขที่งาน&nbsp;&nbsp;<b>'+esc(b.code||b.id)+'</b>';
   const dt = b.date ? `${fmtDate(parseYmd(b.date))} • ${esc(b.time||'')}` : '-';
   const meter = readOnly ? Number(b.meterFare||0) : 0;
+  const FIX = !readOnly && Number(b.fixedFare) > 0 ? Number(b.fixedFare) : 0; // งานแพ็กเกจ (charter): ราคาตายตัวจากใบงาน คนขับแก้ไม่ได้
   const dv = (vehicles||[]).find(x=>x.id===driverCurrentUser.vehicleId), drvName = driverCurrentUser.fullName || driverCurrentUser.username, drvPlate = driverCurrentUser.plate || (dv?dv.plate:'');
   $('frBody').innerHTML = `
     <div class="fr-sec">รายละเอียดลูกค้า</div>
@@ -2975,11 +3321,11 @@ function openFare(b, readOnly, opts){
       ${Number(b.serviceFee)>0 ? `<div class="r"><span>ค่าธรรมเนียมการบริการ</span><b>${money(Number(b.serviceFee))}</b></div>` : ''}
       <div class="r fr-total"><span>ราคารวม</span><span>${money(Number(b.totalFare||0))}</span></div></div>`
       : `<div class="fr-fare one"><span>รวมค่าโดยสารและอื่นๆ</span><b>${money(Number(b.totalFare||0))}</b></div>`) : `<div class="fr-fare">
-      <div class="r"><span>ค่าโดยสาร (ตามมิเตอร์)</span><input id="frMeter" type="number" inputmode="decimal" min="0" max="99999" step="0.01" placeholder="0.00" aria-label="ราคาตามมิเตอร์"></div>
+      <div class="r${FIX ? ' fr-fix' : ''}"><span>${FIX ? 'ค่าโดยสาร (ราคาแพ็กเกจ)' + (b.pkgName ? '<small>' + esc(b.pkgName) + '</small>' : '') : 'ค่าโดยสาร (ตามมิเตอร์)'}</span><input id="frMeter" type="number" inputmode="decimal" min="0" max="99999" step="0.01" placeholder="0.00" aria-label="${FIX ? 'ราคาแพ็กเกจ' : 'ราคาตามมิเตอร์'}"${FIX ? ' value="' + FIX.toFixed(2) + '" readonly tabindex="-1"' : ''}></div>
       ${withExtra ? `<div class="r"><span>ค่าทางด่วน</span><input id="frToll" type="number" inputmode="decimal" min="0" max="9999" step="0.01" placeholder="0.00" aria-label="ค่าทางด่วน"></div>
       <div class="r"><span>ค่าบริการสนามบิน 🔒${AP ? '' : '<small style="color:#6b7c95;font-weight:600;"> (ไม่ใช่งานสนามบิน)</small>'}</span><b>${money(AP)}</b></div>` : ''}
       ${FEE ? `<div class="r"><span>ค่าธรรมเนียมการบริการ</span><b>${money(FEE)}</b></div>` : ''}
-      <div class="r fr-total"><span>ราคารวม</span><span id="frTotal">${money(FEE + AP)}</span></div>
+      <div class="r fr-total"><span>ราคารวม</span><span id="frTotal">${money(FIX + FEE + AP)}</span></div>
     </div>`}`;
   fillInvoiceFromCabb(b);
   $('frErr').textContent = '';
@@ -3007,7 +3353,7 @@ function openFare(b, readOnly, opts){
     };
   }
   $('fareModal').style.display = 'flex';
-  if(!readOnly) setTimeout(()=>$('frMeter').focus(), 50);
+  if(!readOnly) setTimeout(()=>{ if(FIX){ const t = $('frToll'); if(t) t.focus(); } else $('frMeter').focus(); }, 50);
 }
 // งานที่รับแล้ว: คนขับยกเลิกเองไม่ได้ — ส่งคำขอให้เจ้าหน้าที่ยกเลิกให้ หรือแจ้งเปลี่ยนคนเข้ารับ (ต้องแจ้งล่วงหน้า ≥ 1 ชม. ก่อนเวลาเดินทาง)
 const SWAP_LEAD_MIN = 60;
@@ -3119,6 +3465,8 @@ function datePill(s){
   return `<span class="date-pill${cls}">${fmtBE(s)}</span>`;
 }
 const NONE = '<span class="v-none">-</span>';
+const kvItem = (k, v) => `<div class="kv-item"><span class="k">${k}</span><span class="v">${v}</span></div>`;
+const kvTile = (k, v) => `<div class="kv-tile"><span class="k">${k}</span><span class="v">${v}</span></div>`;
 const kvRow = (k, v) => `<div class="kv"><span class="k">${k}</span><span class="v">${v}</span></div>`;
 // โปรไฟล์รถ/เอกสารที่เจ้าหน้าที่ซิงก์ไว้ที่ driver-profiles/{รหัส} — โหลดตอนเข้าแอปและทุกครั้งที่เปิดหน้าโปรไฟล์
 let driverProfile = {};
@@ -3130,8 +3478,16 @@ async function loadDriverProfile(){
 }
 // การ์ดโปรไฟล์พับได้ — แตะหัวข้อเพื่อแสดง/ซ่อนข้อมูล (ค่าเริ่มต้น: พับ, จำสถานะไว้ตอน re-render)
 const openSecs = new Set();
+const subShut = new Set();
 function makeCollapsible(el, key){
   const h = el.querySelector('h3'); if(!h) return;
+  if(el.classList.contains('sub')){ // หัวข้อย่อยในกลุ่ม: แสดงเปิดเสมอ ไม่พับเอง
+    const b = document.createElement('div'); b.className = 'sub-b'; while(h.nextSibling) b.appendChild(h.nextSibling);
+    const t = document.createElement('div'); t.className = 'sub-t'; t.textContent = h.textContent;
+    const fold = (key === 'docs' || key === 'inc'); // 2 หัวข้อนี้แตะที่หัวข้อเพื่อหุบ/กางได้
+    if(fold){ t.classList.add('fold'); t.dataset.k = key; t.setAttribute('role','button'); t.insertAdjacentHTML('beforeend','<i class="fold-ch">▾</i>'); el.classList.toggle('shut', subShut.has(key)); }
+    el.textContent = ''; el.appendChild(t); el.appendChild(b); return;
+  }
   const body = document.createElement('div'); body.className = 'sec-body';
   while(h.nextSibling) body.appendChild(h.nextSibling);
   const head = document.createElement('button'); head.type = 'button'; head.className = 'sec-head'; head.dataset.sec = key;
@@ -3143,12 +3499,13 @@ function makeCollapsible(el, key){
 $('screen-profile').addEventListener('click', e=>{
   const h = e.target.closest('.sec-head'); if(!h) return;
   const k = h.dataset.sec, card = h.parentElement;
-  if(k === 'pm'){ openPmModal('profile'); return; }
   const was = openSecs.has(k);
   openSecs.clear(); if(!was) openSecs.add(k);
   document.querySelectorAll('#screen-profile .sec-head').forEach(x=>{ const on = openSecs.has(x.dataset.sec); x.parentElement.classList.toggle('open', on); x.setAttribute('aria-expanded', on); });
   if(!was) setTimeout(()=>card.scrollIntoView({block:'nearest',behavior:'smooth'}),50);
-  if(k === 'ann') renderAnn();
+  if(k === 'g2') renderAnn();
+  if(k === 'g1' && !was){ incData = null; incOpen = null; renderIncidents(); } // เปิดกลุ่มนี้ทีไรดึงประวัติร้องเรียน/อุบัติเหตุใหม่ทุกครั้ง
+  updGroupBadges();
 });
 // ช่องทางติดต่อ — ค่าจากใบสรุปค่าเดินทาง (ยังไม่ยืนยันว่าเป็นช่องทางสำหรับคนขับ) แก้ที่นี่ที่เดียว
 // เบอร์ CR กด 9: ใช้ ',' = หน่วงแล้วกดต่อให้อัตโนมัติ (ถ้าระบบตอบรับช้ากว่าหน่วง ให้กด 9 เอง) · แก้ที่นี่ที่เดียว
@@ -3159,17 +3516,20 @@ const CONTACTS = [
   {l:'ประกันวิริยะ', n:'02-327-0888', href:'tel:023270888'}
 ];
 const HOWTO = [
-  ['ลงคิวสนามบิน','กดปุ่มสแกนกลางเมนู → สแกน QR จุดรับคิว → อนุญาต GPS → ถ่ายรูปเปอร์เซ็นต์แบตเตอรี่ (กล้องสดเท่านั้น แนบจากคลังภาพไม่ได้) → ได้รหัสคิว ต้องปิดงานคิวเดิมและกรอกค่ามิเตอร์ก่อนจึงลงคิวใหม่ได้'],
-  ['หน้าแรก','ดูรายได้และจำนวนทริป วันนี้/เดือนนี้ (รวมงานจอง) และประกาศใหม่ กด "อ่านแล้ว ✓" เพื่อซ่อน'],
-  ['งานจอง','แตะงานเพื่อดูรายละเอียดและโทรหาผู้โดยสาร กดรับงานได้ก่อนเวลา 1 ชั่วโมง จบงานแล้วกรอกค่ามิเตอร์ ราคาจะแสดงที่การ์ด'],
-  ['ประวัติ','เลือกวันที่บนแถบ (เลื่อนหรือกด ‹ › ย้อนหลัง 30 วัน) ดูรายได้ ทริป และงานคิว/งานจองของวันนั้น'],
-  ['โปรไฟล์','ข้อมูลรถ เอกสารและสัญญา ประกาศ แตะหัวข้อเพื่อเปิด/ปิด'],
-  ['ช่องทางการติดต่อ','ปัญหางานจอง/รถเสีย/อุบัติเหตุ กดโทรหรือ LINE ที่กล่อง "ช่องทางการติดต่อ" ท้ายหน้าโปรไฟล์'],
-  ['เข้าสู่ระบบ','ใช้รหัสผู้เช่าขับ (DR…) และเบอร์โทรที่ลงทะเบียนเป็นรหัสผ่าน เข้าไม่ได้ให้แจ้งเจ้าหน้าที่']
+  ['📷','ลงคิวสนามบิน','กดปุ่มสแกนกลางเมนู → สแกน QR จุดรับคิว → อนุญาต GPS → ถ่ายรูปเปอร์เซ็นต์แบตเตอรี่ (กล้องสดเท่านั้น แนบจากคลังภาพไม่ได้) → ได้รหัสคิว ต้องปิดงานคิวเดิมและกรอกค่ามิเตอร์ก่อนจึงลงคิวใหม่ได้'],
+  ['🏠','หน้าแรก','ดูรายได้และจำนวนทริป วันนี้/เดือนนี้ (รวมงานจอง) และประกาศใหม่ กด "อ่านแล้ว ✓" เพื่อซ่อน'],
+  ['🧳','งานจอง','แตะงานเพื่อดูรายละเอียดและโทรหาผู้โดยสาร กดรับงานได้ก่อนเวลา 1 ชั่วโมง จบงานแล้วกรอกค่ามิเตอร์ ราคาจะแสดงที่การ์ด'],
+  ['🕘','ประวัติ','เลือกวันที่บนแถบ (เลื่อนหรือกด ‹ › ย้อนหลัง 30 วัน) ดูรายได้ ทริป และงานคิว/งานจองของวันนั้น'],
+  ['👤','โปรไฟล์','ข้อมูลรถ เอกสารและสัญญา ประกาศ แตะหัวข้อเพื่อเปิด/ปิด'],
+  ['📞','ช่องทางการติดต่อ','ปัญหางานจอง/รถเสีย/อุบัติเหตุ กดโทรหรือ LINE ที่กล่อง "ช่องทางการติดต่อ" ท้ายหน้าโปรไฟล์'],
+  ['🔑','เข้าสู่ระบบ','ใช้รหัสผู้เช่าขับ (DR…) และเบอร์โทรที่ลงทะเบียนเป็นรหัสผ่าน เข้าไม่ได้ให้แจ้งเจ้าหน้าที่']
 ];
+document.addEventListener('click',e=>{ const c=e.target.closest('.ht-card'); if(!c) return; const o=c.classList.toggle('open'); c.setAttribute('aria-expanded',o); });
+document.addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('ht-card')){ e.preventDefault(); e.target.click(); } });
 function renderProfile(){
+  document.querySelectorAll('#screen-profile .grp .sec-chev').forEach(c=>{ if(!c.firstChild) c.innerHTML = ico('chev',22); });
   renderPmCard();
-  $('profHowto').innerHTML = '<h3>วิธีการใช้งาน</h3><ol class="howto">' + HOWTO.map(x=>`<li><b>${esc(x[0])}</b><span>${esc(x[1])}</span></li>`).join('') + '</ol>';
+  $('profHowto').innerHTML = '<h3>วิธีการใช้งาน</h3><div class="howto">' + HOWTO.map((x,i)=>`<div class="ht-card" role="button" tabindex="0" aria-expanded="false"><div class="ht-ic">${x[0]}<i>${i+1}</i></div><div class="ht-tx"><b>${esc(x[1])}</b><span>${esc(x[2])}</span></div><span class="ht-chev">${ico('chev',18)}</span></div>`).join('') + '</div>';
   makeCollapsible($('profHowto'),'howto');
   const phoneSvg = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>';
   $('profHelp').innerHTML = '<h3>ช่องทางการติดต่อ</h3><div class="help-sub">ปัญหางานจอง รถเสีย อุบัติเหตุ หรือมีปัญหาระหว่างทำงาน</div>' + CONTACTS.map(c=>`<div class="help-row${c.main?' main':''}"><div><div class="hl">${esc(c.l)}</div><div class="hn">${esc(c.n)}</div></div><a class="hb" href="${c.href}" aria-label="โทร ${esc(c.l)}">${phoneSvg}โทร</a></div>`).join('')
@@ -3203,25 +3563,31 @@ function renderProfile(){
   docExpiryNotify(al);
   $('profAlerts').innerHTML = al.map(([k,n])=>`<div class="exp-alert ${n<0?'bad':'warn'}"><span class="dot"></span><span>${esc(k)} ${n<0?`หมดอายุแล้ว ${-n} วัน`:n===0?'หมดอายุวันนี้':`จะหมดอายุในอีก ${n} วัน`}</span></div>`).join('');
   
-  const sub = [veh.color, veh.rentPerDay != null && veh.rentPerDay !== '' ? `ค่าเช่า ${baht2(veh.rentPerDay)}/วัน` : ''].filter(Boolean).join(' · ');
+  const COLORS = {'ขาว':'#ffffff','ดำ':'#111827','เทา':'#9ca3af','เงิน':'#d1d5db','แดง':'#ef4444','น้ำเงิน':'#2563eb','ฟ้า':'#38bdf8','เขียว':'#22c55e','เหลือง':'#facc15','ส้ม':'#f97316','น้ำตาล':'#92400e','ทอง':'#d4a017','ชมพู':'#f472b6','ม่วง':'#8b5cf6'};
+  const cdot = veh.color ? Object.entries(COLORS).find(([k])=>String(veh.color).includes(k)) : null;
+  const chips = [veh.color ? `<span class="vh-chip">${cdot?`<i class="vh-dot" style="background:${cdot[1]}"></i>`:''}สี${esc(String(veh.color).replace(/^สี/,''))}</span>` : '',
+    veh.rentPerDay != null && veh.rentPerDay !== '' ? `<span class="vh-chip">💰 ค่าเช่า ${baht2(veh.rentPerDay)}/วัน</span>` : ''].join('');
   $('profVehicle').innerHTML = `<h3>ข้อมูลรถ</h3>
-    <div class="veh-head">
+    <div class="veh-hero">
       <div class="th-plate"><i>THAILAND</i><b>${esc(plate)}</b><span>${esc(veh.province || DEFAULT_PROVINCE)}</span></div>
-      <div style="min-width:0;"><div class="veh-model">${esc(veh.model||'-')}</div>${sub ? `<div class="muted veh-sub">${esc(sub)}</div>` : ''}</div>
+      <div class="vh-info"><div class="vh-lbl">รุ่นรถ</div><div class="vh-model">${esc(veh.model||'-')}</div><div class="vh-chips">${chips}</div></div>
     </div>
-    ${kvRow('พ.ร.บ.', datePill(veh.actExpiry))}${kvRow('ประกันภัย', datePill(veh.insuranceExpiry))}
-    ${kvRow('ตรวจมิเตอร์', datePill(veh.meterExpiry))}
-    ${kvRow('เซอร์วิสล่าสุด', veh.lastService ? fmtBE(veh.lastService) : NONE)}`;
-  $('profDocs').innerHTML = `<h3>เอกสาร สัญญา และเงินประกัน</h3>
-    ${kvRow('ใบขับขี่สาธารณะ', veh.licenseNo ? esc(veh.licenseNo) : '<span class="v-none">-</span>')}
-    ${kvRow('ใบขับขี่หมดอายุ', datePill(veh.licenseExpiry))}
-    ${kvRow('เงินประกันที่วางไว้', veh.deposit != null && veh.deposit !== '' ? `<b class="v-strong">${baht2(veh.deposit)}</b>` : '<span class="v-none">-</span>')}
-    ${kvRow('เริ่มงาน', veh.startDate ? fmtBE(veh.startDate) : '<span class="v-none">-</span>')}
-    ${kvRow('เลขที่สัญญา', veh.contractNo ? esc(veh.contractNo) : NONE)}
-    ${kvRow('ประเภทสัญญา', veh.contractType ? esc(veh.contractType) : NONE)}
-    ${kvRow('เริ่มสัญญา', veh.contractStart ? fmtBE(veh.contractStart) : NONE)}
-    ${kvRow('สิ้นสุดสัญญา', veh.contractEnd ? fmtBE(veh.contractEnd) : NONE)}`;
+    <div class="kv-two">
+      <div class="kv-box">${kvItem('พ.ร.บ.', datePill(veh.actExpiry))}${kvItem('ตรวจมิเตอร์', datePill(veh.meterExpiry))}</div>
+      <div class="kv-box">${kvItem('ประกันภัย', datePill(veh.insuranceExpiry))}${kvItem('เซอร์วิสล่าสุด', veh.lastService ? `<span class="tile-plain">${fmtBE(veh.lastService)}</span>` : NONE)}</div>
+    </div>`;
+  const tp_ = x => x ? `<span class="tile-plain">${esc(x)}</span>` : NONE;
+  // สถานะผู้เช่าขับ: ค่า status จาก Fleet (ซิงก์ผ่าน SSLS) — ยังไม่ซิงก์ = '-' ; บัญชีถูกระงับในระบบคนขับ = ระงับ
+  const STAT = {inuse:['ใช้งานอยู่','#1e9e5a','#eafaf1'], active:['ใช้งาน','#1e9e5a','#eafaf1'], suspend:['พักขับ','#b7791f','#fff5e8'], cancel:['ยกเลิก','#d94a5c','#fdeef0'], terminate:['สิ้นสุดสัญญา','#d94a5c','#fdeef0'], inactive:['ไม่ใช้งาน','#6b7c93','#eef2f7']};
+  const stk = u.active === false ? 'inactive' : String(veh.status||'').toLowerCase(), st = STAT[stk];
+  const stHtml = st ? `<span class="tile-plain" style="color:${st[1]};background:${st[2]};border-radius:20px;padding:3px 10px">${st[0]}</span>` : tp_(veh.status);
+  $('profDocs').innerHTML = `<h3>ข้อมูลผู้เช่าขับ เอกสาร และสัญญา</h3>
+    <div class="kv-two">
+      <div class="kv-box">${kvItem('ชื่อ-นามสกุล', tp_(u.fullName))}${kvItem('ประเภทผู้เช่าขับ', tp_(veh.driverType))}${kvItem('วันที่เซ็นต์สัญญา', (x => x ? `<span class="tile-plain">${fmtBE(x)}</span>` : NONE)(veh.contractStart))}${kvItem('วันที่ฝึกอบรม', (x => x ? `<span class="tile-plain">${fmtBE(x)}</span>` : NONE)(veh.trainingDate))}${kvItem('ใบขับขี่สาธารณะ', tp_(veh.licenseNo))}${kvItem('เงินประกัน', veh.deposit != null && veh.deposit !== '' ? `<span class="tile-plain" style="color:#0b1f4a">${baht2(veh.deposit)}</span>` : NONE)}</div>
+      <div class="kv-box">${kvItem('รหัสผู้เช่าขับ', tp_(u.username))}${kvItem('ประเภทสัญญา', tp_(veh.contractType))}${kvItem('เลขที่สัญญา', tp_(veh.contractNo))}${kvItem('วันที่ขับรถวันแรก', (x => x ? `<span class="tile-plain">${fmtBE(x)}</span>` : NONE)(veh.carReceiveDate))}${kvItem('ใบขับขี่หมดอายุ', datePill(veh.licenseExpiry))}${kvItem('สถานะผู้เช่าขับ', stHtml)}</div>
+    </div>`;
   makeCollapsible($('profDocs'),'docs'); makeCollapsible($('profVehicle'),'veh');
+  renderIncidents(veh);
 }
 
 const MAIN_SCREENS = ['home','history','join','job','profile'];
@@ -3275,7 +3641,7 @@ $('queueBackBtn').addEventListener('click', ()=>showScreen(lastMain));
 // เก็บ session ไว้ใน localStorage กันหลุดล็อกอินทุกครั้งที่รีเฟรช — เก็บแค่ username ไม่เก็บรหัสผ่าน/hash ใดๆ ทั้งสิ้น
 // ถ้าบัญชีถูกลบ/ระงับไปหลังล็อกอินไว้ ตอน refresh จะเช็คซ้ำกับ DB เสมอแล้วเด้งกลับไปหน้า login เอง ไม่ใช่ session ที่ปลอมข้อมูลค้างอยู่ตลอดไป
 // เวอร์ชันของตัวแอป (เนื้อหาเว็บ driver.html) — เพิ่มเลขทุกครั้งที่ส่งมอบรุ่นใหม่ ไม่ใช่ versionName ของ APK
-const APP_VERSION = '1.10', APP_BUILD = '23/11/2026';
+const APP_VERSION = '1.10', APP_BUILD = '26/11/2026';
 document.querySelectorAll('.app-ver').forEach(el=>{ el.textContent = 'V.' + APP_VERSION + '_' + APP_BUILD; });
 const DRIVER_SESSION_KEY = 'ssls_driver_session_username';
 const DRIVER_LOGIN_AT_KEY = 'ssls_driver_login_at'; // เวลา (ms) ที่ล็อกอินล่าสุด เก็บค้างในเครื่องจนกว่าจะกดออกจากระบบ
